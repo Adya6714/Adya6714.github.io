@@ -1,26 +1,317 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "../styles/tokens.css";
+@import "katex/dist/katex.min.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg-base: var(--bg-base);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-card: var(--bg-card);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-body: var(--text-body);
+  --color-text-muted: var(--text-muted);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-warm: var(--accent-warm);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cormorant), "Times New Roman", serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --radius-lg: var(--radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent-teal) 35%, transparent);
+  color: var(--text-primary);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.label-caps {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.prose-lumen {
+  max-width: var(--prose-max);
+  color: var(--text-body);
+}
+
+.prose-lumen h1,
+.prose-lumen h2,
+.prose-lumen h3,
+.prose-lumen h4 {
+  font-family: var(--font-display);
+  font-weight: 560;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.prose-lumen h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.prose-lumen h2 {
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  margin-top: 2.5rem;
+}
+
+.prose-lumen h3 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+}
+
+.prose-lumen a {
+  color: var(--accent-teal);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.prose-lumen a:hover {
+  color: color-mix(in srgb, var(--accent-teal) 80%, white);
+}
+
+.prose-lumen code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+}
+
+.prose-lumen pre {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  padding: 1rem 1.1rem;
+  margin: 1.5rem 0;
+}
+
+.prose-lumen pre code {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.prose-lumen blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent-violet);
+  color: var(--text-body);
+}
+
+.prose-lumen figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.prose-lumen .footnotes {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Ambient static gradient — Layer 0, always present */
+.ambient-base {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 80% 55% at 50% 110%,
+      color-mix(in srgb, var(--accent-teal) 16%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 85% 70%,
+      color-mix(in srgb, var(--accent-violet) 12%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 40% 30% at 15% 40%,
+      color-mix(in srgb, var(--accent-violet) 8%, transparent),
+      transparent 50%
+    ),
+    var(--bg-base);
+}
+
+.site-main {
+  position: relative;
+  z-index: 10;
+}
+
+.card-surface {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.card-surface[data-rim="true"] {
+  border-color: color-mix(in srgb, var(--accent-warm) 45%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-warm) 20%, transparent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.btn-primary {
+  background: color-mix(in srgb, var(--accent-teal) 18%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--accent-teal) 45%, var(--border));
+  color: var(--text-primary);
+}
+
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent-teal) 28%, var(--bg-card));
+  border-color: var(--accent-teal);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-body);
+}
+
+.btn-ghost:hover {
+  border-color: color-mix(in srgb, var(--accent-violet) 50%, var(--border));
+  color: var(--text-primary);
+}
+
+.breathing-glow {
+  animation: breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathing-glow {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+@keyframes waterfall-flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 220px;
+  }
+}
+
+.waterfall-sheet {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent-teal) 18%, transparent) 18%,
+    color-mix(in srgb, var(--accent-violet) 14%, transparent) 52%,
+    color-mix(in srgb, var(--accent-teal) 22%, transparent) 78%,
+    transparent 100%
+  );
+  background-size: 100% 220%;
+  filter: blur(10px);
+  mask-image: linear-gradient(90deg, transparent, black 30%, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 30%,
+    black 70%,
+    transparent
+  );
+  animation: waterfall-flow 7s linear infinite;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waterfall-sheet {
+    animation: none;
+  }
 }
