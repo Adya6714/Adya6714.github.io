@@ -1,32 +1,24 @@
 # Lumenwald
 
-Dark, modern research portfolio and writing site for **Adya Srivastava** — LLM evaluation, mechanistic interpretability, and the gap between benchmark accuracy and genuine reasoning.
+Research portfolio for Adya Srivastava — LLM evaluation, interpretability, and applied ML systems. Atmosphere: bioluminescent night forest (decorative only; never gates content).
 
-Atmosphere: bioluminescent night forest (Cloud Forest–inspired indoor waterfall mood). Ambience is decorative only and never gates content readability.
+## Content (source of truth)
 
-## Stack
+- `content/experience.json` — About timeline
+- `content/research-nodes.json` — Constellation nodes + links
+- `content/library/*.mdx` — Library chapters (`title`, `order`, `tags`, `readTime`, `summary`)
+- `content/writing/*.mdx` — Blog posts
 
-- Next.js App Router (static export) + TypeScript + Tailwind CSS v4
-- Framer Motion · MDX via `next-mdx-remote` + gray-matter
-- KaTeX · rehype-pretty-code · JetBrains Mono / Geist / Cormorant Garamond
+Library `tags` that match a research node `id` (or title keywords) surface as “Related reading in the Library” chips in the constellation panel.
 
 ## Develop
 
 ```bash
 npm install
 npm run dev
+npm run build   # static `out/`
 ```
-
-```bash
-npm run build   # writes static `out/`
-```
-
-## Content
-
-- Posts: `content/posts/*.mdx`
-- Grimoire chapters: `content/chapters/*.mdx`
-- Design tokens: `src/styles/tokens.css` + `src/styles/tokens.ts`
 
 ## Ambience
 
-Toggle **Dim ambience** in the sidebar (persisted). Respects `prefers-reduced-motion`. Reader mode auto-dims layers and hides the waterfall.
+Dim ambience toggle (sidebar, localStorage). Respects `prefers-reduced-motion`. Reader mode dims layers and hides the waterfall. Decorative extras: richer waterfall, whisper motes, flying canopy sprite.

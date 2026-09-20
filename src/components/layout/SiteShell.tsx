@@ -20,7 +20,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <footer className="mx-auto w-full max-w-[var(--content-max)] border-t border-border px-5 py-8 text-sm text-text-muted sm:px-8">
           <p>
             Lumenwald — research notes by Adya Srivastava. Atmosphere inspired by
-            night forests and indoor cloud canopies; no trademarked wizarding marks.
+            night forests and indoor cloud canopies.
           </p>
         </footer>
       </div>

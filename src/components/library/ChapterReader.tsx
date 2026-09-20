@@ -6,8 +6,8 @@ import { useAmbience } from "@/components/ambience/AmbienceProvider";
 import type { ChapterMeta } from "@/lib/content";
 import { cn } from "@/lib/cn";
 
-const PROGRESS_KEY = "lumenwald-grimoire-progress";
-const SCROLL_KEY = "lumenwald-grimoire-scroll";
+const PROGRESS_KEY = "lumenwald-library-progress";
+const SCROLL_KEY = "lumenwald-library-scroll";
 const SIZE_KEY = "lumenwald-reader-size";
 
 type Size = "sm" | "md" | "lg";
@@ -96,11 +96,8 @@ export function ChapterReader({
       </div>
 
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3 pt-2">
-        <Link
-          href="/grimoire"
-          className="text-sm text-accent-teal hover:underline"
-        >
-          ← Grimoire
+        <Link href="/library" className="text-sm text-accent-teal hover:underline">
+          ← Library
         </Link>
         <div
           className="flex items-center gap-1 rounded-[12px] border border-border p-1"
@@ -128,7 +125,7 @@ export function ChapterReader({
 
       <header className="mb-8">
         <p className="label-caps mb-2">
-          Chapter {String(chapter.number).padStart(2, "0")}
+          Chapter {String(chapter.order).padStart(2, "0")}
         </p>
         <h1
           className="font-display text-4xl font-medium text-text-primary"
@@ -136,7 +133,7 @@ export function ChapterReader({
         >
           {chapter.title}
         </h1>
-        <p className="mt-2 text-text-muted">{chapter.readingTime}</p>
+        <p className="mt-2 text-text-muted">{chapter.readTime}</p>
       </header>
 
       <div className={cn("prose-lumen", sizeClass[size])}>{children}</div>
@@ -146,14 +143,14 @@ export function ChapterReader({
         className="mt-14 flex items-center justify-between gap-4 border-t border-border pt-6"
       >
         {prev ? (
-          <Link href={`/grimoire/${prev.slug}`} className="btn btn-ghost">
+          <Link href={`/library/${prev.slug}`} className="btn btn-ghost">
             ← {prev.title}
           </Link>
         ) : (
           <span />
         )}
         {next ? (
-          <Link href={`/grimoire/${next.slug}`} className="btn btn-primary">
+          <Link href={`/library/${next.slug}`} className="btn btn-primary">
             {next.title} →
           </Link>
         ) : (

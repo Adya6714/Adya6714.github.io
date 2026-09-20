@@ -1,0 +1,75 @@
+[
+  {
+    "id": "reasoning-fragility",
+    "title": "Diagnosing Structural Fragility in LLM Reasoning",
+    "akaTitle": "Same Score, Different Strategy",
+    "depth": 3,
+    "status": "Published (CAISc 2026) — expanding for NeurIPS 2026 workshop",
+    "summary": "Multi-probe method spanning rename, session coupling, and contamination exposure to distinguish retrieval from genuine reasoning in LLMs. Adversarial perturbation tests across 5 frontier LLMs with statistical significance testing.",
+    "links": {
+      "repo": "https://github.com/Adya6714/retrieval-vs-computation",
+      "paper": null
+    },
+    "relatedNodeIds": []
+  },
+  {
+    "id": "volatility-hedging",
+    "title": "Diffusion-Generated Volatility Surfaces for RL Hedging",
+    "depth": 3,
+    "status": "Drafted, NeurIPS 2026 format",
+    "summary": "Built NIFTY 50 IV surfaces from 912K+ option rows using conditional DDPMs (0.005 arbitrage penalty vs market 0.009), then trained a PPO hedging agent that reduced CVaR(95%) hedge error by 60.1% vs Black-Scholes.",
+    "links": {
+      "repo": "https://github.com/Adya6714/ddpm-vol-hedging",
+      "paper": null
+    },
+    "relatedNodeIds": []
+  },
+  {
+    "id": "document-vlm",
+    "title": "Small Document VLM for OCR Evaluation",
+    "depth": 2,
+    "status": "In progress",
+    "summary": "Evaluating small vision-language models on document OCR tasks, with a focus on failure modes on structured and low-resource documents.",
+    "links": {
+      "repo": "https://github.com/Adya6714/vlm-ocr-eval",
+      "paper": null
+    },
+    "relatedNodeIds": []
+  },
+  {
+    "id": "quantum-hybrid",
+    "title": "Hybrid Quantum-Classical Paradigms for Nonlinear Dynamics, ML, and Autonomous Systems",
+    "depth": 1,
+    "status": "Survey paper, IEEE format",
+    "summary": "Unified framework covering Carleman linearization, quantum Fokker-Planck embedding, VQAs for PDEs, quantum RL, and quantum game theory, with hardware and energy-efficiency comparisons.",
+    "links": {
+      "repo": null,
+      "paper": null
+    },
+    "relatedNodeIds": []
+  },
+  {
+    "id": "omnimesh",
+    "title": "OmniMesh",
+    "depth": 2,
+    "status": "Hackathon-stage prototype",
+    "summary": "Offline-first disaster response mesh network using Android phones as triage nodes. Six-agent FastAPI backend running Gemma-2-9B on vLLM-ROCm.",
+    "links": {
+      "repo": "https://github.com/Adya6714/OmniMesh",
+      "paper": null
+    },
+    "relatedNodeIds": []
+  },
+  {
+    "id": "fraudscope360",
+    "title": "FraudScope360",
+    "depth": 1,
+    "status": "National Winner, Citi Bank Campus Innovation Challenge",
+    "summary": "5-module fraud engine using graph embedding, anomaly detection, and feature engineering to detect fraud rings and identity fraud, built on Graph ML and XGBoost.",
+    "links": {
+      "repo": null,
+      "paper": null
+    },
+    "relatedNodeIds": []
+  }
+]

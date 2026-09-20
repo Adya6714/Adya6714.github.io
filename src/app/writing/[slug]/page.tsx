@@ -37,7 +37,7 @@ export default async function PostPage({ params }: Props) {
         <p className="label-caps mb-2">
           <time dateTime={doc.meta.date}>{doc.meta.date}</time>
           {" · "}
-          {doc.meta.readingTime}
+          {doc.meta.readTime}
         </p>
         <h1
           className="font-display text-4xl font-medium text-text-primary"

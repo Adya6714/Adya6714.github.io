@@ -2,9 +2,17 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { researchNodes } from "@/lib/research-nodes";
+import researchNodesData from "../../../content/research-nodes.json";
 
 type Hit = { label: string; href: string; group: string };
+
+const researchHits: Hit[] = (
+  researchNodesData as { id: string; title: string }[]
+).map((n) => ({
+  label: n.title,
+  href: `/research#${n.id}`,
+  group: "Research",
+}));
 
 export function Search() {
   const [open, setOpen] = useState(false);
@@ -17,16 +25,11 @@ export function Search() {
     const query = q.trim().toLowerCase();
     const staticHits: Hit[] = [
       { label: "Home", href: "/", group: "Pages" },
-      { label: "Research Constellation", href: "/research", group: "Pages" },
-      { label: "Research Program", href: "/program", group: "Pages" },
-      { label: "The Grimoire", href: "/grimoire", group: "Pages" },
+      { label: "Research", href: "/research", group: "Pages" },
+      { label: "Library", href: "/library", group: "Pages" },
       { label: "Writing", href: "/writing", group: "Pages" },
       { label: "About & CV", href: "/about", group: "Pages" },
-      ...researchNodes.map((n) => ({
-        label: n.title,
-        href: n.href,
-        group: "Research",
-      })),
+      ...researchHits,
     ];
     if (!query) return staticHits.slice(0, 8);
     return staticHits.filter((h) => h.label.toLowerCase().includes(query));

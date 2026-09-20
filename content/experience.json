@@ -1,0 +1,44 @@
+[
+  {
+    "role": "ML Engineering Intern",
+    "org": "Nurix AI",
+    "start": "2025-07",
+    "end": "2025-12",
+    "bullets": [
+      "Built TinyBERT+NN voicemail detection with backend integration and model deployment, achieving 95% precision",
+      "Optimised transformer-based STT pipeline via semantic parsing, improving real-time turn-end detection accuracy by 115%",
+      "Designed WER/EER correction pipeline using Word2Vec, phonetic normalisation, and LLM scoring, reducing WER by 40%"
+    ]
+  },
+  {
+    "role": "Quant Investment Analyst",
+    "org": "FidelFolio Investments",
+    "start": "2025-05",
+    "end": "2025-06",
+    "bullets": [
+      "Built quantitative research workflow for portfolio analytics and Sharpe evaluation, improving research efficiency by 90%",
+      "Optimised risk-aware portfolio construction via genetic algorithms and bayesian optimisation, improving Sharpe by ~42%",
+      "Analysed multifactor portfolio interactions across 24 factors and 200+ portfolios for strategy evaluation and signal analysis"
+    ]
+  },
+  {
+    "role": "Research Engineer",
+    "org": "Grasim (Aditya Birla Group)",
+    "start": "2024-05",
+    "end": "2024-07",
+    "bullets": [
+      "Designed 20+ PLC-based railway simulations for autonomous control, operational validation, and safety compliance",
+      "Engineered IR + IoT sensor networks for real-time railway-track monitoring, achieving 98% trespassing detection accuracy"
+    ]
+  },
+  {
+    "role": "Product Development Lead",
+    "org": "Khageshvara Aviation Technology",
+    "start": "2023-05",
+    "end": "2023-10",
+    "bullets": [
+      "Developed ML-CNN aerial vision pipelines for real-time human detection and accelerated UAV deployment via partnerships",
+      "Built investor-grade financial models and pitch strategies, securing DST funding and supporting product development"
+    ]
+  }
+]

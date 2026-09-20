@@ -2,31 +2,35 @@
 
 import { useEffect, useRef } from "react";
 import { siteConfig } from "@/lib/site";
+import type { ExperienceItem } from "@/lib/content";
 
-const timeline = [
-  {
-    year: "2026",
-    title: "CAISc — Same Score, Different Strategy",
-    detail: "Published work on strategy divergence under matched accuracy.",
-  },
-  {
-    year: "2025–26",
-    title: "Reasoning probes & mechanistic interpretability",
-    detail: "Three-probe framework and circuit-level follow-ups across five models.",
-  },
-  {
-    year: "2025",
-    title: "Diffusion × PPO hedging · Quantum survey",
-    detail: "NIFTY 50 volatility surfaces; hybrid quantum-classical taxonomy.",
-  },
-  {
-    year: "2024",
-    title: "Graph ML fraud · Applied systems",
-    detail: "GNN + XGBoost fraud stack; CloudWatch agents, VLM OCR eval, OmniMesh.",
-  },
-];
+function formatRange(start: string, end: string) {
+  const fmt = (s: string) => {
+    const [y, m] = s.split("-");
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${months[Number(m) - 1]} ${y}`;
+  };
+  return `${fmt(start)} – ${fmt(end)}`;
+}
 
-export function AboutSection() {
+export function AboutSection({
+  experience,
+}: {
+  experience: ExperienceItem[];
+}) {
   const refs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
@@ -35,12 +39,12 @@ export function AboutSection() {
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            e.target.classList.add("opacity-100", "translate-y-0");
-            e.target.classList.remove("opacity-0", "translate-y-4");
+            (e.target as HTMLElement).style.opacity = "1";
+            (e.target as HTMLElement).style.transform = "translateY(0)";
           }
         });
       },
-      { threshold: 0.25 },
+      { threshold: 0.2 },
     );
     nodes.forEach((n) => obs.observe(n));
     return () => obs.disconnect();
@@ -48,7 +52,7 @@ export function AboutSection() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-12">
-      <div className="lg:col-span-7">
+      <div className="lg:col-span-5">
         <p className="label-caps mb-3">About</p>
         <h1
           className="font-display text-4xl font-medium text-text-primary"
@@ -58,16 +62,11 @@ export function AboutSection() {
         </h1>
         <div className="prose-lumen mt-5 space-y-4">
           <p>
-            I am an AI/ML researcher focused on evaluation methodology and
-            mechanistic interpretability. My work asks whether leaderboard
-            agreement implies shared reasoning — and when it does not, how to
-            measure and explain the difference.
-          </p>
-          <p>
-            Lumenwald is the public notebook for that program: papers and
-            projects in the constellation, long-form agenda in the research
-            program, chapters in the grimoire, and shorter field notes in
-            writing.
+            AI/ML researcher focused on evaluation methodology and the gap
+            between benchmark accuracy and genuine reasoning. Current work spans
+            multi-probe LLM diagnostics, diffusion-based volatility surfaces for
+            RL hedging, and applied systems from document VLMs to offline mesh
+            networks.
           </p>
         </div>
 
@@ -97,29 +96,43 @@ export function AboutSection() {
         </div>
       </div>
 
-      <div className="lg:col-span-5">
+      <div className="lg:col-span-7">
         <h2
-          className="mb-4 font-display text-2xl text-text-primary"
+          className="mb-6 font-display text-2xl text-text-primary"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Timeline
+          Experience
         </h2>
-        <ol className="relative space-y-6 border-l border-border pl-5">
-          {timeline.map((item, i) => (
+        <ol className="relative space-y-8 border-l border-border pl-6">
+          {experience.map((item, i) => (
             <li
-              key={item.title}
+              key={`${item.org}-${item.start}`}
               ref={(el) => {
                 refs.current[i] = el;
               }}
-              className="relative translate-y-4 opacity-0 transition duration-500"
+              className="relative"
+              style={{
+                opacity: 0,
+                transform: "translateY(12px)",
+                transition: "opacity 300ms ease, transform 300ms ease",
+              }}
             >
               <span
                 aria-hidden
-                className="absolute top-1.5 -left-[27px] h-2.5 w-2.5 rounded-full bg-accent-teal"
+                className="absolute top-1.5 -left-[31px] h-2.5 w-2.5 rounded-full bg-accent-teal"
               />
-              <p className="font-mono text-xs text-accent-violet">{item.year}</p>
-              <h3 className="mt-1 text-text-primary">{item.title}</h3>
-              <p className="mt-1 text-sm text-text-body">{item.detail}</p>
+              <p className="font-mono text-xs text-accent-violet">
+                {formatRange(item.start, item.end)}
+              </p>
+              <h3 className="mt-1 text-lg text-text-primary">
+                {item.role}
+                <span className="text-text-muted"> · {item.org}</span>
+              </h3>
+              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-text-body">
+                {item.bullets.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
             </li>
           ))}
         </ol>

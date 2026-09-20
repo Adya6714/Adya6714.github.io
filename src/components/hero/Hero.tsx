@@ -27,10 +27,10 @@ export function Hero() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/research" className="btn btn-primary">
-            Read the research
+            Explore the research
           </Link>
-          <Link href="/grimoire" className="btn btn-ghost">
-            Open the grimoire
+          <Link href="/library" className="btn btn-ghost">
+            Open the library
           </Link>
         </div>
       </div>

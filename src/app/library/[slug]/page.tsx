@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ChapterReader } from "@/components/grimoire/ChapterReader";
+import { ChapterReader } from "@/components/library/ChapterReader";
 import { Mdx } from "@/components/mdx/Mdx";
 import { getAdjacent, getAllChapters, getChapter } from "@/lib/content";
 

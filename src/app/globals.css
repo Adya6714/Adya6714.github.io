@@ -287,31 +287,137 @@ body {
   }
 }
 
+@keyframes waterfall-flow-fast {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 320px;
+  }
+}
+
+@keyframes caustic-shimmer {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes spray-rise {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -18px) scale(1.15);
+    opacity: 0;
+  }
+}
+
 .waterfall-sheet {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    color-mix(in srgb, var(--accent-teal) 18%, transparent) 18%,
-    color-mix(in srgb, var(--accent-violet) 14%, transparent) 52%,
-    color-mix(in srgb, var(--accent-teal) 22%, transparent) 78%,
+    color-mix(in srgb, var(--accent-teal) 20%, transparent) 14%,
+    color-mix(in srgb, var(--accent-violet) 16%, transparent) 48%,
+    color-mix(in srgb, var(--accent-teal) 26%, transparent) 76%,
     transparent 100%
   );
   background-size: 100% 220%;
   filter: blur(10px);
-  mask-image: linear-gradient(90deg, transparent, black 30%, black 70%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 28%, black 72%, transparent);
   -webkit-mask-image: linear-gradient(
     90deg,
     transparent,
-    black 30%,
-    black 70%,
+    black 28%,
+    black 72%,
     transparent
   );
-  animation: waterfall-flow 7s linear infinite;
-  opacity: 0.55;
+  animation: waterfall-flow 6.5s linear infinite;
+  opacity: 0.6;
+}
+
+.waterfall-sheet-secondary {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    color-mix(in srgb, var(--accent-teal) 14%, transparent) 8px,
+    transparent 16px,
+    color-mix(in srgb, var(--accent-violet) 10%, transparent) 24px,
+    transparent 32px
+  );
+  background-size: 100% 160px;
+  filter: blur(4px);
+  mask-image: linear-gradient(90deg, transparent, black 40%, black 60%, transparent);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 40%,
+    black 60%,
+    transparent
+  );
+  animation: waterfall-flow-fast 4.2s linear infinite;
+  opacity: 0.35;
+}
+
+.waterfall-caustics {
+  background:
+    radial-gradient(
+      ellipse 40% 20% at 40% 30%,
+      color-mix(in srgb, var(--accent-teal) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 35% 18% at 65% 55%,
+      color-mix(in srgb, var(--accent-violet) 18%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 30% 15% at 50% 80%,
+      color-mix(in srgb, var(--accent-teal) 20%, transparent),
+      transparent 70%
+    );
+  filter: blur(12px);
+  animation: caustic-shimmer 5s ease-in-out infinite;
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+.waterfall-spray {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent-teal) 40%, transparent),
+    transparent 70%
+  );
+  filter: blur(8px);
+  animation: spray-rise 2.8s ease-out infinite;
+}
+
+.foliage-silhouette {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background:
+    radial-gradient(ellipse 28% 40% at 0% 20%, #0a1018 40%, transparent 70%),
+    radial-gradient(ellipse 32% 45% at 0% 70%, #0a1018 35%, transparent 68%),
+    radial-gradient(ellipse 22% 35% at 100% 35%, #0a1018 30%, transparent 65%);
+}
+
+[data-ambience="dim"] .foliage-silhouette,
+[data-theme="light"] .foliage-silhouette {
+  opacity: 0.06;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .waterfall-sheet {
+  .waterfall-sheet,
+  .waterfall-sheet-secondary,
+  .waterfall-caustics,
+  .waterfall-spray {
     animation: none;
   }
 }

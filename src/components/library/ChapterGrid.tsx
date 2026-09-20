@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ChapterMeta } from "@/lib/content";
 
-const PROGRESS_KEY = "lumenwald-grimoire-progress";
+const PROGRESS_KEY = "lumenwald-library-progress";
 
 function readProgress(): Record<string, number> {
   if (typeof window === "undefined") return {};
@@ -69,25 +69,25 @@ export function ChapterGrid({ chapters }: { chapters: ChapterMeta[] }) {
         return (
           <li key={ch.slug}>
             <Link
-              href={`/grimoire/${ch.slug}`}
+              href={`/library/${ch.slug}`}
               className="card-surface flex items-start gap-4 p-5 transition-colors hover:border-accent-violet/40"
             >
               <div className="relative shrink-0">
                 <ProgressRing value={pct} />
                 <span className="absolute inset-0 grid place-items-center font-mono text-[10px] text-text-muted">
-                  {String(ch.number).padStart(2, "0")}
+                  {String(ch.order).padStart(2, "0")}
                 </span>
               </div>
               <div>
-                <h3
+                <h2
                   className="font-display text-xl font-medium text-text-primary"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {ch.title}
-                </h3>
+                </h2>
                 <p className="mt-1 text-sm text-text-body">{ch.summary}</p>
                 <p className="mt-2 text-xs text-text-muted">
-                  ~{ch.estimatedMinutes} min · {Math.round(pct * 100)}% read
+                  {ch.readTime} · {Math.round(pct * 100)}% read
                 </p>
               </div>
             </Link>

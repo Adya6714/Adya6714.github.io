@@ -53,7 +53,7 @@ export function PostList({ posts }: { posts: PostMeta[] }) {
                 >
                   {post.date}
                 </time>
-                <span className="text-xs text-text-muted">{post.readingTime}</span>
+                <span className="text-xs text-text-muted">{post.readTime}</span>
               </div>
               <h2
                 className="mt-2 font-display text-2xl font-medium text-text-primary"
