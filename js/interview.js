@@ -5,7 +5,7 @@ window.CONTENT.ask = {
   blurb: "If you want to understand how I think, build, research, or approach problems, start here. Pick a thread and walk through it like an interview.",
   still: {
     title: "Still have a question?",
-    blurb: "I've tried to answer the questions I'm most often asked, but there's a good chance I've missed yours. Ask anything about my work, research, or how I approach problems — or leave something you think I should be thinking about."
+    blurb: "I've tried to answer the questions I'm most often asked, but there's a good chance I've missed yours. Ask about my work, research, how I approach problems, or anything you think I should be thinking about."
   },
   layers: [
     { id: "me", label: "Start with me", kind: "list", ids: ["me-yourself", "me-looking", "me-aiml", "me-research", "me-scratch", "me-excite", "me-curious", "me-better", "me-team", "me-unconstrained"] },

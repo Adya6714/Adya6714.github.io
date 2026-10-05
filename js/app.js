@@ -145,9 +145,8 @@ function guardianPanel() {
     <h3 class="about-h3">${esc(A.still?.title || "Still have a question?")}</h3>
     <p class="about-muted">${esc(A.still?.blurb || "")}</p>
     <div class="chat still-chat">
-      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(C.guardian?.intro || "Ask me anything I missed above.")}</div></div>
       <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask anything I missed…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
-      <p class="fine">Freeform answers stay grounded in Adya's documents · or leave a slip on About</p>
     </div>
   </div>`;
 }
@@ -705,15 +704,15 @@ async function ask(question, kbId, label) {
   // Prefer scripted interview answers when the freeform text matches a known question closely
   if (!kbId) {
     const hit = Object.values(askQA).find(item => item.q.toLowerCase() === q.toLowerCase() || q.toLowerCase().includes(item.q.toLowerCase().slice(0, 28)));
-    if (hit) { answer = hit.short + (hit.deep ? "\n\n" + hit.deep : ""); src = "Ask interview notes"; }
+    if (hit) { answer = hit.short + (hit.deep ? "\n\n" + hit.deep : ""); src = null; }
   }
   if (!answer && !kbId && CFG.GUARDIAN_API) {
     try {
       const r = await fetch(CFG.GUARDIAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
-      if (r.ok) { const d = await r.json(); answer = d.answer; src = d.source || "Adya's documents"; }
+      if (r.ok) { const d = await r.json(); answer = d.answer; src = null; }
     } catch (e) { /* fall back */ }
   }
-  if (!answer) { const e = kbId ? kbById(kbId) : findKB(q); answer = e ? e.a : C.guardian.fallback; src = e ? e.src : null; }
+  if (!answer) { const e = kbId ? kbById(kbId) : findKB(q); answer = e ? e.a : C.guardian.fallback; src = null; }
   m.classList.remove("typing"); m.textContent = "";
   typeOut(m, answer, src, () => { statueEyes.classList.remove("speaking"); busy = false; });
 }

@@ -320,7 +320,7 @@ window.CONTENT = {
   },
 
   guardian: {
-    intro: "Hi — I'm the guardian on Adya's site. Interview her through me: research, internships, projects, skills, or what she's looking for next. Answers come only from her documents.",
+    intro: "If none of the threads above cover what you wanted to know, ask here. Research, projects, experience, what I'm looking for next. I'll answer as best I can.",
     chips: [
       ["Walk me through your research", "research"],
       ["What did you ship at Nurix?", "nurix"],
@@ -359,6 +359,6 @@ window.CONTENT = {
       { id: "contact", keys: ["contact", "email", "reach", "resume", "cv", "github", "linkedin", "hello"], src: "Resume",
         a: "You can email srivastavadya@gmail.com, find code at github.com/Adya6714, or download the resume with the button at the top of the page." }
     ],
-    fallback: "I don't have that in the documents I was given. You can email Adya at srivastavadya@gmail.com, or try one of the interview prompts above."
+    fallback: "I'm not sure I have a good answer for that one. Email me at srivastavadya@gmail.com, or try one of the interview threads above."
   }
 };
