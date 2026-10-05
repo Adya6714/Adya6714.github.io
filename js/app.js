@@ -28,32 +28,6 @@ const ytId = u => { const m = String(u).match(/(?:youtu\.be\/|v=)([\w-]{11})/); 
 /* ---------- panels ---------- */
 const P = C.person;
 const resumeBtn = (cls = "btn primary") => `<a class="${cls} resume" href="#" download>Resume</a>`;
-function slipBlock(variant = "about") {
-  const hero = variant === "hero";
-  const sfx = hero ? "-hero" : "";
-  const rootId = hero ? "slips-hero" : "slips";
-  const prompts = (C.suggest?.prompts || ["Something I should explore", "A conversation worth having", "A paper or idea to chase"])
-    .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
-  return `<div class="slips${hero ? " slips-compact" : ""}" id="${rootId}">
-    <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
-    <p class="about-muted">${esc(hero ? (C.suggest?.heroBlurb || C.suggest?.blurb || "") : (C.suggest?.blurb || ""))}</p>
-    <div class="phone-booth" aria-hidden="true"><div class="phone-slot"></div><div class="phone-card">☎</div></div>
-    <div class="slip-deck" aria-hidden="true">${prompts}</div>
-    <form class="slip-form suggestForm" data-slip-root="${rootId}" novalidate>
-      <label class="sr-only" for="slipMsg${sfx}">Your suggestion</label>
-      <textarea id="slipMsg${sfx}" name="message" rows="${hero ? 2 : 3}" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "What should I explore, build, or talk about?")}"></textarea>
-      <div class="slip-meta">
-        <label class="anon"><input type="checkbox" class="slipAnon" data-slip-root="${rootId}" checked> Stay anonymous</label>
-        <div class="slip-identity slipIdentity" data-slip-root="${rootId}" hidden>
-          <input class="slipName" data-slip-root="${rootId}" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
-          <input class="slipContact" data-slip-root="${rootId}" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
-        </div>
-      </div>
-      <div class="row" style="margin:0"><button class="btn primary slipSend" type="submit" data-slip-root="${rootId}">Send slip</button></div>
-      <p class="fine slipStatus" data-slip-root="${rootId}" role="status"></p>
-    </form>
-  </div>`;
-}
 function heroPanel() {
   const paras = P.aboutIntro || [];
   const intro = paras.map((p, i) => `<p class="hero-p${i > 0 ? " hero-p-secondary" : ""}">${esc(p)}</p>`).join("");
@@ -62,9 +36,48 @@ function heroPanel() {
   <div class="chips">${P.proof.map(p => `<span class="chip c">${esc(p)}</span>`).join("")}</div>
   <div class="row">${resumeBtn()}<button class="btn" data-go="1">Research</button><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a></div>
   <div class="status"><i></i>${esc(P.status)}</div>
-  <div class="about-divider"></div>
-  ${slipBlock("hero")}
   <p class="hint">Scroll to travel downstream.</p>`;
+}
+function mountSlipDock() {
+  const prompts = (C.suggest?.prompts || []).map((t, i) =>
+    `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
+  const dock = mk(`<aside class="slip-dock" id="slipDock" data-lenis-prevent aria-label="Leave a slip">
+    <div class="slip-chute" aria-hidden="true"><div class="slip-chute-glow"></div></div>
+    <button type="button" class="slip-dock-tab" id="slipDockTab" aria-expanded="false" aria-controls="slipDockPanel">
+      <span class="slip-tab-icon">✉</span><span class="slip-tab-label">Leave a slip</span>
+    </button>
+    <div class="slip-dock-panel" id="slipDockPanel" hidden>
+      <button type="button" class="slip-dock-close" id="slipDockClose" aria-label="Close">&times;</button>
+      <div class="slips" id="slips">
+        <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
+        <p class="about-muted">${esc(C.suggest?.blurb || "")}</p>
+        <div class="slip-mailbox" aria-hidden="true">
+          <div class="slip-mailbox-slot"></div>
+          <div class="slip-mailbox-body"></div>
+        </div>
+        <div class="slip-deck">${prompts}</div>
+        <div class="slip-thanks" id="slipThanks" hidden>
+          <div class="slip-thanks-sparkles" aria-hidden="true"></div>
+          <p class="slip-thanks-msg" id="slipThanksMsg"></p>
+          <button type="button" class="btn sm" id="slipThanksAgain">Leave another</button>
+        </div>
+        <form class="slip-form suggestForm" id="suggestForm" novalidate>
+          <label class="sr-only" for="slipMsg">Your suggestion</label>
+          <textarea id="slipMsg" name="message" rows="4" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "")}"></textarea>
+          <div class="slip-meta">
+            <label class="anon"><input type="checkbox" class="slipAnon" id="slipAnon" checked> Stay anonymous</label>
+            <div class="slip-identity" id="slipIdentity" hidden>
+              <input class="slipName" id="slipName" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
+              <input class="slipContact" id="slipContact" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
+            </div>
+          </div>
+          <button class="btn primary slipSend" type="submit">Drop it in the chute</button>
+          <p class="fine slipStatus" id="slipStatus" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </aside>`);
+  document.body.appendChild(dock);
 }
 function ideasPanel() {
   const main = C.papers.filter(p => p.kind === "published" || p.kind === "preprint");
@@ -167,10 +180,10 @@ function aboutPanel() {
   return `<div class="about-head">${photo}<div><h2>About me</h2></div></div>
   <div class="about-block">${core}</div>
   <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>
-  <div class="about-divider"></div>
-  ${slipBlock("about")}`;
+  <p class="hint tight">Want to say something? Use <button type="button" class="linkish" data-slip-open>Leave a slip</button> on the right.</p>`;
 }
 const BUILD = [heroPanel, ideasPanel, projectsPanel, expPanel, skillsPanel, shelfPanel, guardianPanel, aboutPanel];
+mountSlipDock();
 const panels = STOPS.map((s, i) => {
   const side = s.side === "hero" ? "left hero" : s.side;
   const el = mk(`<section class="panel ${side}" data-i="${i}" data-lenis-prevent aria-label="${esc(s.label)}">${BUILD[i]()}</section>`);
@@ -541,76 +554,124 @@ const toast = $("#toast"); let tt;
 const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("on"), 3600); };
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
 
-/* ---------- suggestion slips (hero + about) ---------- */
-function wireSlipRoot(slips) {
-  if (!slips || slips.dataset.slipWired) return;
-  slips.dataset.slipWired = "1";
-  const rootId = slips.id;
-  const form = slips.querySelector(".suggestForm");
-  const msg = slips.querySelector("textarea");
-  const anon = slips.querySelector(".slipAnon");
-  const identity = slips.querySelector(".slipIdentity");
-  const name = slips.querySelector(".slipName");
-  const contact = slips.querySelector(".slipContact");
-  const status = slips.querySelector(".slipStatus");
-  const send = slips.querySelector(".slipSend");
-  const booth = slips.querySelector(".phone-booth");
-  const setBusy = on => { if (send) { send.disabled = on; send.textContent = on ? "Sending…" : "Send slip"; } };
-  const markFocus = el => {
-    if (!el) return;
-    el.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
-    el.addEventListener("blur", () => { chatFocused = false; });
-  };
-  [msg, name, contact].forEach(markFocus);
-  const syncAnon = () => {
-    if (!anon || !identity) return;
-    const hide = anon.checked;
-    identity.hidden = hide;
-    if (hide && name && contact) { name.value = ""; contact.value = ""; }
-  };
-  if (anon) { anon.addEventListener("change", syncAnon); syncAnon(); }
-  slips.addEventListener("click", e => {
-    const chip = e.target.closest("[data-slip-prompt]");
-    if (!chip || !msg) return;
-    const seed = chip.dataset.slipPrompt;
-    if (!msg.value.trim()) msg.value = seed + " — ";
-    else if (!msg.value.includes(seed)) msg.value = msg.value.trim() + "\n" + seed + " — ";
-    msg.focus();
-  });
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const text = msg.value.trim();
-    if (!text) { status.textContent = "Write something first."; return; }
-    const endpoint = CFG.SUGGEST_ENDPOINT;
-    if (!endpoint) { status.textContent = "Suggestions aren’t wired yet."; return; }
-    setBusy(true); status.textContent = "";
-    const payload = {
-      _subject: "Portfolio slip" + (anon.checked ? " (anonymous)" : ""),
-      _template: "table",
-      _captcha: "false",
-      suggestion: text,
-      from: anon.checked ? "anonymous" : (name.value.trim() || "unnamed"),
-      contact: anon.checked ? "none" : (contact.value.trim() || "none"),
-      page: location.href
-    };
-    try {
-      const r = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!r.ok) throw new Error("bad status");
-      slips.classList.add("sent");
-      if (booth) booth.classList.add("dropped");
-      status.textContent = "Slip sent — thank you.";
-      say("Suggestion sent to Adya.");
-      form.reset(); syncAnon();
-    } catch {
-      status.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
-    } finally { setBusy(false); }
-  });
+/* ---------- suggestion slip dock (right side) ---------- */
+const slipDock = $("#slipDock"), slipPanel = $("#slipDockPanel"), slipTab = $("#slipDockTab");
+const slips = $("#slips"), slipForm = $("#suggestForm"), slipMsg = $("#slipMsg");
+const slipAnon = $("#slipAnon"), slipIdentity = $("#slipIdentity"), slipName = $("#slipName"), slipContact = $("#slipContact");
+const slipStatus = $("#slipStatus"), slipSend = slipForm?.querySelector(".slipSend");
+const slipThanks = $("#slipThanks"), slipThanksMsg = $("#slipThanksMsg"), slipThanksAgain = $("#slipThanksAgain");
+const slipMailbox = $(".slip-mailbox", slips);
+const pickThankYou = () => {
+  const list = C.suggest?.thankYou || ["Thank you."];
+  return list[Math.floor(Math.random() * list.length)];
+};
+function openSlipDock() {
+  slipPanel.hidden = false;
+  slipDock.classList.add("open");
+  slipTab.setAttribute("aria-expanded", "true");
+  slipMsg?.focus();
 }
-$$(".slips").forEach(wireSlipRoot);
+function closeSlipDock() {
+  slipPanel.hidden = true;
+  slipDock.classList.remove("open");
+  slipTab.setAttribute("aria-expanded", "false");
+}
+function resetSlipThanks() {
+  slipThanks.hidden = true;
+  slipForm.hidden = false;
+  $(".slip-deck", slips).style.display = "";
+  slipMailbox?.classList.remove("caught");
+  slips.classList.remove("sent");
+}
+slipTab?.addEventListener("click", () => (slipDock.classList.contains("open") ? closeSlipDock() : openSlipDock()));
+$("#slipDockClose")?.addEventListener("click", closeSlipDock);
+slipThanksAgain?.addEventListener("click", () => { resetSlipThanks(); slipForm.reset(); syncSlipAnon(); slipMsg?.focus(); });
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-slip-open]")) { e.preventDefault(); openSlipDock(); }
+});
+const syncSlipAnon = () => {
+  if (!slipAnon || !slipIdentity) return;
+  slipIdentity.hidden = slipAnon.checked;
+  if (slipAnon.checked && slipName && slipContact) { slipName.value = ""; slipContact.value = ""; }
+};
+slipAnon?.addEventListener("change", syncSlipAnon); syncSlipAnon();
+[slipMsg, slipName, slipContact].forEach(el => {
+  if (!el) return;
+  el.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
+  el.addEventListener("blur", () => { chatFocused = false; });
+});
+slips?.addEventListener("click", e => {
+  const chip = e.target.closest("[data-slip-prompt]");
+  if (!chip || !slipMsg) return;
+  const seed = chip.dataset.slipPrompt;
+  if (!slipMsg.value.trim()) slipMsg.value = seed + " — ";
+  else if (!slipMsg.value.includes(seed)) slipMsg.value = slipMsg.value.trim() + "\n" + seed + " — ";
+  slipMsg.focus();
+});
+function playSlipAnimation(done) {
+  const dock = slipDock;
+  const paper = mk('<div class="slip-paper-fly"><span>Your note</span></div>');
+  dock.appendChild(paper);
+  requestAnimationFrame(() => {
+    paper.classList.add("fly");
+    dock.classList.add("chute-active");
+    slipMailbox?.classList.add("waiting");
+  });
+  const finish = () => {
+    paper.remove();
+    dock.classList.remove("chute-active");
+    slipMailbox?.classList.remove("waiting");
+    slipMailbox?.classList.add("caught");
+    done();
+  };
+  paper.addEventListener("animationend", finish, { once: true });
+  setTimeout(finish, preferReduced ? 50 : 2200);
+}
+slipForm?.addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = slipMsg.value.trim();
+  if (!text) { slipStatus.textContent = "Write something first."; return; }
+  const endpoint = CFG.SUGGEST_ENDPOINT;
+  if (!endpoint) { slipStatus.textContent = "Suggestions aren’t wired yet."; return; }
+  if (slipSend) { slipSend.disabled = true; slipSend.textContent = "Sending…"; }
+  slipStatus.textContent = "";
+  const payload = {
+    _subject: "Portfolio slip" + (slipAnon.checked ? " (anonymous)" : ""),
+    _template: "table",
+    _captcha: "false",
+    suggestion: text,
+    from: slipAnon.checked ? "anonymous" : (slipName.value.trim() || "unnamed"),
+    contact: slipAnon.checked ? "none" : (slipContact.value.trim() || "none"),
+    page: location.href
+  };
+  let ok = false;
+  try {
+    const r = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload)
+    });
+    ok = r.ok;
+  } catch { ok = false; }
+  const afterAnim = () => {
+    if (!ok) {
+      slipStatus.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
+      if (slipSend) { slipSend.disabled = false; slipSend.textContent = "Drop it in the chute"; }
+      return;
+    }
+    slips.classList.add("sent");
+    slipForm.hidden = true;
+    $(".slip-deck", slips).style.display = "none";
+    const thanks = pickThankYou();
+    slipThanksMsg.textContent = thanks;
+    slipThanks.hidden = false;
+    say(thanks);
+    slipForm.reset(); syncSlipAnon();
+    if (slipSend) { slipSend.disabled = false; slipSend.textContent = "Drop it in the chute"; }
+  };
+  if (preferReduced) afterAnim();
+  else playSlipAnimation(afterAnim);
+});
 
 function openMoreModal() {
   const more = C.more || {}, m = C.shelf.meraki;

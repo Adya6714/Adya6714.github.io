@@ -11,7 +11,7 @@ window.CONTENT = {
     openreview: "https://openreview.net/forum?id=d8w4gMVQ1w",
     aboutIntro: [
       "I'm Adya, an engineer who genuinely enjoys building things from scratch and figuring out how they work along the way. I'm especially interested in AI and ML, but what keeps me excited is the engineering and research around them: taking a vague question, digging into it, experimenting, breaking things, and eventually turning an idea into something that actually works. I love learning by building, and I'm constantly trying to go one level deeper than what I already know.",
-      "I'm currently looking for opportunities where I can work closely on interesting problems in AI/ML, research, and engineering. I'm also here for the people side of it: if you're building something, thinking about a hackathon team, or found a resource that actually helped you learn, I want to hear about that too. Papers, repos, courses, events, or a half-formed idea are all fair game. Leave a slip below or say hi anytime."
+      "I'm currently looking for opportunities where I can work closely on interesting problems in AI/ML, research, and engineering. I'm also here for the people side of it: if you're building something, thinking about a hackathon team, or found a resource that actually helped you learn, I want to hear about that too. Papers, repos, courses, events, or a half-formed idea are all fair game. Use the slip on the right, or say hi anytime."
     ],
     aboutCore: [
       "At the core, I like making things. I like starting with a blank page, learning whatever I need to learn, and slowly turning an idea into something real. Research gives me the opportunity to chase questions that don't have obvious answers, while engineering gives me the satisfaction of actually building the answer. AI and ML happen to sit at a particularly exciting intersection of the two for me.",
@@ -29,6 +29,15 @@ window.CONTENT = {
       "Hackathon or build together",
       "A resource that actually helped",
       "A paper or idea to chase"
+    ],
+    thankYou: [
+      "Got it. Thank you for taking the time.",
+      "Your slip made it to me. I really appreciate it.",
+      "Thank you. This kind of note genuinely makes my day.",
+      "Received. I'll read this properly.",
+      "Thanks for dropping this in. Means a lot.",
+      "You just made the mailbox happier. Thank you.",
+      "Noted with care. Thank you for reaching out."
     ]
   },
 
