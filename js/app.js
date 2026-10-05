@@ -173,11 +173,13 @@ const scrollForStop = i => (clamp(i, 0, N - 1) / (N - 1)) * range();
 
 const preferReduced = reducedMotion();
 const lenis = window.Lenis ? new Lenis({
-  duration: preferReduced ? 0 : 1.05,
-  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  duration: preferReduced ? 0 : 0.72,
+  easing: t => 1 - Math.pow(1 - t, 3),
   smoothWheel: !preferReduced,
   syncTouch: true,
-  touchMultiplier: 1.4
+  touchMultiplier: 1.6,
+  wheelMultiplier: 1.35,
+  lerp: preferReduced ? 1 : 0.14
 }) : null;
 
 let snapping = false, snapTimer = null, chatFocused = false, busy = false;
@@ -191,7 +193,7 @@ function snapToNearest() {
   const target = scrollForStop(i);
   if (Math.abs(scrollY - target) < 4) return;
   snapping = true;
-  go(i, preferReduced ? 0 : 0.8, () => { snapping = false; });
+  go(i, preferReduced ? 0 : 0.5, () => { snapping = false; });
 }
 function onScrollUpdate(y) {
   const prev = scrollY;
@@ -200,7 +202,7 @@ function onScrollUpdate(y) {
   dirty = true;
   if (!canSnap()) return;
   clearTimeout(snapTimer);
-  snapTimer = setTimeout(snapToNearest, 150);
+  snapTimer = setTimeout(snapToNearest, 110);
 }
 if (lenis) {
   lenis.on("scroll", ({ scroll }) => onScrollUpdate(scroll));
@@ -211,12 +213,12 @@ if (lenis) {
 function go(i, duration, done) {
   i = clamp(i | 0, 0, N - 1);
   const top = scrollForStop(i);
-  const d = duration == null ? (preferReduced ? 0 : 0.8) : duration;
+  const d = duration == null ? (preferReduced ? 0 : 0.55) : duration;
   if (lenis) {
-    lenis.scrollTo(top, { duration: d, force: true, onComplete: () => done && done() });
+    lenis.scrollTo(top, { duration: d, force: true, lock: true, onComplete: () => done && done() });
   } else {
     window.scrollTo({ top, behavior: d === 0 ? "auto" : "smooth" });
-    if (done) setTimeout(done, d * 1000 + 50);
+    if (done) setTimeout(done, d * 1000 + 40);
   }
 }
 document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); go(+g.dataset.go); } });
@@ -303,9 +305,16 @@ function upload(unit, img, fmt) {
 let rs = 1;
 function resize() {
   measure();
-  rs = Math.min(devicePixelRatio || 1, 1.5) * (W > 1700 ? .8 : 1);
+  /* Full device pixels for a sharp painting (cap 2×; gentle throttle only on huge canvases). */
+  const dpr = Math.min(Math.max(devicePixelRatio || 1, 1), 2);
+  rs = dpr;
+  const px = W * H * rs * rs;
+  if (px > 9e6) rs = Math.max(1.25, rs * Math.sqrt(9e6 / px));
   canvas.width = Math.round(W * rs); canvas.height = Math.round(H * rs);
-  fxc.width = Math.round(W * Math.min(devicePixelRatio || 1, 2)); fxc.height = Math.round(H * Math.min(devicePixelRatio || 1, 2));
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+  fxc.width = Math.round(W * Math.min(devicePixelRatio || 1, 2));
+  fxc.height = Math.round(H * Math.min(devicePixelRatio || 1, 2));
+  fxc.style.width = W + "px"; fxc.style.height = H + "px";
   fx.setTransform(fxc.width / W, 0, 0, fxc.height / H, 0, 0);
   if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
   dirty = true;
