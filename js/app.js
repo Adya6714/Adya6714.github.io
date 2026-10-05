@@ -29,7 +29,9 @@ const ytId = u => { const m = String(u).match(/(?:youtu\.be\/|v=)([\w-]{11})/); 
 const P = C.person;
 const resumeBtn = (cls = "btn primary") => `<a class="${cls} resume" href="#" download>Resume</a>`;
 function heroPanel() {
-  return `<h1>${esc(P.name)}</h1><p class="lead">${esc(P.line)}</p>
+  const intro = (P.aboutIntro || []).map(p => `<p class="hero-p">${esc(p)}</p>`).join("");
+  return `<h1>${esc(P.name)}</h1>
+  <div class="hero-intro">${intro}</div>
   <div class="chips">${P.proof.map(p => `<span class="chip c">${esc(p)}</span>`).join("")}</div>
   <div class="row">${resumeBtn()}<button class="btn" data-go="1">Research</button><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a></div>
   <div class="status"><i></i>${esc(P.status)}</div><p class="hint">Scroll to travel downstream.</p>`;
@@ -142,16 +144,13 @@ function aboutPanel() {
   const photo = CFG.PHOTO_URL
     ? `<img class="about-photo" src="${esc(CFG.PHOTO_URL)}" alt="${esc(P.name)}" width="112" height="112">`
     : `<span class="about-photo placeholder" aria-hidden="true">AS</span>`;
-  const intro = (P.aboutIntro || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
   const core = (P.aboutCore || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
   const prompts = (C.suggest?.prompts || ["Something I should explore", "A conversation worth having", "A paper or idea to chase"])
     .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
-  return `<div class="about-head">${photo}<div><h2>About me</h2><p class="about-line">${esc(P.line)}</p></div></div>
-  <div class="about-block">${intro}</div>
+  return `<div class="about-head">${photo}<div><h2>About me</h2></div></div>
+  <div class="about-block">${core}</div>
   <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>
   <div class="about-divider"></div>
-  <h3 class="about-h3">How I think</h3>
-  <div class="about-block">${core}</div>
   <div class="slips" id="slips">
     <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
     <p class="about-muted">${esc(C.suggest?.blurb || "Drop a suggestion, a lead, or something you think I should know. Name optional.")}</p>

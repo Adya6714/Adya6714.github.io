@@ -61,7 +61,10 @@ button{font:inherit;color:inherit}
 .panel.right{right:calc(2.5vw + 22px)}
 .panel.center{left:50%;width:min(520px,88vw);top:auto;bottom:max(9vh,160px);transform:translateX(-50%) translateY(var(--py))}
 .panel.on{/* opacity/visibility driven in JS */}
-.panel.hero{background:linear-gradient(rgba(4,22,26,.42),rgba(4,22,26,.72));top:auto;bottom:8vh;overflow:auto;box-shadow:none}
+.panel.hero{background:linear-gradient(rgba(4,22,26,.42),rgba(4,22,26,.72));top:auto;bottom:8vh;overflow:auto;box-shadow:none;width:min(520px,42vw);max-height:min(72vh,720px)}
+.hero-intro{margin:0 0 16px}
+.hero-p{margin:0 0 12px;color:#d6ebe7;font-size:15.5px;line-height:1.55;max-width:36em}
+.hero-p:last-child{margin-bottom:0}
 .panel .list{max-height:none}
 .panel .sub{margin-bottom:12px}
 .panel[data-i="1"]{overflow:auto;overscroll-behavior:contain}
