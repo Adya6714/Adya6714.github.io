@@ -256,7 +256,29 @@ window.CONTENT = {
         "RL for control and hedging"
       ]
     },
-    sampleNote: "Scroll the rows for papers, videos, and my own technical blogs from past case work.",
+    meraki: {
+      title: "MERAKI",
+      tagline: "An Alleyway to Sonder",
+      home: "https://srivastavadya.wixsite.com/meraki14",
+      blog: "https://srivastavadya.wixsite.com/meraki14/blog",
+      about: "Meraki is where I share poems, experiences and perceptions — small worlds built in words. Outside engineering I write about people, nature and the quieter parts of ambition.",
+      posts: [
+        { t: "Justice of Time", date: "Nov 16, 2023", min: "2 min", url: "https://srivastavadya.wixsite.com/meraki14/post/justice-of-time", blurb: "But, there will be a time… when the sun would bleed in red…" },
+        { t: "Laughingly", date: "Nov 15, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/laughingly", blurb: "Amidst the cluster, I stood in — a smile had my face covered…" },
+        { t: "Birth of an Evil", date: "Nov 15, 2023", min: "3 min", url: "https://srivastavadya.wixsite.com/meraki14/post/birth-of-an-evil", blurb: "As the clouds of the night swept the sky…" },
+        { t: "Hallucinate the Ricochet", date: "Nov 15, 2023", min: "6 min", url: "https://srivastavadya.wixsite.com/meraki14/post/hallucinate-the-ricochet", blurb: "A poem as story — too proud to believe life flashes before death." },
+        { t: "Stupidity", date: "Nov 15, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/stupidity", blurb: "Two sides of selfishness — an unnecessary evil." },
+        { t: "Two", date: "Nov 15, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/__two", blurb: "Two are the coconuts knocking… two are the stars twinkling…" },
+        { t: "The Right Path", date: "Nov 15, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/the-right-path", blurb: "As I was walking through the lane, darkness stayed with me…" },
+        { t: "Soon…", date: "Jul 25, 2023", min: "2 min", url: "https://srivastavadya.wixsite.com/meraki14/post/_soon", blurb: "And I know for a fact we'd be sitting on the stairs…" },
+        { t: "Heaven", date: "Apr 20, 2023", min: "2 min", url: "https://srivastavadya.wixsite.com/meraki14/post/heaven", blurb: "There is no ultimate that ever existed…" },
+        { t: "SHIELDED…", date: "Mar 13, 2023", min: "2 min", url: "https://srivastavadya.wixsite.com/meraki14/post/shielded", blurb: "To be young is a boon — for the euphoria sparked inside…" },
+        { t: "Lustre", date: "Mar 8, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/lustre", blurb: "As she sat on her balcony…" },
+        { t: "The Little Boy", date: "Mar 8, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/the-little-boy", blurb: "With the children playing in the park…" },
+        { t: "Twinkling", date: "Mar 7, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/twinkling", blurb: "Goodness is not kindness…" }
+      ]
+    },
+    sampleNote: "Scroll the rows for Meraki poems, technical blogs, papers and videos.",
     rows: [
       { topic: "Technical blogs & case studies", items: [
         { t: "Citizen Services App", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/citizen-services-app.pdf", why: "Product and systems write-up for a civic services app." },
@@ -319,8 +341,8 @@ window.CONTENT = {
         a: "I like clear write-ups and small demos that make a result checkable. At Nurix I worked inside a production speech stack with other engineers. I ask for the failure case early and prefer experiments you can re-run." },
       { id: "weak", keys: ["weakness", "weaknesses", "improve", "growth", "challenge", "hardest"], src: "Profile",
         a: "I can over-invest in getting the evaluation story right before shipping a rough prototype. I am getting better at landing a thin vertical slice first, then deepening the probes once something runs end to end." },
-      { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive", "blog", "blogs", "case study", "case studies", "writing"], src: "Shelf",
-        a: "On the Shelf stop I keep an ML study module on Google Drive, plus a row of technical blogs from past case work — citizen services, healthcare cloud, Zepto-style quick commerce, consulting cases and pitch material. Open any PDF from that row." },
+      { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive", "blog", "blogs", "case study", "case studies", "writing", "meraki", "poem", "poems", "poetry"], src: "Shelf",
+        a: "On the Shelf stop you will find Meraki — my poetry journal (An Alleyway to Sonder) with posts like Justice of Time and Hallucinate the Ricochet, plus an ML study module on Drive and technical case-study PDFs. Open Meraki from the Shelf, or the full site at srivastavadya.wixsite.com/meraki14." },
       { id: "contact", keys: ["contact", "email", "reach", "resume", "cv", "github", "linkedin", "hello"], src: "Resume",
         a: "You can email srivastavadya@gmail.com, find code at github.com/Adya6714, or download the resume with the button at the top of the page." }
     ],

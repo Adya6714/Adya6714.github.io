@@ -148,6 +148,26 @@ h3{font:600 19px/1.25 var(--display);letter-spacing:-.01em;margin:0 0 4px}
 .sk:hover .tip,.sk:focus-visible .tip{opacity:1}
 @media(max-width:760px){.skrow{grid-template-columns:1fr;gap:4px}.skrow > span{padding:0}}
 
+/* Meraki journal (personal writing) */
+.meraki{margin:0 0 18px;padding:16px 14px 14px;border-radius:18px;border:1px solid rgba(255,207,134,.28);
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(255,207,134,.12), transparent 55%),
+    linear-gradient(160deg, rgba(42,28,22,.55), rgba(8,28,32,.72))}
+.meraki-kicker{margin:0 0 4px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.meraki-title{font:700 clamp(28px,3vw,40px)/1 var(--display);letter-spacing:.08em;margin:0 0 6px;color:#f6ead6}
+.meraki-tag{font:500 15px/1.35 var(--display);font-style:italic;color:#e8d7b8;margin:0 0 10px}
+.meraki-about{margin:0 0 12px;color:#d9cfc0;font-size:13.5px;line-height:1.5}
+.meraki-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.meraki-grid.modal-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));margin-top:14px}
+.meraki-card{display:flex;flex-direction:column;gap:4px;padding:12px 12px 11px;border-radius:12px;text-decoration:none;color:inherit;
+  background:rgba(255,248,235,.06);border:1px solid rgba(255,207,134,.2);min-height:108px;transition:border-color .2s,background .2s,transform .2s}
+.meraki-card:hover{border-color:rgba(255,207,134,.55);background:rgba(255,248,235,.1);transform:translateY(-1px)}
+.meraki-meta{font-size:11px;color:#c4b39a}
+.meraki-card strong{font:600 14.5px/1.25 var(--display);color:#f3e7d2}
+.meraki-card em{font-style:normal;font-size:12px;line-height:1.4;color:#cbbba3}
+.meraki-modal .meraki-title,.meraki-modal h3{letter-spacing:.06em}
+@media(max-width:760px){.meraki-grid{grid-template-columns:1fr}}
+
 /* shelf */
 .book{display:grid;grid-template-columns:92px 1fr;gap:16px;align-items:center;margin:14px 0 4px;padding:14px;border-radius:16px;background:linear-gradient(135deg,rgba(255,207,134,.14),rgba(114,241,223,.08));border:1px solid rgba(255,207,134,.32)}
 .cover{width:92px;height:124px;border-radius:4px 8px 8px 4px;background:linear-gradient(160deg,#2c5e57,#123336 60%,#0b2124);box-shadow:inset 6px 0 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:space-between;padding:10px 9px;font:700 12px/1.15 var(--display);color:var(--parch)}

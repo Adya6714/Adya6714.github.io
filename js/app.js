@@ -90,9 +90,30 @@ function skillsPanel() {
 const GRADS = [["#0b3a4a", "#2a1b5c"], ["#0b4a3f", "#143a63"], ["#3b1f5c", "#0b3a4a"], ["#5c3b1f", "#0b3a4a"], ["#1f4a5c", "#0b2f2a"], ["#0b4a3f", "#4a1f5c"]];
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 4l14 8-14 8z"/></svg>';
 function shelfPanel() {
-  const b = C.shelf.book; let gi = 0;
+  const b = C.shelf.book, m = C.shelf.meraki; let gi = 0;
   const TYPE_TONE = { Blog: ["#1a3d38", "#0b2a32"], Video: null, Paper: ["#2a1b5c", "#0b3a4a"], Book: ["#5c3b1f", "#0b3a4a"], Profile: ["#1f4a5c", "#0b2f2a"] };
+  const meraki = m ? `<div class="meraki">
+    <div class="meraki-hero">
+      <p class="meraki-kicker">Personal writing</p>
+      <h3 class="meraki-title">${esc(m.title)}</h3>
+      <p class="meraki-tag">${esc(m.tagline)}</p>
+      <p class="meraki-about">${esc(m.about)}</p>
+      <div class="row">
+        <a class="btn primary sm" href="${esc(m.home)}" target="_blank" rel="noopener">Open Meraki</a>
+        <a class="btn sm" href="${esc(m.blog)}" target="_blank" rel="noopener">All posts</a>
+        <button class="btn sm" type="button" data-meraki-all>Browse poems here</button>
+      </div>
+    </div>
+    <div class="sect">From the alleyway</div>
+    <div class="meraki-grid">${m.posts.slice(0, 6).map(p => `
+      <a class="meraki-card" href="${esc(p.url)}" target="_blank" rel="noopener">
+        <span class="meraki-meta">${esc(p.date)} · ${esc(p.min)}</span>
+        <strong>${esc(p.t)}</strong>
+        <em>${esc(p.blurb)}</em>
+      </a>`).join("")}</div>
+  </div>` : "";
   return `<h2>On my shelf</h2>
+  ${meraki}
   <div class="book"><div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div><div><small>Featured</small><h3>${esc(b.title)}</h3><p>${esc(b.blurb)}</p>
     ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
     ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open study module</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
@@ -103,7 +124,7 @@ function shelfPanel() {
       ? `background-image:url(https://img.youtube.com/vi/${yid}/hqdefault.jpg);background-size:cover;background-position:center`
       : `background:linear-gradient(135deg,${tone[0]},${tone[1]})`;
     const local = it.url && !/^https?:\/\//i.test(it.url);
-    return `<a class="vid" href="${esc(it.url)}" ${local ? "" : 'target="_blank" rel="noopener"'}${local ? ' download' : ""}><div class="thumb" style="${bg}"><span class="ty">${esc(it.type)}</span>${it.type === "Video" ? `<span class="play">${PLAY}</span>` : ""}<span class="len">${esc(it.len)}</span></div>
+    return `<a class="vid" href="${esc(it.url)}" ${local ? "" : 'target="_blank" rel="noopener"'}${local ? " download" : ""}><div class="thumb" style="${bg}"><span class="ty">${esc(it.type)}</span>${it.type === "Video" ? `<span class="play">${PLAY}</span>` : ""}<span class="len">${esc(it.len)}</span></div>
     <h5>${esc(it.t)}</h5><small>${esc(it.by)}</small>${it.why ? `<em>${esc(it.why)}</em>` : ""}</a>`; }).join("")}</div>`).join("")}
   ${C.shelf.sampleNote ? `<p class="hint">${esc(C.shelf.sampleNote)}</p>` : ""}`;
 }
@@ -527,6 +548,17 @@ document.addEventListener("click", e => {
   }
   if (e.target.closest("[data-all-proj]")) {
     openModal(`<h3 id="mTitle">All projects</h3><div class="list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}"><h3>${esc(p.title)}</h3><p>${esc(p.line)}</p></div>`).join("")}</div>`);
+  }
+  if (e.target.closest("[data-meraki-all]") && C.shelf.meraki) {
+    const m = C.shelf.meraki;
+    openModal(`<div class="meraki-modal"><p class="meraki-kicker">Personal writing</p><h3 id="mTitle">${esc(m.title)}</h3><p class="meraki-tag">${esc(m.tagline)}</p><p class="sub">${esc(m.about)}</p>
+      <div class="meraki-grid modal-grid">${m.posts.map(p => `
+        <a class="meraki-card" href="${esc(p.url)}" target="_blank" rel="noopener">
+          <span class="meraki-meta">${esc(p.date)} · ${esc(p.min)}</span>
+          <strong>${esc(p.t)}</strong>
+          <em>${esc(p.blurb)}</em>
+        </a>`).join("")}</div>
+      <div class="row" style="margin-top:16px"><a class="btn primary" href="${esc(m.home)}" target="_blank" rel="noopener">Open full Meraki site</a></div></div>`);
   }
 });
 
