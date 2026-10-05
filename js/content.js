@@ -32,9 +32,9 @@ window.CONTENT = {
     { title: "Reading Without Looking", status: "Preprint", kind: "preprint",
       note: "Does OCR confidence track visual evidence? A controlled study on Indic scripts.",
       links: [["Project page", "https://adya6714.github.io/vlm-ocr-eval/"], ["PDF", "https://adya6714.github.io/vlm-ocr-eval/paper/main.pdf"], ["Code", "https://github.com/Adya6714/vlm-ocr-eval"]] },
-    { title: "Diffusion volatility surfaces for RL hedging", status: "Draft", kind: "draft",
+    { title: "Diffusion volatility surfaces for RL hedging", status: "Preprint", kind: "preprint",
       note: "A model-risk decomposition of RL hedging trained on generated NIFTY surfaces.",
-      links: [["Draft PDF", "https://drive.google.com/file/d/1eXAm7XeUYIWnzu_3MWRpSY6nO9gyGDNV/view?usp=drive_link"], ["Code", "https://github.com/Adya6714/ddpm-vol-hedging"]] },
+      links: [["Code", "https://github.com/Adya6714/ddpm-vol-hedging"], ["Paper", "https://github.com/Adya6714/ddpm-vol-hedging"]] },
     { title: "Hybrid quantum-classical paradigms", status: "Survey", kind: "survey",
       note: "Carleman linearization, variational PDEs, quantum RL, hardware comparisons.",
       links: [["PDF", "https://drive.google.com/file/d/1zwhnW2Nvl6I5myx556UoGED-1MKv9qt5/view?usp=sharing"]] },
@@ -107,7 +107,7 @@ window.CONTENT = {
       problem: "Training a hedging agent needs far more market scenarios than history provides, and an agent trained on one model of the market inherits that model's blind spots.",
       built: ["A dataset of 1,268 NIFTY implied volatility surfaces (2018 to 2026) built from 912K+ NSE option rows.", "A conditional diffusion model that generates new surfaces with fewer arbitrage violations than market data (penalty 0.005 vs 0.009).", "A PPO hedging agent for barrier options, compared against a Heston-trained RL baseline."],
       impact: "Cut tail-risk hedging error (CVaR 95%) by 60.1% against Black-Scholes, and separates how much of the result comes from the generator versus the agent.",
-      links: [["Code", "https://github.com/Adya6714/ddpm-vol-hedging"], ["Draft", "https://drive.google.com/file/d/1eXAm7XeUYIWnzu_3MWRpSY6nO9gyGDNV/view?usp=drive_link"]] },
+      links: [["Code", "https://github.com/Adya6714/ddpm-vol-hedging"], ["Paper", "https://github.com/Adya6714/ddpm-vol-hedging"]] },
     { id: "p-mesh", title: "OmniMesh", group: ["Agents & systems"],
       line: "An offline disaster-response network with an AI triage backend.",
       chips: ["Multi-agent", "LLM serving", "Edge"],
@@ -291,18 +291,8 @@ window.CONTENT = {
         { t: "Twinkling", date: "Mar 7, 2023", min: "1 min", url: "https://srivastavadya.wixsite.com/meraki14/post/twinkling", blurb: "Goodness is not kindness…" }
       ]
     },
-    sampleNote: "Scroll the rows for Meraki poems, technical blogs, papers and videos.",
+    sampleNote: "Study notes and resources I learn from. Horizontal rows scroll inside the panel.",
     rows: [
-      { topic: "Technical blogs & case studies", items: [
-        { t: "Citizen Services App", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/citizen-services-app.pdf", why: "Product and systems write-up for a civic services app." },
-        { t: "Cloud Computing in Healthcare", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/cloud-computing-healthcare.pdf", why: "How cloud patterns show up in clinical and hospital workflows." },
-        { t: "Zepto assignment", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/zepto-assignment.pdf", why: "Case work on quick-commerce operations and product thinking." },
-        { t: "Consulting case", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/consulting-case.pdf", why: "Structured consulting-style analysis from coursework." },
-        { t: "Business case study", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/business-case-study.pdf", why: "End-to-end case framing and recommendation." },
-        { t: "Idea guidebook", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/idea-guidebook.pdf", why: "Notes on turning a rough idea into a scoped product." },
-        { t: "Pitch deck", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/pitch-deck.pdf", why: "Narrative and slides for a startup-style pitch." },
-        { t: "TAS write-up", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/tas.pdf", why: "Technical assignment / systems analysis notes." },
-        { t: "MT assignment", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/mt-assignment.pdf", why: "Course technical write-up kept as a blog-style PDF." } ] },
       { topic: "Transformers and LLMs", items: [
         { t: "Let's build GPT from scratch", by: "Andrej Karpathy", type: "Video", len: "1h 56m", url: "https://www.youtube.com/watch?v=kCc8FmEb1nY", why: "Best hands-on walkthrough of attention and training a tiny GPT." },
         { t: "Attention in transformers, visually explained", by: "3Blue1Brown", type: "Video", len: "26 min", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc", why: "Clearest visual intuition for Q/K/V." },
@@ -316,6 +306,22 @@ window.CONTENT = {
         { t: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", len: "Book", url: "http://incompleteideas.net/book/the-book.html", why: "Reference for the hedging RL agent." } ] },
       { topic: "Practice and profiles", items: [
         { t: "LeetCode — add profile link", by: "Adya", type: "Profile", len: "Soon", url: "#", why: "Paste your LeetCode URL here in content.js when ready." } ] }
+    ]
+  },
+
+  more: {
+    title: "More",
+    blurb: "Personal writing and older product or coursework write-ups. Not the main ML thread on the river.",
+    offProjects: [
+      { t: "Citizen Services App", type: "PDF", url: "assets/case-studies/citizen-services-app.pdf", why: "Civic services product write-up." },
+      { t: "Cloud Computing in Healthcare", type: "PDF", url: "assets/case-studies/cloud-computing-healthcare.pdf", why: "Cloud patterns in clinical workflows." },
+      { t: "Zepto assignment", type: "PDF", url: "assets/case-studies/zepto-assignment.pdf", why: "Quick-commerce operations case." },
+      { t: "Consulting case", type: "PDF", url: "assets/case-studies/consulting-case.pdf", why: "Structured consulting analysis." },
+      { t: "Business case study", type: "PDF", url: "assets/case-studies/business-case-study.pdf", why: "Case framing and recommendation." },
+      { t: "Idea guidebook", type: "PDF", url: "assets/case-studies/idea-guidebook.pdf", why: "Scoping a rough idea into a product." },
+      { t: "Pitch deck", type: "PDF", url: "assets/case-studies/pitch-deck.pdf", why: "Startup-style pitch narrative." },
+      { t: "TAS write-up", type: "PDF", url: "assets/case-studies/tas.pdf", why: "Systems analysis notes." },
+      { t: "MT assignment", type: "PDF", url: "assets/case-studies/mt-assignment.pdf", why: "Course technical write-up." }
     ]
   },
 

@@ -13,7 +13,7 @@ const MAP_W = 848, MAP_H = 1264;
 const STOPS = [
   { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
   { id: "ideas",      label: "Research",   side: "left",   d: [390, 340, 500, .70, .40], m: [380, 340, 360, .55, .26] },
-  { id: "projects",   label: "Projects",   side: "left",   d: [530, 600, 520, .74, .46], m: [500, 600, 380, .58, .28] },
+  { id: "projects",   label: "Projects",   side: "left",   d: [480, 555, 560, .72, .44], m: [470, 555, 400, .56, .28] },
   { id: "experience", label: "Experience", side: "left",   d: [720, 440, 680, .76, .42], m: [700, 455, 420, .62, .26] },
   { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
   { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
@@ -28,38 +28,69 @@ const ytId = u => { const m = String(u).match(/(?:youtu\.be\/|v=)([\w-]{11})/); 
 /* ---------- panels ---------- */
 const P = C.person;
 const resumeBtn = (cls = "btn primary") => `<a class="${cls} resume" href="#" download>Resume</a>`;
+function slipBlock(variant = "about") {
+  const hero = variant === "hero";
+  const sfx = hero ? "-hero" : "";
+  const rootId = hero ? "slips-hero" : "slips";
+  const prompts = (C.suggest?.prompts || ["Something I should explore", "A conversation worth having", "A paper or idea to chase"])
+    .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
+  return `<div class="slips${hero ? " slips-compact" : ""}" id="${rootId}">
+    <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
+    <p class="about-muted">${esc(hero ? "Drop a suggestion or a way to reach you. I read every slip." : (C.suggest?.blurb || ""))}</p>
+    <div class="phone-booth" aria-hidden="true"><div class="phone-slot"></div><div class="phone-card">☎</div></div>
+    <div class="slip-deck" aria-hidden="true">${prompts}</div>
+    <form class="slip-form suggestForm" data-slip-root="${rootId}" novalidate>
+      <label class="sr-only" for="slipMsg${sfx}">Your suggestion</label>
+      <textarea id="slipMsg${sfx}" name="message" rows="${hero ? 2 : 3}" maxlength="1200" required placeholder="What should I explore, build, or talk about?"></textarea>
+      <div class="slip-meta">
+        <label class="anon"><input type="checkbox" class="slipAnon" data-slip-root="${rootId}" checked> Stay anonymous</label>
+        <div class="slip-identity slipIdentity" data-slip-root="${rootId}" hidden>
+          <input class="slipName" data-slip-root="${rootId}" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
+          <input class="slipContact" data-slip-root="${rootId}" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
+        </div>
+      </div>
+      <div class="row" style="margin:0"><button class="btn primary slipSend" type="submit" data-slip-root="${rootId}">Send slip</button></div>
+      <p class="fine slipStatus" data-slip-root="${rootId}" role="status"></p>
+    </form>
+  </div>`;
+}
 function heroPanel() {
-  const intro = (P.aboutIntro || []).map(p => `<p class="hero-p">${esc(p)}</p>`).join("");
+  const paras = P.aboutIntro || [];
+  const intro = paras.map((p, i) => `<p class="hero-p${i > 0 ? " hero-p-secondary" : ""}">${esc(p)}</p>`).join("");
   return `<h1>${esc(P.name)}</h1>
   <div class="hero-intro">${intro}</div>
   <div class="chips">${P.proof.map(p => `<span class="chip c">${esc(p)}</span>`).join("")}</div>
   <div class="row">${resumeBtn()}<button class="btn" data-go="1">Research</button><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a></div>
-  <div class="status"><i></i>${esc(P.status)}</div><p class="hint">Scroll to travel downstream.</p>`;
+  <div class="status"><i></i>${esc(P.status)}</div>
+  <div class="about-divider"></div>
+  ${slipBlock("hero")}
+  <p class="hint">Scroll to travel downstream.</p>`;
 }
 function ideasPanel() {
-  const featured = C.papers.filter(p => p.kind === "published" || p.kind === "preprint");
-  const rest = C.papers.filter(p => p.kind !== "published" && p.kind !== "preprint");
-  const mapNotes = ["n-rename", "n-inject", "n-pos0"].map(id => C.notes.find(n => n.id === id)).filter(Boolean);
+  const main = C.papers.filter(p => p.kind === "published" || p.kind === "preprint");
+  const other = C.papers.filter(p => p.kind !== "published" && p.kind !== "preprint");
+  const highlights = ["n-rename", "n-inject", "n-pos0"].map(id => C.notes.find(n => n.id === id)).filter(Boolean);
   return `<h2>Research</h2>
-  <p class="sub research-thesis">When two models get the same score, are they solving the problem the same way — and when a meter says “confident,” does the evidence agree?</p>
-  <div class="sect">Papers</div>
-  <div class="paper-stack">${featured.map(p => `
+  <p class="sub research-thesis">Papers and questions: how models behave under probes, and when confidence matches evidence.</p>
+  <p class="hint tight">Research is the question and the write-up. Projects (next stop) are the systems and code I built to answer it.</p>
+  <div class="sect">Papers &amp; preprints</div>
+  <div class="paper-stack">${main.map(p => `
     <article class="paper paper-card">
       <span class="badge ${p.kind}">${esc(p.status)}</span>
       <b>${esc(p.title)}</b>
       <small>${esc(p.note)}</small>
       ${p.links.length ? `<div class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</div>` : ""}
     </article>`).join("")}</div>
-  <div class="sect">Also in progress</div>
-  <div class="paper-mini">${rest.map(p => `
+  ${other.length ? `<div class="sect">More writing</div>
+  <div class="paper-mini">${other.map(p => `
     <div class="paper-row">
       <span class="badge ${p.kind}">${esc(p.status)}</span>
-      <span class="paper-row-body"><b>${esc(p.title)}</b>
-      ${p.links.length ? `<span class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</span>` : `<span class="chip warm">Coming</span>`}</span>
-    </div>`).join("")}</div>
-  <div class="sect">Findings on the river</div>
-  <p class="hint tight">Three results float on the scrolls. Open one.</p>
-  <div class="list note-list">${mapNotes.map(n => `
+      <span class="paper-row-body"><b>${esc(p.title)}</b><small>${esc(p.note)}</small>
+      ${p.links.length ? `<span class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</span>` : `<span class="chip warm">In progress</span>`}</span>
+    </div>`).join("")}</div>` : ""}
+  <div class="sect">Highlighted findings</div>
+  <p class="hint tight">Three results I keep coming back to. Open for the full note.</p>
+  <div class="list note-list">${highlights.map(n => `
     <button class="item note-item" data-note="${n.id}">
       <span class="note-proj">${esc(n.project)}</span>
       <h3>${esc(n.headline)}</h3>
@@ -69,15 +100,13 @@ function ideasPanel() {
 }
 const GROUPS = ["All", "Research", "Agents & systems", "Quant"];
 function projectsPanel() {
-  const shown = C.projects.slice(0, 5), rest = C.projects.length > 5;
-  return `<h2>Projects in the current</h2><p class="sub">Each started with a question a benchmark number couldn't answer.</p>
+  return `<h2>Projects</h2><p class="sub">Everything I have built: research code, ML systems, and applied work. Skills are the chips on each card.</p>
   <div class="filters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-f="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
-  <div class="list">${shown.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
+  <div class="list project-list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
     <h3>${esc(p.title)}</h3><p>${esc(p.line)}</p>
-    <div class="meta">${p.chips.slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("")}${
+    <div class="meta">${p.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}${
       p.links.length ? p.links.map(([l, u]) => ext(u, l)).join("") : `<span class="chip warm">Private</span>`
-    }</div></div>`).join("")}</div>
-  ${rest ? `<button class="btn sm" type="button" data-all-proj>Show all ${C.projects.length} projects</button>` : ""}`;
+    }</div></div>`).join("")}</div>`;
 }
 function expPanel() {
   return `<h2>The path so far</h2><p class="sub">From production speech models to research engineering. Open one for details.</p>
@@ -92,34 +121,14 @@ function skillsPanel() {
 const GRADS = [["#0b3a4a", "#2a1b5c"], ["#0b4a3f", "#143a63"], ["#3b1f5c", "#0b3a4a"], ["#5c3b1f", "#0b3a4a"], ["#1f4a5c", "#0b2f2a"], ["#0b4a3f", "#4a1f5c"]];
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 4l14 8-14 8z"/></svg>';
 function shelfPanel() {
-  const b = C.shelf.book, m = C.shelf.meraki; let gi = 0;
+  const b = C.shelf.book; let gi = 0;
   const TYPE_TONE = { Blog: ["#1a3d38", "#0b2a32"], Video: null, Paper: ["#2a1b5c", "#0b3a4a"], Book: ["#5c3b1f", "#0b3a4a"], Profile: ["#1f4a5c", "#0b2f2a"] };
-  const meraki = m ? `<div class="meraki">
-    <div class="meraki-hero">
-      <p class="meraki-kicker">Personal writing</p>
-      <h3 class="meraki-title">${esc(m.title)}</h3>
-      <p class="meraki-tag">${esc(m.tagline)}</p>
-      <p class="meraki-about">${esc(m.about)}</p>
-      <div class="row">
-        <a class="btn primary sm" href="${esc(m.home)}" target="_blank" rel="noopener">Open Meraki</a>
-        <a class="btn sm" href="${esc(m.blog)}" target="_blank" rel="noopener">All posts</a>
-        <button class="btn sm" type="button" data-meraki-all>Browse poems here</button>
-      </div>
-    </div>
-    <div class="sect">From the alleyway</div>
-    <div class="meraki-grid">${m.posts.slice(0, 6).map(p => `
-      <a class="meraki-card" href="${esc(p.url)}" target="_blank" rel="noopener">
-        <span class="meraki-meta">${esc(p.date)} · ${esc(p.min)}</span>
-        <strong>${esc(p.t)}</strong>
-        <em>${esc(p.blurb)}</em>
-      </a>`).join("")}</div>
-  </div>` : "";
   return `<h2>On my shelf</h2>
-  ${meraki}
+  <p class="sub">Study material I learn from: papers, videos, and notes. For poetry and older product write-ups, open <button type="button" class="linkish" data-open-more>More</button>.</p>
   <div class="book"><div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div><div><small>Featured</small><h3>${esc(b.title)}</h3><p>${esc(b.blurb)}</p>
     ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
     ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open study module</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
-  ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail">${r.items.map(it => {
+  ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail" data-lenis-prevent>${r.items.map(it => {
     const yid = it.type === "Video" ? ytId(it.url) : null;
     const tone = TYPE_TONE[it.type] || GRADS[gi++ % GRADS.length];
     const bg = yid
@@ -137,53 +146,34 @@ function guardianPanel() {
   return `<h2>${esc(A.title || "Ask")}</h2>
   <p class="ask-kicker">${esc(A.kicker || "A little more than a FAQ.")}</p>
   <p class="sub">${esc(A.blurb || "")}</p>
+  <p class="hint tight">Pick a tab, choose a question, read the short answer, then open “Go deeper” or follow the next prompts.</p>
   <div class="ask-tabs" role="tablist">${tabs}</div>
   <div id="askBrowse" class="ask-browse"></div>
   <div id="askAnswer" class="ask-answer" hidden></div>
-  <div class="about-divider"></div>
-  <div class="ask-still">
-    <h3 class="about-h3">${esc(A.still?.title || "Still have a question?")}</h3>
+  <details class="ask-freeform">
+    <summary>Still have a question?</summary>
     <p class="about-muted">${esc(A.still?.blurb || "")}</p>
     <div class="chat still-chat">
       <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(C.guardian?.intro || "Ask me anything I missed above.")}</div></div>
       <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask anything I missed…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
     </div>
-  </div>`;
+  </details>`;
 }
 function aboutPanel() {
   const photo = CFG.PHOTO_URL
     ? `<img class="about-photo" src="${esc(CFG.PHOTO_URL)}" alt="${esc(P.name)}" width="112" height="112">`
     : `<span class="about-photo placeholder" aria-hidden="true">AS</span>`;
   const core = (P.aboutCore || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
-  const prompts = (C.suggest?.prompts || ["Something I should explore", "A conversation worth having", "A paper or idea to chase"])
-    .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
   return `<div class="about-head">${photo}<div><h2>About me</h2></div></div>
   <div class="about-block">${core}</div>
   <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>
   <div class="about-divider"></div>
-  <div class="slips" id="slips">
-    <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
-    <p class="about-muted">${esc(C.suggest?.blurb || "Drop a suggestion, a lead, or something you think I should know. Name optional.")}</p>
-    <div class="slip-deck" aria-hidden="true">${prompts}</div>
-    <form class="slip-form" id="suggestForm" novalidate>
-      <label class="sr-only" for="slipMsg">Your suggestion</label>
-      <textarea id="slipMsg" name="message" rows="3" maxlength="1200" required placeholder="What should I explore, build, or talk about?"></textarea>
-      <div class="slip-meta">
-        <label class="anon"><input type="checkbox" id="slipAnon" checked> Stay anonymous</label>
-        <div class="slip-identity" id="slipIdentity" hidden>
-          <input id="slipName" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
-          <input id="slipContact" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
-        </div>
-      </div>
-      <div class="row" style="margin:0"><button class="btn primary" type="submit" id="slipSend">Send slip</button></div>
-      <p class="fine" id="slipStatus" role="status"></p>
-    </form>
-  </div>`;
+  ${slipBlock("about")}`;
 }
 const BUILD = [heroPanel, ideasPanel, projectsPanel, expPanel, skillsPanel, shelfPanel, guardianPanel, aboutPanel];
 const panels = STOPS.map((s, i) => {
   const side = s.side === "hero" ? "left hero" : s.side;
-  const el = mk(`<section class="panel ${side}" data-i="${i}" aria-label="${esc(s.label)}">${BUILD[i]()}</section>`);
+  const el = mk(`<section class="panel ${side}" data-i="${i}" data-lenis-prevent aria-label="${esc(s.label)}">${BUILD[i]()}</section>`);
   $("#panels").appendChild(el); return el;
 });
 $("#dots").innerHTML = STOPS.map((s, i) => `<button data-go="${i}" aria-label="${esc(s.label)}"><span>${esc(s.label)}</span></button>`).join("");
@@ -191,37 +181,45 @@ $("#track").innerHTML = STOPS.map(() => "<div></div>").join("");
 
 /* ---------- map overlays (positions in map pixels) ---------- */
 const MI = $("#mapInner");
-const ov = (html, x, y, w, h, rot = 0, extra = "") => {
+const ov = (html, x, y, w, h, rot = 0, extra = "", mapGroup = "") => {
   const el = mk(html); el.classList.add("ov");
+  if (mapGroup) { el.classList.add("map-ov"); el.dataset.mapGroup = mapGroup; }
   el.style.cssText += `left:${x}px;top:${y}px;${w ? `width:${w}px;` : ""}${h ? `height:${h}px;` : ""}${rot ? `transform:rotate(${rot}deg);` : ""}${extra}`;
   MI.appendChild(el); return el;
 };
 const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.find(p => p.id === id);
-[["n-rename", 334, 290, 98, 96, -3], ["n-inject", 420, 310, 112, 120, 3], ["n-pos0", 280, 370, 152, 126, -6]].forEach(([id, x, y, w, h, r]) => {
-  const n = noteBy(id); ov(`<button class="scroll" data-note="${id}"><b>${esc(n.title)}</b><span>${esc(n.project)}</span></button>`, x, y, w, h, r);
-});
-[["p-rvc", 294, 486, 244, 120, -4, 3], ["p-ocr", 318, 574, 284, 136, -4, 2], ["p-ddpm", 428, 658, 240, 152, -5, 1]].forEach(([id, x, y, w, h, r, z]) => {
+[["p-rvc", 352, 488, 244, 120, -3, 4], ["p-ocr", 368, 578, 268, 128, -3, 3], ["p-ddpm", 448, 652, 228, 140, -4, 2]].forEach(([id, x, y, w, h, r, z]) => {
   const p = projBy(id); if (!p) return;
   const cta = (p.group || []).includes("Research") ? "Open research" : "Open project";
-  ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>${esc(cta)}</em></button>`, x, y, w, h, r, `z-index:${z};`);
+  ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>${esc(cta)}</em></button>`, x, y, w, h, r, `z-index:${z};`, "2");
 });
-/* Arch banners: Nurix (top), FidelFolio (middle), Grasim (left). Khageshvara is panel-only. */
 [[0, 674, 274, 32, 68], [1, 696, 452, 40, 92], [2, 112, 447, 39, 84]].forEach(([ji, x, y, w, h]) => {
   const j = C.jobs[ji]; if (!j) return;
-  ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h, 0, "z-index:3;");
-  const t = mk(`<div class="tag">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 22) + "px"; t.style.zIndex = "4"; MI.appendChild(t);
+  ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h, 0, "z-index:3;", "3");
+  const t = mk(`<div class="tag map-ov" data-map-group="3">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 22) + "px"; t.style.zIndex = "4"; MI.appendChild(t);
 });
 [[0, 90, 800], [1, 248, 772], [2, 329, 832], [3, 768, 872], [4, 784, 1000]].forEach(([gi, x, y]) => {
   const [g, items] = C.skills[gi];
-  ov(`<button class="crystal" data-go="4">${esc(g)}<span class="pop">${items.map(i => esc(i[0])).join(", ")}</span></button>`, x, y);
+  ov(`<button class="crystal" data-go="4">${esc(g)}<span class="pop">${items.map(i => esc(i[0])).join(", ")}</span></button>`, x, y, 0, 0, 0, "", "4");
 });
 {
   const items = C.shelf.rows.flatMap(r => r.items).slice(0, 4);
-  ov(`<button class="shelfov" data-go="5"><span class="bk">${esc(C.shelf.book.title)}</span>${items.map((it, i) => `<span class="th" style="background:linear-gradient(135deg,${GRADS[i][0]},${GRADS[i][1]})">${esc(it.t)}</span>`).join("")}<span class="cap">On my shelf</span></button>`, 30, 812, 238, 140);
+  ov(`<button class="shelfov" data-go="5"><span class="bk">${esc(C.shelf.book.title)}</span>${items.map((it, i) => `<span class="th" style="background:linear-gradient(135deg,${GRADS[i][0]},${GRADS[i][1]})">${esc(it.t)}</span>`).join("")}<span class="cap">On my shelf</span></button>`, 30, 812, 238, 140, 0, "", "5");
 }
-ov(`<div class="bubble"><button data-ask-open="me-yourself">Tell me about yourself</button><button data-ask-open="rvc-what">Retrieval vs Computation?</button><button data-ask-open="hd-hire">Why hire you?</button></div>`, 470, 846, 134, 0);
-const eyes = [mk('<i class="eye"></i>'), mk('<i class="eye"></i>')];
+ov(`<div class="bubble"><button data-ask-open="me-yourself">Tell me about yourself</button><button data-ask-open="rvc-what">Retrieval vs Computation?</button><button data-ask-open="hd-hire">Why hire you?</button></div>`, 470, 846, 134, 0, 0, "", "6");
+const eyes = [mk('<i class="eye map-ov" data-map-group="6"></i>'), mk('<i class="eye map-ov" data-map-group="6"></i>')];
 eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:439px;top:881px"; eyes.forEach(e => MI.appendChild(e));
+const MAP_GROUP_FOR_STOP = ["", "1", "2", "3", "4", "5", "6", "7"];
+function updateMapOverlays(stopIdx) {
+  MI.dataset.stop = String(stopIdx);
+  const show = MAP_GROUP_FOR_STOP[stopIdx] || "";
+  $$(".map-ov", MI).forEach(el => {
+    const on = el.dataset.mapGroup === show;
+    el.style.opacity = on ? "1" : "0";
+    el.style.pointerEvents = on ? "auto" : "none";
+  });
+}
+updateMapOverlays(0);
 
 /* ---------- Lenis scroll + hold / travel / snap ---------- */
 let W = innerWidth, H = innerHeight, docH = 1, scrollY = 0, scrollDir = 1, lastF = 0;
@@ -425,7 +423,7 @@ function updatePanels(f) {
   panels.forEach((p, i) => {
     const d = Math.abs(f - i);
     const opacity = 1 - smoothstep(0.25, 0.45, d);
-    const py = (1 - opacity) * 24 * scrollDir;
+    const py = (1 - opacity) * 10 * scrollDir;
     p.style.setProperty("--py", `${py.toFixed(1)}px`);
     p.style.opacity = String(opacity);
     p.style.visibility = opacity > 0.02 ? "visible" : "hidden";
@@ -436,6 +434,7 @@ function updatePanels(f) {
     activeIdx = idx;
     dots.forEach((d, i) => d.classList.toggle("on", i === idx));
     navl.forEach(l => l.classList.toggle("on", +l.dataset.go === idx));
+    updateMapOverlays(idx);
   }
 }
 function frame(now) {
@@ -542,12 +541,21 @@ const toast = $("#toast"); let tt;
 const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("on"), 3600); };
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
 
-/* ---------- suggestion slips (About) ---------- */
-{
-  const form = $("#suggestForm"), msg = $("#slipMsg"), anon = $("#slipAnon"), identity = $("#slipIdentity");
-  const name = $("#slipName"), contact = $("#slipContact"), status = $("#slipStatus"), send = $("#slipSend");
-  const slips = $("#slips");
-  const setBusy = on => { send.disabled = on; send.textContent = on ? "Sending…" : "Send slip"; };
+/* ---------- suggestion slips (hero + about) ---------- */
+function wireSlipRoot(slips) {
+  if (!slips || slips.dataset.slipWired) return;
+  slips.dataset.slipWired = "1";
+  const rootId = slips.id;
+  const form = slips.querySelector(".suggestForm");
+  const msg = slips.querySelector("textarea");
+  const anon = slips.querySelector(".slipAnon");
+  const identity = slips.querySelector(".slipIdentity");
+  const name = slips.querySelector(".slipName");
+  const contact = slips.querySelector(".slipContact");
+  const status = slips.querySelector(".slipStatus");
+  const send = slips.querySelector(".slipSend");
+  const booth = slips.querySelector(".phone-booth");
+  const setBusy = on => { if (send) { send.disabled = on; send.textContent = on ? "Sending…" : "Send slip"; } };
   const markFocus = el => {
     if (!el) return;
     el.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
@@ -555,14 +563,15 @@ $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b
   };
   [msg, name, contact].forEach(markFocus);
   const syncAnon = () => {
+    if (!anon || !identity) return;
     const hide = anon.checked;
     identity.hidden = hide;
-    if (hide) { name.value = ""; contact.value = ""; }
+    if (hide && name && contact) { name.value = ""; contact.value = ""; }
   };
-  anon.addEventListener("change", syncAnon); syncAnon();
+  if (anon) { anon.addEventListener("change", syncAnon); syncAnon(); }
   slips.addEventListener("click", e => {
     const chip = e.target.closest("[data-slip-prompt]");
-    if (!chip) return;
+    if (!chip || !msg) return;
     const seed = chip.dataset.slipPrompt;
     if (!msg.value.trim()) msg.value = seed + " — ";
     else if (!msg.value.includes(seed)) msg.value = msg.value.trim() + "\n" + seed + " — ";
@@ -592,6 +601,7 @@ $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b
       });
       if (!r.ok) throw new Error("bad status");
       slips.classList.add("sent");
+      if (booth) booth.classList.add("dropped");
       status.textContent = "Slip sent — thank you.";
       say("Suggestion sent to Adya.");
       form.reset(); syncAnon();
@@ -599,6 +609,28 @@ $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b
       status.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
     } finally { setBusy(false); }
   });
+}
+$$(".slips").forEach(wireSlipRoot);
+
+function openMoreModal() {
+  const more = C.more || {}, m = C.shelf.meraki;
+  const off = (more.offProjects || []).map(it => `
+    <a class="meraki-card more-pdf" href="${esc(it.url)}" download>
+      <span class="meraki-meta">${esc(it.type)}</span>
+      <strong>${esc(it.t)}</strong>
+      <em>${esc(it.why)}</em>
+    </a>`).join("");
+  const meraki = m ? `<div class="meraki" style="margin:0 0 18px">
+    <p class="meraki-kicker">Personal writing</p>
+    <h3 class="meraki-title">${esc(m.title)}</h3>
+    <p class="meraki-tag">${esc(m.tagline)}</p>
+    <p class="sub">${esc(m.about)}</p>
+    <div class="row"><a class="btn primary sm" href="${esc(m.home)}" target="_blank" rel="noopener">Open Meraki</a>
+    <button class="btn sm" type="button" data-meraki-all>Browse poems</button></div></div>` : "";
+  openModal(`<h3 id="mTitle">${esc(more.title || "More")}</h3>
+    <p class="sub">${esc(more.blurb || "")}</p>${meraki}
+    <div class="sect">Off-thread write-ups</div>
+    <div class="meraki-grid modal-grid">${off || "<p class=\"hint\">Nothing here yet.</p>"}</div>`);
 }
 
 /* ---------- Ask: async interview browser ---------- */
@@ -723,6 +755,7 @@ askIn.addEventListener("blur", () => { chatFocused = false; });
 
 /* Show-all modals for notes / projects */
 document.addEventListener("click", e => {
+  if (e.target.closest("[data-open-more]")) { e.preventDefault(); return openMoreModal(); }
   if (e.target.closest("[data-all-notes]")) {
     openModal(`<h3 id="mTitle">Research findings</h3><p class="sub" style="margin-bottom:12px">Probe results from the papers above. Click one for the full note.</p><div class="list">${C.notes.map(n => `<button class="item note-item" data-note="${n.id}"><span class="note-proj">${esc(n.project)}</span><h3>${esc(n.headline)}</h3><p>${esc(n.title)}</p></button>`).join("")}</div>`);
   }
