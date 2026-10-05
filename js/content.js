@@ -154,29 +154,49 @@ window.CONTENT = {
   ],
 
   shelf: {
-    book: { title: "My ML study book", status: "Writing in progress",
-      blurb: "A textbook I am writing for myself: the maths, the papers and the experiments I want to understand properly, in my own words.",
-      link: "", chapters: [] },
-    sampleNote: "Sample picks. Replace with what you have studied, with one line on why each helped.",
+    book: {
+      title: "My ML study module",
+      status: "Open on Drive",
+      blurb: "Notes, maths, papers and experiments I am writing up for myself — the study module lives on Google Drive.",
+      link: "https://drive.google.com/drive/home",
+      chapters: [
+        "Probability and linear algebra refreshers",
+        "Transformers from the ground up",
+        "Evaluation and probing methods",
+        "Diffusion and generative models",
+        "RL for control and hedging"
+      ]
+    },
+    sampleNote: "More library rows coming: LeetCode profile, watchlist videos, and reading notes. Swap sample items below when you have the real links.",
     rows: [
       { topic: "Transformers and LLMs", items: [
-        { t: "Let's build GPT from scratch", by: "Andrej Karpathy", type: "Video", len: "1h 56m", url: "https://www.youtube.com/results?search_query=karpathy+let%27s+build+GPT", why: "" },
-        { t: "Attention in transformers, visually explained", by: "3Blue1Brown", type: "Video", len: "26 min", url: "https://www.youtube.com/results?search_query=3blue1brown+attention+in+transformers", why: "" },
-        { t: "Attention Is All You Need", by: "Vaswani et al.", type: "Paper", len: "Paper", url: "https://arxiv.org/abs/1706.03762", why: "" } ] },
+        { t: "Let's build GPT from scratch", by: "Andrej Karpathy", type: "Video", len: "1h 56m", url: "https://www.youtube.com/watch?v=kCc8FmEb1nY", why: "Best hands-on walkthrough of attention and training a tiny GPT." },
+        { t: "Attention in transformers, visually explained", by: "3Blue1Brown", type: "Video", len: "26 min", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc", why: "Clearest visual intuition for Q/K/V." },
+        { t: "Attention Is All You Need", by: "Vaswani et al.", type: "Paper", len: "Paper", url: "https://arxiv.org/abs/1706.03762", why: "The original architecture paper." } ] },
       { topic: "Interpretability", items: [
-        { t: "A Mathematical Framework for Transformer Circuits", by: "Elhage et al.", type: "Paper", len: "Paper", url: "https://transformer-circuits.pub/2021/framework/index.html", why: "" },
-        { t: "Toy Models of Superposition", by: "Elhage et al.", type: "Paper", len: "Paper", url: "https://transformer-circuits.pub/2022/toy_model/index.html", why: "" } ] },
+        { t: "A Mathematical Framework for Transformer Circuits", by: "Elhage et al.", type: "Paper", len: "Paper", url: "https://transformer-circuits.pub/2021/framework/index.html", why: "Language for talking about circuits inside transformers." },
+        { t: "Toy Models of Superposition", by: "Elhage et al.", type: "Paper", len: "Paper", url: "https://transformer-circuits.pub/2022/toy_model/index.html", why: "Why features pack into fewer dimensions." } ] },
       { topic: "Generative models and RL", items: [
-        { t: "Denoising Diffusion Probabilistic Models", by: "Ho, Jain, Abbeel", type: "Paper", len: "Paper", url: "https://arxiv.org/abs/2006.11239", why: "" },
-        { t: "What are diffusion models?", by: "Lilian Weng", type: "Blog", len: "Blog", url: "https://lilianweng.github.io/posts/2021-07-11-diffusion-models/", why: "" },
-        { t: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", len: "Book", url: "http://incompleteideas.net/book/the-book.html", why: "" } ] }
+        { t: "Denoising Diffusion Probabilistic Models", by: "Ho, Jain, Abbeel", type: "Paper", len: "Paper", url: "https://arxiv.org/abs/2006.11239", why: "Foundation for the volatility-surface work." },
+        { t: "What are diffusion models?", by: "Lilian Weng", type: "Blog", len: "Blog", url: "https://lilianweng.github.io/posts/2021-07-11-diffusion-models/", why: "Clean survey before reading the DDPM paper." },
+        { t: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", len: "Book", url: "http://incompleteideas.net/book/the-book.html", why: "Reference for the hedging RL agent." } ] },
+      { topic: "Practice and profiles (add yours)", items: [
+        { t: "LeetCode — add profile link", by: "Adya", type: "Profile", len: "Soon", url: "#", why: "Paste your LeetCode URL here in content.js." } ] }
     ]
   },
 
   guardian: {
-    chips: [["Walk me through your research", "research"], ["What did you ship at Nurix?", "nurix"], ["Tell me about the OCR project", "ocr"], ["What are you looking for?", "looking"]],
+    intro: "Hi — I'm the guardian on Adya's site. Interview her through me: research, internships, projects, skills, or what she's looking for next. Answers come only from her documents.",
+    chips: [
+      ["Walk me through your research", "research"],
+      ["What did you ship at Nurix?", "nurix"],
+      ["Tell me about the OCR project", "ocr"],
+      ["Why should we hire you?", "hire"],
+      ["What are you looking for?", "looking"],
+      ["How do you work on a team?", "team"]
+    ],
     kb: [
-      { id: "research", keys: ["research", "paper", "caisc", "reasoning", "retrieval", "computation", "fragility", "strategy", "llm", "llms", "probe", "probes"], src: "Paper abstract, project page",
+      { id: "research", keys: ["research", "paper", "caisc", "reasoning", "retrieval", "computation", "fragility", "strategy", "llm", "llms", "probe", "probes", "interview"], src: "Paper abstract, project page",
         a: "My main research asks: when two LLMs get the same benchmark score, are they solving problems the same way? In Same Score, Different Strategy (CAISc 2026) I used three probes (entity rename, plan-versus-execution consistency, and closeness to training data) on 219 problems across arithmetic, planning and optimisation, with five models. Matched accuracy hid large differences: o3-mini went from a perfect score to zero on weighted interval scheduling after a rename. It is the first paper in a four-paper program on where retrieval and computation split inside models." },
       { id: "ocr", keys: ["ocr", "confidence", "indic", "vlm", "vision", "grounding", "calibration", "reading"], src: "Reading Without Looking project page",
         a: "Reading Without Looking tests whether OCR confidence reflects what the model sees. I trained a small OCR model from scratch so I could blank the image, add noise, scramble it and switch off the vision pathway. Confidence stayed around 0.9 while the correct first character had roughly 1e-11 probability, and a blank page got almost the same confidence as text. On held-out lines AUROC fell from 0.84 to about 0.57. The takeaway is that peak confidence is not a safe routing signal." },
@@ -188,15 +208,23 @@ window.CONTENT = {
         a: "On the systems side: OmniMesh is an offline disaster-response mesh where phones act as triage nodes, backed by a six-agent FastAPI service serving Gemma-2-9B with vLLM on an AMD GPU. CloudWatch in Plain English lets teams query AWS metrics in natural language using a Bedrock agent, embeddings in S3 and semantic search in Lambda. I am also the founding engineer at EquiContracts, an agentic platform for construction contract operations." },
       { id: "fraud", keys: ["fraud", "fraudscope", "citi", "hackathon", "winner", "graph", "fraudsense"], src: "Resume",
         a: "FraudScope360 won the national round of the Citi Bank Campus Innovation Challenge. It is a five-module fraud engine combining graph machine learning, anomaly detection and XGBoost, covering fraud rings and identity fraud, served through FastAPI." },
-      { id: "edu", keys: ["bits", "education", "college", "degree", "graduate", "university", "studied"], src: "Resume",
+      { id: "edu", keys: ["bits", "education", "college", "degree", "graduate", "university", "studied", "background"], src: "Resume",
         a: "I graduated from BITS Pilani in 2026 with a B.E. in Electrical and Electronics Engineering and a minor in Finance." },
-      { id: "stack", keys: ["stack", "tools", "skills", "pytorch", "python", "languages", "framework", "frameworks"], src: "Resume",
+      { id: "stack", keys: ["stack", "tools", "skills", "pytorch", "python", "languages", "framework", "frameworks", "strength"], src: "Resume",
         a: "Day to day: Python and PyTorch, with Transformers, scikit-learn and XGBoost. For systems work I use FastAPI, Docker, vLLM and AWS or GCP. I have also used OpenCV, LangChain, C++, SQL and TypeScript." },
-      { id: "looking", keys: ["looking", "role", "roles", "hire", "hiring", "available", "job", "seeking", "want", "interested", "interests", "next"], src: "Resume, profile",
+      { id: "looking", keys: ["looking", "role", "roles", "hire", "hiring", "available", "job", "seeking", "want", "interested", "interests", "next", "open"], src: "Resume, profile",
         a: "I am looking for ML research and research engineering roles where I can build, run experiments and learn from people working on hard problems. My interests are LLM evaluation and reasoning, model internals and interpretability, and post-training and alignment." },
+      { id: "hire", keys: ["hire", "why you", "strengths", "fit", "candidate", "offer", "value"], src: "Resume, papers",
+        a: "I ship: a CAISc paper on LLM reasoning fragility, production speech work at Nurix that cut WER by 40%, and a national Citi Innovation win. I care about whether a metric actually means what people think it means — so I design probes and ablations, not only dashboards. I am comfortable moving between research and engineering." },
+      { id: "team", keys: ["team", "collaborate", "collaboration", "work with", "communication", "mentor", "style"], src: "Experience write-ups",
+        a: "I like clear write-ups and small demos that make a result checkable. At Nurix I worked inside a production speech stack; as founding engineer at EquiContracts I coordinate with a co-founder on product and architecture. I ask for the failure case early and prefer experiments you can re-run." },
+      { id: "weak", keys: ["weakness", "weaknesses", "improve", "growth", "challenge", "hardest"], src: "Profile",
+        a: "I can over-invest in getting the evaluation story right before shipping a rough prototype. I am getting better at landing a thin vertical slice first, then deepening the probes once something runs end to end." },
+      { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive"], src: "Shelf",
+        a: "I keep an ML study module on Google Drive — maths, papers and experiments in my own words. Open it from the Shelf stop, or ask me about a topic and I will point to the closest project or paper." },
       { id: "contact", keys: ["contact", "email", "reach", "resume", "cv", "github", "linkedin", "hello"], src: "Resume",
         a: "You can email srivastavadya@gmail.com, find code at github.com/Adya6714, or download the resume with the button at the top of the page." }
     ],
-    fallback: "I don't have that in the documents I was given. You can email Adya at srivastavadya@gmail.com, or try one of the questions above."
+    fallback: "I don't have that in the documents I was given. You can email Adya at srivastavadya@gmail.com, or try one of the interview prompts above."
   }
 };

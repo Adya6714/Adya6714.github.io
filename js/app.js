@@ -9,17 +9,21 @@ const ext = (u, label) => `<a href="${esc(u)}" target="_blank" rel="noopener">${
 const MAP_W = 848, MAP_H = 1264;
 
 /* ---------- journey stops: map focus point, visible width (map px), screen anchor ---------- */
+/* Wider visible widths so map elements stay on-screen (less zoomed-in). */
 const STOPS = [
-  { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 600, .68, .42], m: [420, 190, 420, .5, .22] },
-  { id: "ideas",      label: "Research",   side: "left",   d: [410, 388, 430, .66, .50], m: [395, 385, 300, .5, .24] },
-  { id: "projects",   label: "Projects",   side: "left",   d: [478, 650, 470, .64, .50], m: [470, 640, 330, .5, .24] },
-  { id: "experience", label: "Experience", side: "left",   d: [722, 492, 430, .70, .50], m: [705, 480, 300, .62, .24] },
-  { id: "skills",     label: "Skills",     side: "right",  d: [215, 830, 480, .30, .50], m: [210, 820, 330, .45, .22] },
-  { id: "shelf",      label: "Shelf",      side: "right",  d: [150, 885, 420, .32, .50], m: [150, 885, 300, .5, .22] },
-  { id: "guardian",   label: "Ask",        side: "left",   d: [480, 895, 420, .62, .50], m: [470, 895, 300, .5, .22] },
-  { id: "about",      label: "About",      side: "center", d: [440, 1150, 848, .5, .64], m: [445, 1196, 380, .5, .30] }
+  { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
+  { id: "ideas",      label: "Research",   side: "left",   d: [410, 388, 510, .64, .48], m: [395, 385, 340, .5, .24] },
+  { id: "projects",   label: "Projects",   side: "left",   d: [478, 650, 540, .62, .48], m: [470, 640, 360, .5, .24] },
+  { id: "experience", label: "Experience", side: "left",   d: [700, 492, 520, .68, .48], m: [690, 480, 340, .58, .24] },
+  { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
+  { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
+  { id: "guardian",   label: "Ask",        side: "left",   d: [480, 895, 500, .60, .48], m: [470, 895, 340, .5, .22] },
+  { id: "about",      label: "About",      side: "center", d: [440, 1150, 848, .5, .62], m: [445, 1196, 420, .5, .28] }
 ];
 const N = STOPS.length;
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const smoothstep = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
+const ytId = u => { const m = String(u).match(/(?:youtu\.be\/|v=)([\w-]{11})/); return m ? m[1] : null; };
 
 /* ---------- panels ---------- */
 const P = C.person;
@@ -31,20 +35,24 @@ function heroPanel() {
   <div class="status"><i></i>${esc(P.status)}</div><p class="hint">Scroll to travel downstream.</p>`;
 }
 function ideasPanel() {
-  return `<h2>Where the ideas come from</h2><p class="sub">Papers, and the results that started them. Open a note for the full story.</p>
+  const notes = C.notes, shown = notes.slice(0, 4);
+  return `<h2>Where the ideas come from</h2><p class="sub">Papers, and the results that started them.</p>
   <div class="sect">Papers</div>
   ${C.papers.map(p => `<div class="paper"><span class="badge ${p.kind}">${esc(p.status)}</span><b>${esc(p.title)}</b><small>${esc(p.note)}</small>
     ${p.links.length ? `<div class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</div>` : ""}</div>`).join("")}
   <div class="sect">Research notes</div>
-  <div class="list">${C.notes.map(n => `<button class="item" data-note="${n.id}"><h3>${esc(n.headline)}</h3><p>${esc(n.project)}</p></button>`).join("")}</div>`;
+  <div class="list">${shown.map(n => `<button class="item" data-note="${n.id}"><h3>${esc(n.headline)}</h3><p>${esc(n.project)}</p></button>`).join("")}</div>
+  ${notes.length > 4 ? `<button class="btn sm" type="button" data-all-notes>Show all ${notes.length} notes</button>` : ""}`;
 }
 const GROUPS = ["All", "Research", "Agents & systems", "Quant"];
 function projectsPanel() {
+  const shown = C.projects.slice(0, 5), rest = C.projects.length > 5;
   return `<h2>Projects in the current</h2><p class="sub">Each started with a question a benchmark number couldn't answer.</p>
   <div class="filters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-f="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
-  <div class="list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
+  <div class="list">${shown.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
     <h3>${esc(p.title)}</h3><p>${esc(p.line)}</p>
-    <div class="meta">${p.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}${p.links.map(([l, u]) => ext(u, l)).join("")}</div></div>`).join("")}</div>`;
+    <div class="meta">${p.chips.slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("")}${p.links.map(([l, u]) => ext(u, l)).join("")}</div></div>`).join("")}</div>
+  ${rest ? `<button class="btn sm" type="button" data-all-proj>Show all projects</button>` : ""}`;
 }
 function expPanel() {
   return `<h2>The path so far</h2><p class="sub">From production speech models to a founding role. Open one for details.</p>
@@ -62,19 +70,26 @@ function shelfPanel() {
   const b = C.shelf.book; let gi = 0;
   return `<h2>On my shelf</h2>
   <div class="book"><div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div><div><small>Featured</small><h3>${esc(b.title)}</h3><p>${esc(b.blurb)}</p>
-    ${b.chapters.length ? `<ol>${b.chapters.slice(0, 6).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
-    ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Read the book</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
-  ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail">${r.items.map(it => { const g = GRADS[gi++ % GRADS.length];
-    return `<a class="vid" href="${esc(it.url)}" target="_blank" rel="noopener"><div class="thumb" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="ty">${esc(it.type)}</span><span class="play">${PLAY}</span><span class="len">${esc(it.len)}</span></div>
+    ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
+    ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open study module</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
+  ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail">${r.items.map(it => {
+    const g = GRADS[gi++ % GRADS.length], yid = it.type === "Video" ? ytId(it.url) : null;
+    const bg = yid
+      ? `background-image:url(https://img.youtube.com/vi/${yid}/hqdefault.jpg);background-size:cover;background-position:center`
+      : `background:linear-gradient(135deg,${g[0]},${g[1]})`;
+    return `<a class="vid" href="${esc(it.url)}" target="_blank" rel="noopener"><div class="thumb" style="${bg}"><span class="ty">${esc(it.type)}</span><span class="play">${PLAY}</span><span class="len">${esc(it.len)}</span></div>
     <h5>${esc(it.t)}</h5><small>${esc(it.by)}</small>${it.why ? `<em>${esc(it.why)}</em>` : ""}</a>`; }).join("")}</div>`).join("")}
   ${C.shelf.sampleNote ? `<p class="hint">${esc(C.shelf.sampleNote)}</p>` : ""}`;
 }
 function guardianPanel() {
-  return `<h2>Ask the guardian</h2><p class="sub">It answers from my resume, papers and project write-ups, and says so when it doesn't know.</p>
-  <div class="msgs" id="msgs" aria-live="polite"><div class="m b">Hello. Ask me about Adya's research, projects or experience.</div></div>
-  <div class="qs" id="qs">${C.guardian.chips.map(([q, id]) => `<button type="button" data-kb="${id}">${esc(q)}</button>`).join("")}</div>
-  <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask a question" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
-  <p class="fine">AI guardian. Answers come only from Adya's documents.</p>`;
+  const intro = C.guardian.intro || "Ask me about Adya's research, projects or experience.";
+  return `<h2>Interview Adya</h2><p class="sub">Recruiter mode: ask what you would ask in a screen. Answers stay grounded in her documents.</p>
+  <div class="chat">
+    <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(intro)}<small>From: Guardian</small></div></div>
+    <div class="qs" id="qs">${C.guardian.chips.map(([q, id]) => `<button type="button" data-kb="${id}">${esc(q)}</button>`).join("")}</div>
+    <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask an interview question…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
+    <p class="fine">AI guardian · answers only from Adya's documents · works offline with scripted replies</p>
+  </div>`;
 }
 function aboutPanel() {
   return `<h2>About me</h2><p class="sub" style="color:#d6ebe7;font-size:16px">${esc(P.about)}</p>
@@ -122,26 +137,103 @@ eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:43
 ov(`<div class="footcard"><span class="av">${CFG.PHOTO_URL ? `<img src="${esc(CFG.PHOTO_URL)}" alt="">` : "AS"}</span><span><b>${esc(P.name)}</b><span>ML research engineer</span></span>
   <span class="fl"><a class="p resume" href="#" download>Resume</a><a href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a href="${P.github}" target="_blank" rel="noopener">GitHub</a></span></div>`, 292, 1153, 308, 0);
 
-/* ---------- scroll position <-> journey ---------- */
-let W = innerWidth, H = innerHeight, docH = 1;
+/* ---------- Lenis scroll + hold / travel / snap ---------- */
+let W = innerWidth, H = innerHeight, docH = 1, scrollY = 0, scrollDir = 1, lastF = 0;
 const measure = () => { W = innerWidth; H = innerHeight; docH = document.documentElement.scrollHeight; };
 const range = () => Math.max(1, docH - H);
-function go(i) { window.scrollTo({ top: (i / (N - 1)) * range(), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+const progressFromScroll = y => clamp(y / range(), 0, 1) * (N - 1);
+const scrollForStop = i => (clamp(i, 0, N - 1) / (N - 1)) * range();
+
+const preferReduced = reducedMotion();
+const lenis = window.Lenis ? new Lenis({
+  duration: preferReduced ? 0 : 1.05,
+  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: !preferReduced,
+  syncTouch: true,
+  touchMultiplier: 1.4
+}) : null;
+
+let snapping = false, snapTimer = null, chatFocused = false, busy = false;
+function canSnap() {
+  const m = document.getElementById("modal");
+  return !snapping && !chatFocused && !busy && !(m && m.classList.contains("on"));
+}
+function snapToNearest() {
+  if (!canSnap()) return;
+  const i = clamp(Math.round(progressFromScroll(scrollY)), 0, N - 1);
+  const target = scrollForStop(i);
+  if (Math.abs(scrollY - target) < 4) return;
+  snapping = true;
+  go(i, preferReduced ? 0 : 0.8, () => { snapping = false; });
+}
+function onScrollUpdate(y) {
+  const prev = scrollY;
+  scrollY = y;
+  if (y > prev + 0.5) scrollDir = 1; else if (y < prev - 0.5) scrollDir = -1;
+  dirty = true;
+  if (!canSnap()) return;
+  clearTimeout(snapTimer);
+  snapTimer = setTimeout(snapToNearest, 150);
+}
+if (lenis) {
+  lenis.on("scroll", ({ scroll }) => onScrollUpdate(scroll));
+} else {
+  addEventListener("scroll", () => onScrollUpdate(window.scrollY), { passive: true });
+}
+
+function go(i, duration, done) {
+  i = clamp(i | 0, 0, N - 1);
+  const top = scrollForStop(i);
+  const d = duration == null ? (preferReduced ? 0 : 0.8) : duration;
+  if (lenis) {
+    lenis.scrollTo(top, { duration: d, force: true, onComplete: () => done && done() });
+  } else {
+    window.scrollTo({ top, behavior: d === 0 ? "auto" : "smooth" });
+    if (done) setTimeout(done, d * 1000 + 50);
+  }
+}
 document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); go(+g.dataset.go); } });
 
-/* ---------- camera ---------- */
+/* Keyboard: one stop at a time */
+addEventListener("keydown", e => {
+  if (chatFocused) return;
+  const m = document.getElementById("modal");
+  if (m && m.classList.contains("on")) return;
+  const tag = (e.target && e.target.tagName) || "";
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  const cur = clamp(Math.round(progressFromScroll(scrollY)), 0, N - 1);
+  if (["ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === "Home") { e.preventDefault(); go(0); }
+  else if (e.key === "End") { e.preventDefault(); go(N - 1); }
+});
+
+/* ---------- camera: hold centre of each stop, ease only in travel bands ---------- */
 const lerp = (a, b, t) => a + (b - a) * t;
-const ease = t => { t = clamp((t - .15) / .7, 0, 1); return t * t * (3 - 2 * t); };
 const cam = { x0: 0, y0: 0, vw: MAP_W, vh: MAP_H, k: 1 };
+/** Map scroll progress f → camera parameter with 50% hold per stop. */
+function cameraParam(f) {
+  if (preferReduced) return clamp(Math.round(f), 0, N - 1);
+  const nearest = clamp(Math.round(f), 0, N - 1);
+  const d = f - nearest;
+  if (Math.abs(d) <= 0.25) return nearest;
+  if (d > 0) {
+    const u = clamp((d - 0.25) / 0.5, 0, 1);
+    return nearest + smoothstep(0, 1, u);
+  }
+  const u = clamp((-d - 0.25) / 0.5, 0, 1);
+  return nearest - smoothstep(0, 1, u);
+}
 function computeCam(f) {
   const mob = W < 760 || W / H < .9;
-  const i = clamp(Math.floor(f), 0, N - 1), j = Math.min(N - 1, i + 1), t = ease(f - i);
+  const cf = cameraParam(f);
+  const i = clamp(Math.floor(cf), 0, N - 1), j = Math.min(N - 1, i + 1), t = cf - i;
   const a = mob ? STOPS[i].m : STOPS[i].d, b = mob ? STOPS[j].m : STOPS[j].d;
   const cx = lerp(a[0], b[0], t), cy = lerp(a[1], b[1], t), ax = lerp(a[3], b[3], t), ay = lerp(a[4], b[4], t);
   let vw = Math.exp(lerp(Math.log(a[2]), Math.log(b[2]), t));
   let k = W / vw;
-  if (H / k > MAP_H) { k = H / MAP_H; }
-  if (W / k > MAP_W) { k = W / MAP_W; }
+  if (H / k > MAP_H) k = H / MAP_H;
+  if (W / k > MAP_W) k = W / MAP_W;
   vw = W / k; const vh = H / k;
   cam.x0 = clamp(cx - ax * vw, 0, MAP_W - vw); cam.y0 = clamp(cy - ay * vh, 0, MAP_H - vh);
   cam.vw = vw; cam.vh = vh; cam.k = k;
@@ -229,13 +321,22 @@ addEventListener("pointermove", e => { const n = performance.now(); if (n - last
 addEventListener("pointerdown", e => pushRip(e.clientX, e.clientY), { passive: true });
 
 /* ---------- main loop ---------- */
-let motion = !matchMedia("(prefers-reduced-motion: reduce)").matches, dirty = true;
-let fs = 0, t0 = performance.now(), last = t0;
+let motion = !preferReduced, dirty = true;
+let t0 = performance.now(), last = t0;
 const dots = $$("#dots button"), navl = $$(".nav .l");
 let activeIdx = -1;
 function updatePanels(f) {
   const idx = clamp(Math.round(f), 0, N - 1);
-  panels.forEach((p, i) => { const on = i === idx && Math.abs(f - i) < .42; p.classList.toggle("on", on); });
+  panels.forEach((p, i) => {
+    const d = Math.abs(f - i);
+    const opacity = 1 - smoothstep(0.25, 0.45, d);
+    const py = (1 - opacity) * 24 * scrollDir;
+    p.style.setProperty("--py", `${py.toFixed(1)}px`);
+    p.style.opacity = String(opacity);
+    p.style.visibility = opacity > 0.02 ? "visible" : "hidden";
+    p.style.pointerEvents = opacity < 0.5 ? "none" : "auto";
+    p.classList.toggle("on", opacity >= 0.5);
+  });
   if (idx !== activeIdx) {
     activeIdx = idx;
     dots.forEach((d, i) => d.classList.toggle("on", i === idx));
@@ -243,15 +344,14 @@ function updatePanels(f) {
   }
 }
 function frame(now) {
+  if (lenis) lenis.raf(now);
   const dt = Math.min(.05, (now - last) / 1000) || .016; last = now;
-  const target = clamp(scrollY / range(), 0, 1) * (N - 1);
-  const k = motion ? 1 - Math.exp(-dt * 7) : 1;
-  const prev = fs; fs += (target - fs) * k; if (Math.abs(target - fs) < 1e-4) fs = target;
-  if (Math.abs(fs - prev) > 1e-5) dirty = true;
-  computeCam(fs);
+  const f = progressFromScroll(scrollY);
+  lastF = f;
+  computeCam(f);
   MI.style.setProperty("--k", cam.k.toFixed(3));
   MI.style.transform = `scale(${cam.k}) translate(${-cam.x0}px,${-cam.y0}px)`;
-  updatePanels(fs);
+  updatePanels(f);
   for (let i = 0; i < 8; i++) { const r = rips[i]; if (r) { r.a += dt; ripBuf[i * 3] = r.x; ripBuf[i * 3 + 1] = r.y; ripBuf[i * 3 + 2] = Math.max(r.a, .001); } else ripBuf[i * 3 + 2] = -1; }
   while (rips.length && rips[0].a > 3.5) rips.shift();
   if (gl && texReady && (motion || dirty || rips.length)) {
@@ -311,7 +411,7 @@ const DEMOS = {
 };
 function openModal(html, extra) {
   lastFocus = document.activeElement; mBody.innerHTML = html; if (extra) extra.forEach(x => x && mBody.appendChild(x));
-  modal.classList.add("on"); $("#mClose").focus();
+  modal.classList.add("on"); clearTimeout(snapTimer); $("#mClose").focus();
 }
 function closeModal() { modal.classList.remove("on"); if (lastFocus) lastFocus.focus(); }
 const linksRow = links => links && links.length ? mk(`<div class="mlinks">${links.map(([l, u], i) => `<a class="btn ${i === 0 ? "primary" : ""}" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)}</a>`).join("")}</div>`) : null;
@@ -349,21 +449,21 @@ const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeou
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
 
 /* ---------- guardian ---------- */
-const msgs = $("#msgs"), statueEyes = MI; let busy = false;
+const msgs = $("#msgs"), statueEyes = MI;
 const KB = C.guardian.kb, kbById = id => KB.find(k => k.id === id);
 const rx = k => new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b");
 function findKB(q) { q = q.toLowerCase(); let best = null, bs = 0; KB.forEach(e => { let s = 0; e.keys.forEach(k => { if (rx(k).test(q)) s++; }); if (s > bs) { bs = s; best = e; } }); return best; }
 function addMsg(cls, text) { const m = mk(`<div class="m ${cls}"></div>`); m.textContent = text; msgs.appendChild(m); msgs.scrollTop = msgs.scrollHeight; return m; }
 function typeOut(m, text, src, done) {
-  const words = text.split(" "); let i = 0;
+  const words = text.split(/\s+/); let i = 0;
   const tick = () => { m.textContent = words.slice(0, ++i).join(" "); msgs.scrollTop = msgs.scrollHeight;
-    if (i < words.length) setTimeout(tick, motion ? 22 : 0); else { if (src) { const s = document.createElement("small"); s.textContent = "From: " + src; m.appendChild(s); } done(); } };
+    if (i < words.length) setTimeout(tick, motion ? 18 : 0); else { if (src) { const s = document.createElement("small"); s.textContent = "From: " + src; m.appendChild(s); } done(); } };
   tick();
 }
 async function ask(question, kbId, label) {
-  if (busy) return; busy = true;
+  if (busy) return; busy = true; clearTimeout(snapTimer);
   const q = question || label; addMsg("u", q); statueEyes.classList.add("speaking");
-  const m = addMsg("b", "…");
+  const m = addMsg("b", ""); m.classList.add("typing"); m.textContent = "Thinking…";
   let answer = null, src = null;
   if (!kbId && CFG.GUARDIAN_API) {
     try {
@@ -372,10 +472,24 @@ async function ask(question, kbId, label) {
     } catch (e) { /* fall back to the scripted answers */ }
   }
   if (!answer) { const e = kbId ? kbById(kbId) : findKB(q); answer = e ? e.a : C.guardian.fallback; src = e ? e.src : null; }
+  m.classList.remove("typing"); m.textContent = "";
   typeOut(m, answer, src, () => { statueEyes.classList.remove("speaking"); busy = false; });
 }
 $("#qs").onclick = e => { const b = e.target.closest("button"); if (b) ask(null, b.dataset.kb, b.textContent); };
 $("#askForm").onsubmit = e => { e.preventDefault(); const v = $("#askIn").value.trim(); if (!v) return; $("#askIn").value = ""; ask(v); };
+const askIn = $("#askIn");
+askIn.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
+askIn.addEventListener("blur", () => { chatFocused = false; });
+
+/* Show-all modals for notes / projects */
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-all-notes]")) {
+    openModal(`<h3 id="mTitle">Research notes</h3><div class="list">${C.notes.map(n => `<button class="item" data-note="${n.id}"><h3>${esc(n.headline)}</h3><p>${esc(n.project)}</p></button>`).join("")}</div>`);
+  }
+  if (e.target.closest("[data-all-proj]")) {
+    openModal(`<h3 id="mTitle">All projects</h3><div class="list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}"><h3>${esc(p.title)}</h3><p>${esc(p.line)}</p></div>`).join("")}</div>`);
+  }
+});
 
 /* ---------- start ---------- */
 addEventListener("resize", resize);
