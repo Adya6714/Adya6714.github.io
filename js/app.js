@@ -12,7 +12,7 @@ const MAP_W = 848, MAP_H = 1264;
 /* Wider visible widths so map elements stay on-screen (less zoomed-in). */
 const STOPS = [
   { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
-  { id: "ideas",      label: "Research",   side: "left",   d: [410, 388, 510, .64, .48], m: [395, 385, 340, .5, .24] },
+  { id: "ideas",      label: "Research",   side: "left",   d: [390, 340, 500, .70, .40], m: [380, 340, 360, .55, .26] },
   { id: "projects",   label: "Projects",   side: "left",   d: [530, 600, 520, .74, .46], m: [500, 600, 380, .58, .28] },
   { id: "experience", label: "Experience", side: "left",   d: [720, 440, 680, .76, .42], m: [700, 455, 420, .62, .26] },
   { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
@@ -35,14 +35,35 @@ function heroPanel() {
   <div class="status"><i></i>${esc(P.status)}</div><p class="hint">Scroll to travel downstream.</p>`;
 }
 function ideasPanel() {
-  const notes = C.notes, shown = notes.slice(0, 4);
-  return `<h2>Where the ideas come from</h2><p class="sub">Papers, and the results that started them.</p>
+  const featured = C.papers.filter(p => p.kind === "published" || p.kind === "preprint");
+  const rest = C.papers.filter(p => p.kind !== "published" && p.kind !== "preprint");
+  const mapNotes = ["n-rename", "n-inject", "n-pos0"].map(id => C.notes.find(n => n.id === id)).filter(Boolean);
+  return `<h2>Research</h2>
+  <p class="sub research-thesis">When two models get the same score, are they solving the problem the same way — and when a meter says “confident,” does the evidence agree?</p>
   <div class="sect">Papers</div>
-  ${C.papers.map(p => `<div class="paper"><span class="badge ${p.kind}">${esc(p.status)}</span><b>${esc(p.title)}</b><small>${esc(p.note)}</small>
-    ${p.links.length ? `<div class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</div>` : ""}</div>`).join("")}
-  <div class="sect">Research notes</div>
-  <div class="list">${shown.map(n => `<button class="item" data-note="${n.id}"><h3>${esc(n.headline)}</h3><p>${esc(n.project)}</p></button>`).join("")}</div>
-  ${notes.length > 4 ? `<button class="btn sm" type="button" data-all-notes>Show all ${notes.length} notes</button>` : ""}`;
+  <div class="paper-stack">${featured.map(p => `
+    <article class="paper paper-card">
+      <span class="badge ${p.kind}">${esc(p.status)}</span>
+      <b>${esc(p.title)}</b>
+      <small>${esc(p.note)}</small>
+      ${p.links.length ? `<div class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</div>` : ""}
+    </article>`).join("")}</div>
+  <div class="sect">Also in progress</div>
+  <div class="paper-mini">${rest.map(p => `
+    <div class="paper-row">
+      <span class="badge ${p.kind}">${esc(p.status)}</span>
+      <span class="paper-row-body"><b>${esc(p.title)}</b>
+      ${p.links.length ? `<span class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</span>` : `<span class="chip warm">Coming</span>`}</span>
+    </div>`).join("")}</div>
+  <div class="sect">Findings on the river</div>
+  <p class="hint tight">Three results float on the scrolls. Open one.</p>
+  <div class="list note-list">${mapNotes.map(n => `
+    <button class="item note-item" data-note="${n.id}">
+      <span class="note-proj">${esc(n.project)}</span>
+      <h3>${esc(n.headline)}</h3>
+      <p>${esc(n.title)}</p>
+    </button>`).join("")}</div>
+  <button class="btn sm" type="button" data-all-notes>All ${C.notes.length} findings</button>`;
 }
 const GROUPS = ["All", "Research", "Agents & systems", "Quant"];
 function projectsPanel() {
@@ -490,7 +511,7 @@ askIn.addEventListener("blur", () => { chatFocused = false; });
 /* Show-all modals for notes / projects */
 document.addEventListener("click", e => {
   if (e.target.closest("[data-all-notes]")) {
-    openModal(`<h3 id="mTitle">Research notes</h3><div class="list">${C.notes.map(n => `<button class="item" data-note="${n.id}"><h3>${esc(n.headline)}</h3><p>${esc(n.project)}</p></button>`).join("")}</div>`);
+    openModal(`<h3 id="mTitle">Research findings</h3><p class="sub" style="margin-bottom:12px">Probe results from the papers above. Click one for the full note.</p><div class="list">${C.notes.map(n => `<button class="item note-item" data-note="${n.id}"><span class="note-proj">${esc(n.project)}</span><h3>${esc(n.headline)}</h3><p>${esc(n.title)}</p></button>`).join("")}</div>`);
   }
   if (e.target.closest("[data-all-proj]")) {
     openModal(`<h3 id="mTitle">All projects</h3><div class="list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}"><h3>${esc(p.title)}</h3><p>${esc(p.line)}</p></div>`).join("")}</div>`);
