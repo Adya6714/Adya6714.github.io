@@ -7,7 +7,8 @@ vm.runInNewContext(fs.readFileSync(path.join(root, "js/content.js"), "utf8"), sa
 const C = sandbox.window.CONTENT;
 const L = [];
 const P = C.person;
-L.push(`# About ${P.name}`, P.line, P.about, `Status: ${P.status}`, `Email: ${P.email}`, `GitHub: ${P.github}`, `LinkedIn: ${P.linkedin}`, "");
+const aboutText = [P.line, ...(P.aboutIntro || []), ...(P.aboutCore || []), P.about].filter(Boolean).join("\n");
+L.push(`# About ${P.name}`, aboutText, `Status: ${P.status}`, `Email: ${P.email}`, `GitHub: ${P.github}`, `LinkedIn: ${P.linkedin}`, "");
 L.push("# Papers");
 C.papers.forEach(p => L.push(`- ${p.title} [${p.status}]: ${p.note} ${p.links.map(l => l[1]).join(" ")}`));
 L.push("", "# Research notes (results)");

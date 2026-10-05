@@ -9,7 +9,20 @@ window.CONTENT = {
     github: "https://github.com/Adya6714",
     linkedin: "https://www.linkedin.com/in/adyasri",
     openreview: "https://openreview.net/forum?id=d8w4gMVQ1w",
-    about: "BITS Pilani graduate (Electrical and Electronics, minor in Finance, 2026). I like questions where the benchmark number is not the whole story: whether a model computed or recalled, whether its confidence means anything, whether a result survives a change that should not matter. I'm looking for a team that works on hard versions of those questions."
+    aboutIntro: [
+      "I'm Adya, an engineer who genuinely enjoys building things from scratch and figuring out how they work along the way. I'm especially interested in AI and ML, but what keeps me excited is the engineering and research around them: taking a vague question, digging into it, experimenting, breaking things, and eventually turning an idea into something that actually works. I love learning by building, and I'm constantly trying to go one level deeper than what I already know.",
+      "I'm currently looking for opportunities where I can work closely with interesting problems in AI/ML, research, and engineering. But I'm also here because I like talking to people who are building, experimenting, and thinking about the same things. If you're working on something interesting, have a different way of looking at AI/ML, have recently discovered something that changed how you think about the field, or simply have a few things you think I should know, I'd genuinely love to hear from you. I'm always up for a good conversation."
+    ],
+    aboutCore: [
+      "At the core, I like making things. I like starting with a blank page, learning whatever I need to learn, and slowly turning an idea into something real. Research gives me the opportunity to chase questions that don't have obvious answers, while engineering gives me the satisfaction of actually building the answer. AI and ML happen to sit at a particularly exciting intersection of the two for me.",
+      "I don't think of learning as something that ends when you understand the theory. I want to understand enough to build with it, break it, question it, and hopefully discover something that wasn't obvious before. That's probably what keeps me moving between research papers, experiments, systems, and completely new things I know very little about. There's always something more to uncover, and that's the part I enjoy most."
+    ]
+  },
+
+  suggest: {
+    title: "Leave a slip",
+    blurb: "Drop a suggestion, a lead, or something you think I should explore. Stay anonymous, or leave a way to reach you.",
+    prompts: ["Something I should explore", "A conversation worth having", "A paper or idea to chase"]
   },
 
   papers: [

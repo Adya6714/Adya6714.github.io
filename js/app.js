@@ -139,8 +139,37 @@ function guardianPanel() {
   </div>`;
 }
 function aboutPanel() {
-  return `<h2>About me</h2><p class="sub" style="color:#d6ebe7;font-size:16px">${esc(P.about)}</p>
-  <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>`;
+  const photo = CFG.PHOTO_URL
+    ? `<img class="about-photo" src="${esc(CFG.PHOTO_URL)}" alt="${esc(P.name)}" width="112" height="112">`
+    : `<span class="about-photo placeholder" aria-hidden="true">AS</span>`;
+  const intro = (P.aboutIntro || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
+  const core = (P.aboutCore || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
+  const prompts = (C.suggest?.prompts || ["Something I should explore", "A conversation worth having", "A paper or idea to chase"])
+    .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
+  return `<div class="about-head">${photo}<div><h2>About me</h2><p class="about-line">${esc(P.line)}</p></div></div>
+  <div class="about-block">${intro}</div>
+  <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>
+  <div class="about-divider"></div>
+  <h3 class="about-h3">How I think</h3>
+  <div class="about-block">${core}</div>
+  <div class="slips" id="slips">
+    <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
+    <p class="about-muted">${esc(C.suggest?.blurb || "Drop a suggestion, a lead, or something you think I should know. Name optional.")}</p>
+    <div class="slip-deck" aria-hidden="true">${prompts}</div>
+    <form class="slip-form" id="suggestForm" novalidate>
+      <label class="sr-only" for="slipMsg">Your suggestion</label>
+      <textarea id="slipMsg" name="message" rows="3" maxlength="1200" required placeholder="What should I explore, build, or talk about?"></textarea>
+      <div class="slip-meta">
+        <label class="anon"><input type="checkbox" id="slipAnon" checked> Stay anonymous</label>
+        <div class="slip-identity" id="slipIdentity" hidden>
+          <input id="slipName" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
+          <input id="slipContact" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
+        </div>
+      </div>
+      <div class="row" style="margin:0"><button class="btn primary" type="submit" id="slipSend">Send slip</button></div>
+      <p class="fine" id="slipStatus" role="status"></p>
+    </form>
+  </div>`;
 }
 const BUILD = [heroPanel, ideasPanel, projectsPanel, expPanel, skillsPanel, shelfPanel, guardianPanel, aboutPanel];
 const panels = STOPS.map((s, i) => {
@@ -184,8 +213,6 @@ const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.f
 ov(`<div class="bubble">${C.guardian.chips.slice(0, 3).map(([q, id]) => `<button data-ask="${id}">${esc(q)}</button>`).join("")}</div>`, 470, 846, 134, 0);
 const eyes = [mk('<i class="eye"></i>'), mk('<i class="eye"></i>')];
 eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:439px;top:881px"; eyes.forEach(e => MI.appendChild(e));
-ov(`<div class="footcard"><span class="av">${CFG.PHOTO_URL ? `<img src="${esc(CFG.PHOTO_URL)}" alt="">` : "AS"}</span><span><b>${esc(P.name)}</b><span>ML research engineer</span></span>
-  <span class="fl"><a class="p resume" href="#" download>Resume</a><a href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a href="${P.github}" target="_blank" rel="noopener">GitHub</a></span></div>`, 292, 1153, 308, 0);
 
 /* ---------- Lenis scroll + hold / travel / snap ---------- */
 let W = innerWidth, H = innerHeight, docH = 1, scrollY = 0, scrollDir = 1, lastF = 0;
@@ -506,6 +533,65 @@ $("#mClose").onclick = closeModal;
 const toast = $("#toast"); let tt;
 const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("on"), 3600); };
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
+
+/* ---------- suggestion slips (About) ---------- */
+{
+  const form = $("#suggestForm"), msg = $("#slipMsg"), anon = $("#slipAnon"), identity = $("#slipIdentity");
+  const name = $("#slipName"), contact = $("#slipContact"), status = $("#slipStatus"), send = $("#slipSend");
+  const slips = $("#slips");
+  const setBusy = on => { send.disabled = on; send.textContent = on ? "Sending…" : "Send slip"; };
+  const markFocus = el => {
+    if (!el) return;
+    el.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
+    el.addEventListener("blur", () => { chatFocused = false; });
+  };
+  [msg, name, contact].forEach(markFocus);
+  const syncAnon = () => {
+    const hide = anon.checked;
+    identity.hidden = hide;
+    if (hide) { name.value = ""; contact.value = ""; }
+  };
+  anon.addEventListener("change", syncAnon); syncAnon();
+  slips.addEventListener("click", e => {
+    const chip = e.target.closest("[data-slip-prompt]");
+    if (!chip) return;
+    const seed = chip.dataset.slipPrompt;
+    if (!msg.value.trim()) msg.value = seed + " — ";
+    else if (!msg.value.includes(seed)) msg.value = msg.value.trim() + "\n" + seed + " — ";
+    msg.focus();
+  });
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const text = msg.value.trim();
+    if (!text) { status.textContent = "Write something first."; return; }
+    const endpoint = CFG.SUGGEST_ENDPOINT;
+    if (!endpoint) { status.textContent = "Suggestions aren’t wired yet."; return; }
+    setBusy(true); status.textContent = "";
+    const payload = {
+      _subject: "Portfolio slip" + (anon.checked ? " (anonymous)" : ""),
+      _template: "table",
+      _captcha: "false",
+      suggestion: text,
+      from: anon.checked ? "anonymous" : (name.value.trim() || "unnamed"),
+      contact: anon.checked ? "none" : (contact.value.trim() || "none"),
+      page: location.href
+    };
+    try {
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) throw new Error("bad status");
+      slips.classList.add("sent");
+      status.textContent = "Slip sent — thank you.";
+      say("Suggestion sent to Adya.");
+      form.reset(); syncAnon();
+    } catch {
+      status.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
+    } finally { setBusy(false); }
+  });
+}
 
 /* ---------- guardian ---------- */
 const msgs = $("#msgs"), statueEyes = MI;

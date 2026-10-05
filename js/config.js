@@ -1,7 +1,9 @@
 /* Site settings. */
 window.SITE_CONFIG = {
   RESUME_URL: "assets/Resume_Adya_Srivastava.pdf", // replace the PDF in /assets with your latest resume
-  PHOTO_URL: "",                                    // e.g. "assets/photo.jpg" (square, at least 300x300)
+  PHOTO_URL: "",                                    // set to "assets/photo.jpg" after you drop the file in /assets
+  // Suggestions email via FormSubmit (works on GitHub Pages). First submit: confirm the email FormSubmit sends you.
+  SUGGEST_ENDPOINT: "https://formsubmit.co/ajax/srivastavadya@gmail.com",
   GUARDIAN_API: ""                                  // set to "/api/ask" on a serverless host; empty = scripted answers (GitHub Pages)
 };
 window.ASSETS = {
