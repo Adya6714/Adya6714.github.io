@@ -131,13 +131,24 @@ function shelfPanel() {
   ${C.shelf.sampleNote ? `<p class="hint">${esc(C.shelf.sampleNote)}</p>` : ""}`;
 }
 function guardianPanel() {
-  const intro = C.guardian.intro || "Ask me about Adya's research, projects or experience.";
-  return `<h2>Interview Adya</h2><p class="sub">Recruiter mode: ask what you would ask in a screen. Answers stay grounded in her documents.</p>
-  <div class="chat">
-    <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(intro)}<small>From: Guardian</small></div></div>
-    <div class="qs" id="qs">${C.guardian.chips.map(([q, id]) => `<button type="button" data-kb="${id}">${esc(q)}</button>`).join("")}</div>
-    <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask an interview question…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
-    <p class="fine">AI guardian · answers only from Adya's documents · works offline with scripted replies</p>
+  const A = C.ask || {};
+  const layers = A.layers || [];
+  const tabs = layers.map((L, i) => `<button type="button" class="ask-tab${i === 0 ? " on" : ""}" data-ask-layer="${esc(L.id)}" aria-pressed="${i === 0}">${esc(L.label)}</button>`).join("");
+  return `<h2>${esc(A.title || "Ask")}</h2>
+  <p class="ask-kicker">${esc(A.kicker || "A little more than a FAQ.")}</p>
+  <p class="sub">${esc(A.blurb || "")}</p>
+  <div class="ask-tabs" role="tablist">${tabs}</div>
+  <div id="askBrowse" class="ask-browse"></div>
+  <div id="askAnswer" class="ask-answer" hidden></div>
+  <div class="about-divider"></div>
+  <div class="ask-still">
+    <h3 class="about-h3">${esc(A.still?.title || "Still have a question?")}</h3>
+    <p class="about-muted">${esc(A.still?.blurb || "")}</p>
+    <div class="chat still-chat">
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask anything I missed…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
+      <p class="fine">Freeform answers stay grounded in Adya's documents · or leave a slip on About</p>
+    </div>
   </div>`;
 }
 function aboutPanel() {
@@ -209,7 +220,7 @@ const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.f
   const items = C.shelf.rows.flatMap(r => r.items).slice(0, 4);
   ov(`<button class="shelfov" data-go="5"><span class="bk">${esc(C.shelf.book.title)}</span>${items.map((it, i) => `<span class="th" style="background:linear-gradient(135deg,${GRADS[i][0]},${GRADS[i][1]})">${esc(it.t)}</span>`).join("")}<span class="cap">On my shelf</span></button>`, 30, 812, 238, 140);
 }
-ov(`<div class="bubble">${C.guardian.chips.slice(0, 3).map(([q, id]) => `<button data-ask="${id}">${esc(q)}</button>`).join("")}</div>`, 470, 846, 134, 0);
+ov(`<div class="bubble"><button data-ask-open="me-yourself">Tell me about yourself</button><button data-ask-open="rvc-what">Retrieval vs Computation?</button><button data-ask-open="hd-hire">Why hire you?</button></div>`, 470, 846, 134, 0);
 const eyes = [mk('<i class="eye"></i>'), mk('<i class="eye"></i>')];
 eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:439px;top:881px"; eyes.forEach(e => MI.appendChild(e));
 
@@ -519,7 +530,6 @@ document.addEventListener("click", e => {
   const n = e.target.closest("[data-note]"); if (n) return openNote(n.dataset.note);
   const p = e.target.closest("[data-proj]"); if (p) return openProject(p.dataset.proj);
   const j = e.target.closest(".banner[data-job]"); if (j) return openJob(+j.dataset.job);
-  const a = e.target.closest("[data-ask]"); if (a) { go(6); setTimeout(() => ask(null, a.dataset.ask, a.textContent), 600); return; }
   if (e.target === modal) closeModal();
 });
 document.addEventListener("keydown", e => {
@@ -592,7 +602,90 @@ $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b
   });
 }
 
-/* ---------- guardian ---------- */
+/* ---------- Ask: async interview browser ---------- */
+const ASK = C.ask || { layers: [], qa: {} };
+const askQA = ASK.qa || {};
+const askBrowse = $("#askBrowse"), askAnswer = $("#askAnswer");
+let askLayer = (ASK.layers[0] && ASK.layers[0].id) || "me";
+let askProject = null;
+const paraHtml = t => String(t || "").split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("");
+function qBtn(id) {
+  const item = askQA[id]; if (!item) return "";
+  return `<button type="button" class="ask-q" data-ask-open="${esc(id)}">${esc(item.q)}</button>`;
+}
+function renderAskBrowse() {
+  const layer = ASK.layers.find(L => L.id === askLayer) || ASK.layers[0];
+  if (!layer) { askBrowse.innerHTML = ""; return; }
+  if (layer.kind === "projects") {
+    if (askProject) {
+      const proj = layer.projects.find(p => p.id === askProject);
+      if (!proj) { askProject = null; return renderAskBrowse(); }
+      askBrowse.innerHTML = `<button type="button" class="ask-back" data-ask-proj="">← All projects</button>
+        <div class="ask-proj-head"><b>${esc(proj.title)}</b><span>${esc(proj.tag || "")}</span></div>
+        ${proj.sections.map(s => `<div class="ask-sec"><div class="sect">${esc(s.label)}</div><div class="ask-qlist">${s.ids.map(qBtn).join("")}</div></div>`).join("")}`;
+      return;
+    }
+    askBrowse.innerHTML = `<p class="about-muted" style="margin-top:0">Pick a project and walk the interview tree.</p>
+      <div class="ask-proj-grid">${layer.projects.map(p => `<button type="button" class="ask-proj" data-ask-proj="${esc(p.id)}"><b>${esc(p.title)}</b><span>${esc(p.tag || "")}</span></button>`).join("")}</div>`;
+    return;
+  }
+  askBrowse.innerHTML = `<div class="ask-qlist">${(layer.ids || []).map(qBtn).join("")}</div>`;
+}
+function openAskQuestion(id) {
+  const item = askQA[id]; if (!item) return;
+  askAnswer.hidden = false;
+  const next = (item.next || []).map(nid => {
+    const n = askQA[nid]; return n ? `<button type="button" class="ask-follow" data-ask-open="${esc(nid)}">${esc(n.q)}</button>` : "";
+  }).join("");
+  askAnswer.innerHTML = `<button type="button" class="ask-back" data-ask-close>← Back to questions</button>
+    <h3 class="ask-qtitle">${esc(item.q)}</h3>
+    <div class="ask-short">${paraHtml(item.short)}</div>
+    ${item.deep ? `<details class="ask-deep"><summary>Go deeper ↓</summary><div class="ask-deep-body">${paraHtml(item.deep)}</div></details>` : ""}
+    ${next ? `<div class="ask-next"><span>You might ask next</span><div class="ask-qlist">${next}</div></div>` : ""}`;
+  askAnswer.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
+  MI.classList.add("speaking");
+  setTimeout(() => MI.classList.remove("speaking"), preferReduced ? 0 : 900);
+}
+function setAskLayer(id) {
+  askLayer = id; askProject = null; askAnswer.hidden = true; askAnswer.innerHTML = "";
+  $$(".ask-tab").forEach(b => {
+    const on = b.dataset.askLayer === id;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+  });
+  renderAskBrowse();
+}
+renderAskBrowse();
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-ask-layer]");
+  if (tab) { setAskLayer(tab.dataset.askLayer); return; }
+  const proj = e.target.closest("[data-ask-proj]");
+  if (proj) { askProject = proj.dataset.askProj || null; askAnswer.hidden = true; renderAskBrowse(); return; }
+  if (e.target.closest("[data-ask-close]")) { askAnswer.hidden = true; askAnswer.innerHTML = ""; return; }
+  const open = e.target.closest("[data-ask-open]");
+  if (open) {
+    const id = open.dataset.askOpen;
+    // Jump to Ask stop if coming from the map bubble
+    if (!e.target.closest(".panel")) go(6);
+    // Reveal the right layer/project for deep links
+    const layer = ASK.layers.find(L => L.kind === "list" && (L.ids || []).includes(id))
+      || ASK.layers.find(L => L.kind === "projects" && L.projects.some(p => p.sections.some(s => s.ids.includes(id))));
+    if (layer) {
+      askLayer = layer.id;
+      if (layer.kind === "projects") {
+        const p = layer.projects.find(pr => pr.sections.some(s => s.ids.includes(id)));
+        askProject = p ? p.id : null;
+      } else askProject = null;
+      $$(".ask-tab").forEach(b => {
+        const on = b.dataset.askLayer === askLayer;
+        b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+      });
+      renderAskBrowse();
+    }
+    setTimeout(() => openAskQuestion(id), e.target.closest(".panel") ? 0 : 550);
+  }
+});
+
+/* ---------- guardian freeform (Still have a question?) ---------- */
 const msgs = $("#msgs"), statueEyes = MI;
 const KB = C.guardian.kb, kbById = id => KB.find(k => k.id === id);
 const rx = k => new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b");
@@ -609,17 +702,21 @@ async function ask(question, kbId, label) {
   const q = question || label; addMsg("u", q); statueEyes.classList.add("speaking");
   const m = addMsg("b", ""); m.classList.add("typing"); m.textContent = "Thinking…";
   let answer = null, src = null;
-  if (!kbId && CFG.GUARDIAN_API) {
+  // Prefer scripted interview answers when the freeform text matches a known question closely
+  if (!kbId) {
+    const hit = Object.values(askQA).find(item => item.q.toLowerCase() === q.toLowerCase() || q.toLowerCase().includes(item.q.toLowerCase().slice(0, 28)));
+    if (hit) { answer = hit.short + (hit.deep ? "\n\n" + hit.deep : ""); src = "Ask interview notes"; }
+  }
+  if (!answer && !kbId && CFG.GUARDIAN_API) {
     try {
       const r = await fetch(CFG.GUARDIAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
       if (r.ok) { const d = await r.json(); answer = d.answer; src = d.source || "Adya's documents"; }
-    } catch (e) { /* fall back to the scripted answers */ }
+    } catch (e) { /* fall back */ }
   }
   if (!answer) { const e = kbId ? kbById(kbId) : findKB(q); answer = e ? e.a : C.guardian.fallback; src = e ? e.src : null; }
   m.classList.remove("typing"); m.textContent = "";
   typeOut(m, answer, src, () => { statueEyes.classList.remove("speaking"); busy = false; });
 }
-$("#qs").onclick = e => { const b = e.target.closest("button"); if (b) ask(null, b.dataset.kb, b.textContent); };
 $("#askForm").onsubmit = e => { e.preventDefault(); const v = $("#askIn").value.trim(); if (!v) return; $("#askIn").value = ""; ask(v); };
 const askIn = $("#askIn");
 askIn.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
