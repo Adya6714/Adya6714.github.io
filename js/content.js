@@ -133,8 +133,6 @@ window.CONTENT = {
   ],
 
   jobs: [
-    { co: "EquiContracts", initial: "E", role: "Founding Engineer", when: "2026 to present", color: "#7fe3c8",
-      pts: ["Building an agentic platform for construction contract operations in India: bank guarantee tracking, milestone and payment validation, and an evidence locker shared by contractor and client.", "Stack: FastAPI, Next.js, Postgres with row-level security, a YAML-driven deterministic rules engine and an isolated AI extraction package."] },
     { co: "Nurix AI", initial: "N", role: "ML Engineering Intern", when: "Jul to Dec 2025", color: "#6ff0df",
       pts: ["Built and deployed a TinyBERT + NN voicemail detector with backend integration (95% precision).", "Improved real-time turn-end detection in a transformer speech-to-text pipeline using semantic parsing.", "Designed a word-error correction pipeline (Word2Vec, phonetic normalisation, LLM scoring) that cut WER by 40%."] },
     { co: "FidelFolio Investments", initial: "F", role: "Quant Investment Analyst", when: "May to Jun 2025", color: "#b9a6ff",
@@ -149,7 +147,7 @@ window.CONTENT = {
     ["LLMs and NLP", [["PyTorch", "All research projects"], ["Transformers", "RvC, Nurix speech pipeline"], ["LLM evaluation", "Retrieval vs Computation"], ["Probing and ablation", "Reading Without Looking"], ["LangChain", "Agent tooling"]]],
     ["Vision", [["OpenCV", "UAV vision"], ["OCR", "Indic OCR research"], ["CNNs", "Aerial detection"]]],
     ["RL and generative", [["Diffusion models", "Volatility surfaces"], ["PPO", "Hedging agent"], ["vLLM", "OmniMesh"]]],
-    ["Systems", [["Python", "Everything"], ["FastAPI", "OmniMesh, FraudScope360, EquiContracts"], ["Docker", "Deployments"], ["AWS", "CloudWatch agent"], ["GCP", "Cloud work"], ["SQL", "Data work"], ["TypeScript", "Web builds"]]],
+    ["Systems", [["Python", "Everything"], ["FastAPI", "OmniMesh, FraudScope360"], ["Docker", "Deployments"], ["AWS", "CloudWatch agent"], ["GCP", "Cloud work"], ["SQL", "Data work"], ["TypeScript", "Web builds"]]],
     ["Quant and classical ML", [["XGBoost", "FraudScope360"], ["Graph ML", "FraudScope360"], ["Portfolio optimisation", "FidelFolio"], ["Volatility modelling", "NIFTY surfaces"], ["CVaR", "Hedging evaluation"]]]
   ],
 
@@ -205,7 +203,7 @@ window.CONTENT = {
       { id: "quant", keys: ["quant", "fidelfolio", "finance", "portfolio", "sharpe", "hedging", "ddpm", "diffusion", "volatility", "ppo", "nifty"], src: "Resume, project write-up",
         a: "On the finance side I did quant research at FidelFolio (portfolio optimisation with genetic algorithms and Bayesian optimisation, Sharpe up about 42%). I am also writing a paper that trains a diffusion model on 1,268 NIFTY 50 volatility surfaces to generate new market scenarios, then trains a PPO agent to hedge barrier options on them. It cut CVaR(95%) hedging error by 60.1% against Black-Scholes and is compared with a Heston-trained RL baseline." },
       { id: "agents", keys: ["agent", "agents", "agentic", "cloudwatch", "aws", "omnimesh", "mesh", "offline", "disaster", "gemma", "vllm", "equicontracts", "construction"], src: "Project write-ups",
-        a: "On the systems side: OmniMesh is an offline disaster-response mesh where phones act as triage nodes, backed by a six-agent FastAPI service serving Gemma-2-9B with vLLM on an AMD GPU. CloudWatch in Plain English lets teams query AWS metrics in natural language using a Bedrock agent, embeddings in S3 and semantic search in Lambda. I am also the founding engineer at EquiContracts, an agentic platform for construction contract operations." },
+        a: "On the systems side: OmniMesh is an offline disaster-response mesh where phones act as triage nodes, backed by a six-agent FastAPI service serving Gemma-2-9B with vLLM on an AMD GPU. CloudWatch in Plain English lets teams query AWS metrics in natural language using a Bedrock agent, embeddings in S3 and semantic search in Lambda." },
       { id: "fraud", keys: ["fraud", "fraudscope", "citi", "hackathon", "winner", "graph", "fraudsense"], src: "Resume",
         a: "FraudScope360 won the national round of the Citi Bank Campus Innovation Challenge. It is a five-module fraud engine combining graph machine learning, anomaly detection and XGBoost, covering fraud rings and identity fraud, served through FastAPI." },
       { id: "edu", keys: ["bits", "education", "college", "degree", "graduate", "university", "studied", "background"], src: "Resume",
@@ -217,7 +215,7 @@ window.CONTENT = {
       { id: "hire", keys: ["hire", "why you", "strengths", "fit", "candidate", "offer", "value"], src: "Resume, papers",
         a: "I ship: a CAISc paper on LLM reasoning fragility, production speech work at Nurix that cut WER by 40%, and a national Citi Innovation win. I care about whether a metric actually means what people think it means — so I design probes and ablations, not only dashboards. I am comfortable moving between research and engineering." },
       { id: "team", keys: ["team", "collaborate", "collaboration", "work with", "communication", "mentor", "style"], src: "Experience write-ups",
-        a: "I like clear write-ups and small demos that make a result checkable. At Nurix I worked inside a production speech stack; as founding engineer at EquiContracts I coordinate with a co-founder on product and architecture. I ask for the failure case early and prefer experiments you can re-run." },
+        a: "I like clear write-ups and small demos that make a result checkable. At Nurix I worked inside a production speech stack with other engineers. I ask for the failure case early and prefer experiments you can re-run." },
       { id: "weak", keys: ["weakness", "weaknesses", "improve", "growth", "challenge", "hardest"], src: "Profile",
         a: "I can over-invest in getting the evaluation story right before shipping a rough prototype. I am getting better at landing a thin vertical slice first, then deepening the probes once something runs end to end." },
       { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive"], src: "Shelf",

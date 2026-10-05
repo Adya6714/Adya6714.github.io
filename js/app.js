@@ -14,7 +14,7 @@ const STOPS = [
   { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
   { id: "ideas",      label: "Research",   side: "left",   d: [410, 388, 510, .64, .48], m: [395, 385, 340, .5, .24] },
   { id: "projects",   label: "Projects",   side: "left",   d: [478, 650, 540, .62, .48], m: [470, 640, 360, .5, .24] },
-  { id: "experience", label: "Experience", side: "left",   d: [700, 492, 520, .68, .48], m: [690, 480, 340, .58, .24] },
+  { id: "experience", label: "Experience", side: "left",   d: [720, 440, 680, .76, .42], m: [700, 455, 420, .62, .26] },
   { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
   { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
   { id: "guardian",   label: "Ask",        side: "left",   d: [480, 895, 500, .60, .48], m: [470, 895, 340, .5, .22] },
@@ -119,9 +119,11 @@ const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.f
 [["p-rvc", 294, 486, 244, 120, -4, 3], ["p-ocr", 318, 574, 284, 136, -4, 2], ["p-ddpm", 428, 658, 240, 152, -5, 1]].forEach(([id, x, y, w, h, r, z]) => {
   const p = projBy(id); ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>Open case study</em></button>`, x, y, w, h, r, `z-index:${z};`);
 });
-[[3, 112, 447, 39, 84], [0, 674, 274, 28, 64], [1, 696, 452, 38, 88], [2, 732, 619, 42, 101]].forEach(([ji, x, y, w, h]) => {
-  const j = C.jobs[ji]; ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h);
-  const t = mk(`<div class="tag">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 20) + "px"; MI.appendChild(t);
+/* Arch banners: Nurix (top), FidelFolio (middle), Grasim (left). Khageshvara is panel-only. */
+[[0, 674, 274, 32, 68], [1, 696, 452, 40, 92], [2, 112, 447, 39, 84]].forEach(([ji, x, y, w, h]) => {
+  const j = C.jobs[ji]; if (!j) return;
+  ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h, 0, "z-index:3;");
+  const t = mk(`<div class="tag">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 22) + "px"; t.style.zIndex = "4"; MI.appendChild(t);
 });
 [[0, 90, 800], [1, 248, 772], [2, 329, 832], [3, 768, 872], [4, 784, 1000]].forEach(([gi, x, y]) => {
   const [g, items] = C.skills[gi];
