@@ -1,0 +1,6 @@
+{
+  "functions": { "api/ask.js": { "maxDuration": 15 } },
+  "headers": [
+    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
+  ]
+}

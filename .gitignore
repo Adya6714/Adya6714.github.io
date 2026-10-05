@@ -6,10 +6,10 @@ node_modules/
 .env
 .env.*
 
-# Vercel (not used — site deploys via GitHub Pages)
+# Vercel local link (site deploys via GitHub Pages)
 .vercel/
 
-# redundant archive of the same source already in this repo
+# redundant archive — source is already in this repo
 Adya Portfolio Codebase.zip
 
 # editor / OS

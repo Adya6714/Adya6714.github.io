@@ -2,11 +2,11 @@
   "name": "adya-portfolio",
   "private": true,
   "version": "1.0.0",
-  "description": "Scroll-driven river portfolio — static HTML/CSS/JS for GitHub Pages",
+  "description": "Scroll-driven river portfolio — static HTML/CSS/JS",
   "scripts": {
     "dev": "npx --yes serve .",
-    "kb": "node tools/make_kb.js",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "kb": "node tools/make_kb.js"
   },
   "engines": {
     "node": ">=18"
