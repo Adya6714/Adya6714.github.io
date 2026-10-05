@@ -13,7 +13,7 @@ const MAP_W = 848, MAP_H = 1264;
 const STOPS = [
   { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
   { id: "ideas",      label: "Research",   side: "left",   d: [410, 388, 510, .64, .48], m: [395, 385, 340, .5, .24] },
-  { id: "projects",   label: "Projects",   side: "left",   d: [478, 650, 540, .62, .48], m: [470, 640, 360, .5, .24] },
+  { id: "projects",   label: "Projects",   side: "left",   d: [530, 600, 520, .74, .46], m: [500, 600, 380, .58, .28] },
   { id: "experience", label: "Experience", side: "left",   d: [720, 440, 680, .76, .42], m: [700, 455, 420, .62, .26] },
   { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
   { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
@@ -51,11 +51,13 @@ function projectsPanel() {
   <div class="filters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-f="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
   <div class="list">${shown.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
     <h3>${esc(p.title)}</h3><p>${esc(p.line)}</p>
-    <div class="meta">${p.chips.slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("")}${p.links.map(([l, u]) => ext(u, l)).join("")}</div></div>`).join("")}</div>
-  ${rest ? `<button class="btn sm" type="button" data-all-proj>Show all projects</button>` : ""}`;
+    <div class="meta">${p.chips.slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("")}${
+      p.links.length ? p.links.map(([l, u]) => ext(u, l)).join("") : `<span class="chip warm">Private</span>`
+    }</div></div>`).join("")}</div>
+  ${rest ? `<button class="btn sm" type="button" data-all-proj>Show all ${C.projects.length} projects</button>` : ""}`;
 }
 function expPanel() {
-  return `<h2>The path so far</h2><p class="sub">From production speech models to a founding role. Open one for details.</p>
+  return `<h2>The path so far</h2><p class="sub">From production speech models to research engineering. Open one for details.</p>
   ${C.jobs.map((j, i) => `<div class="job" data-job="${i}"><button aria-expanded="false"><span class="mono" style="background:${j.color}">${esc(j.initial)}</span>
     <span><h3>${esc(j.co)}</h3><small>${esc(j.role)}, ${esc(j.when)}</small></span><span class="tog">Details</span></button>
     <ul>${j.pts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}`;
