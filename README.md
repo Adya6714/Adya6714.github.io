@@ -1,40 +1,14 @@
 # Adya Srivastava — river portfolio
 
-Scroll-driven portfolio: a camera flies down a painted forest river (WebGL flow-map shader). Eight stops — Waterfall, Research, Projects, Experience, Skills, Shelf, Ask, About.
+Scroll-driven portfolio: a camera flies down a painted forest river (WebGL flow-map shader). Seven stops on the River, plus Library / Writing / Other work tabs.
 
-Plain HTML, CSS, and JavaScript. No framework. No build step.
+Plain HTML, CSS, and JavaScript. No framework. No build step for the site.
 
 | | |
 |---|---|
 | **Live site** | https://adya6714.github.io/adya-portfolio/ |
 | **Repo** | https://github.com/Adya6714/adya-portfolio |
-| **Build guide** | [`SITE_SPEC.md`](./SITE_SPEC.md) |
-
-Cursor: start each job with `Read @SITE_SPEC.md. Build only section X. Follow the acceptance checks.`
-
-## Repo layout
-
-```
-.
-├── index.html          # page shell + water shader
-├── css/style.css       # look and feel
-├── js/
-│   ├── app.js          # camera, map overlays, panels, guardian UI
-│   ├── content.js      # all text and links (edit here)
-│   └── config.js       # resume / photo / guardian endpoint
-├── assets/
-│   ├── scene/          # plate.webp, flow.png, foam.png
-│   ├── source/         # painting source + masks (not for the browser)
-│   └── Resume_Adya_Srivastava.pdf
-├── api/                # optional serverless guardian (not used on Pages)
-├── tools/              # make_kb, make_maps, clean_plate
-├── docs/               # shader copy, Cursor prompts
-├── Doc/                # personal archive (not published to Pages)
-│   ├── Resume_Adya_Srivastava.pdf
-│   └── case-studies/
-├── SITE_SPEC.md        # full website spec
-└── .github/workflows/  # GitHub Pages deploy
-```
+| **Plan** | [`CURSOR_PLAN_v2.md`](./CURSOR_PLAN_v2.md) |
 
 ## Run locally
 
@@ -44,13 +18,42 @@ npm run dev
 
 Open the printed URL. Do not open `index.html` from disk — textures will not load.
 
-## Deploy
+## Deploy (site)
 
 Push to `main`. GitHub Actions publishes to Pages automatically.
+
+## Live guardian (Cloudflare Worker)
+
+GitHub Pages cannot run `api/ask.js`. The Interview room free-text box talks to a Worker instead.
+
+1. Regenerate the knowledge base after editing interview answers:
+
+```bash
+npm run kb
+```
+
+2. From `worker/`:
+
+```bash
+cd worker
+npx wrangler login
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler deploy
+```
+
+3. Copy the Worker URL into `js/config.js`:
+
+```js
+GUARDIAN_API: "https://adya-guardian.<your-subdomain>.workers.dev/ask"
+```
+
+CORS allows only `https://adya6714.github.io` (plus local dev). The browser never sees the API key. Rate limit: 20 questions per IP per hour.
+
+If `GUARDIAN_API` is empty, free-text search offers the 3 closest interview-bank questions instead.
 
 ## Common edits
 
 - Content / links → `js/content.js`
+- Interview answers → `js/interview.js` then `npm run kb`
 - Resume → replace `assets/Resume_Adya_Srivastava.pdf`
-- Spec / job list → `SITE_SPEC.md`
-- After content edits for a future AI guardian → `npm run kb`
+- Plan → `CURSOR_PLAN_v2.md`

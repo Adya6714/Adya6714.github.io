@@ -18,3 +18,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# personal photos — keep local only (site expects assets/photo.jpg on deploy machine)
+assets/photo.jpg
+photo.jpg
+photo2.jpg
+Image 3409.png
+Image 3409_leveled.png
+Resume Optimization for AI ML Researcher Roles.webp

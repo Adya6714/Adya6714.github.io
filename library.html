@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Library | Adya Srivastava</title>
+<meta name="description" content="Study notes, practice, videos and reading — Adya's library off the river.">
+<meta name="theme-color" content="#06191c">
+<meta property="og:title" content="Library | Adya Srivastava">
+<meta property="og:description" content="Study notes, practice, videos and reading — Adya's library off the river.">
+<meta property="og:image" content="https://adya6714.github.io/adya-portfolio/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://adya6714.github.io/adya-portfolio/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page page-library">
+<header class="nav page-nav">
+  <a class="brand" href="index.html">Adya Srivastava</a>
+  <nav class="site-tabs" aria-label="Site sections">
+    <a href="index.html">River</a>
+    <a href="library.html" aria-current="page">Library</a>
+    <a href="writing.html">Writing</a>
+    <a href="other.html">Other work</a>
+  </nav>
+  <a class="btn primary sm resume" href="#" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>Resume</a>
+</header>
+
+<main class="page-main">
+  <header class="page-hero">
+    <p class="page-kicker">Off the river</p>
+    <h1>Library</h1>
+    <p class="sub">Study notes, practice, videos and reading — things I learn from.</p>
+  </header>
+
+  <div class="lib-tabs" role="tablist" aria-label="Library sections">
+    <button type="button" class="lib-tab on" role="tab" aria-selected="true" data-tab="study" id="tab-study">Study module</button>
+    <button type="button" class="lib-tab" role="tab" aria-selected="false" data-tab="leetcode" id="tab-leetcode">LeetCode and practice</button>
+    <button type="button" class="lib-tab" role="tab" aria-selected="false" data-tab="videos" id="tab-videos">Videos</button>
+    <button type="button" class="lib-tab" role="tab" aria-selected="false" data-tab="reading" id="tab-reading">Reading</button>
+    <button type="button" class="lib-tab" role="tab" aria-selected="false" data-tab="notes" id="tab-notes">Notes</button>
+  </div>
+
+  <div class="lib-panels">
+    <section class="lib-panel on" role="tabpanel" id="panel-study" aria-labelledby="tab-study" data-panel="study"></section>
+    <section class="lib-panel" role="tabpanel" id="panel-leetcode" aria-labelledby="tab-leetcode" data-panel="leetcode" hidden></section>
+    <section class="lib-panel" role="tabpanel" id="panel-videos" aria-labelledby="tab-videos" data-panel="videos" hidden></section>
+    <section class="lib-panel" role="tabpanel" id="panel-reading" aria-labelledby="tab-reading" data-panel="reading" hidden></section>
+    <section class="lib-panel" role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" data-panel="notes" hidden></section>
+  </div>
+</main>
+
+<div class="modal" id="ytModal" role="dialog" aria-modal="true" aria-label="Video">
+  <div class="sheet yt-sheet">
+    <button type="button" class="x" id="ytClose" aria-label="Close">&times;</button>
+    <div class="yt-frame-wrap"><iframe id="ytFrame" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/content.js"></script>
+<script src="js/library.js"></script>
+</body>
+</html>

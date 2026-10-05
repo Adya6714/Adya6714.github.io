@@ -8,133 +8,165 @@ const mk = h => { const t = document.createElement("template"); t.innerHTML = h.
 const ext = (u, label) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`;
 const MAP_W = 848, MAP_H = 1264;
 
-/* ---------- journey stops: map focus point, visible width (map px), screen anchor ---------- */
-/* Wider visible widths so map elements stay on-screen (less zoomed-in). */
+/* ---------- journey stops: focus box (map px) + panel side ---------- */
 const STOPS = [
-  { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
-  { id: "ideas",      label: "Research",   side: "left",   d: [390, 340, 500, .70, .40], m: [380, 340, 360, .55, .26] },
-  { id: "projects",   label: "Projects",   side: "left",   d: [400, 560, 640, .52, .42], m: [390, 560, 420, .48, .28] },
-  { id: "experience", label: "Experience", side: "left",   d: [620, 420, 720, .70, .40], m: [600, 430, 440, .58, .26] },
-  { id: "skills",     label: "Skills",     side: "right",  d: [280, 820, 520, .38, .46], m: [260, 810, 360, .42, .24] },
-  { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
-  { id: "guardian",   label: "Ask",        side: "left",   d: [460, 900, 480, .58, .48], m: [450, 900, 340, .5, .22] },
-  { id: "about",      label: "About",      side: "center", d: [440, 1180, 848, .5, .72], m: [445, 1200, 420, .5, .32] }
+  { id: "hello",     label: "Hello",     panel: "left",   box: [230, 0, 640, 300],     mbox: [230, 0, 640, 300] },
+  { id: "research",  label: "Research",  panel: "left",   box: [270, 280, 545, 500],   mbox: [270, 280, 545, 500] },
+  { id: "projects",  label: "Projects",  panel: "bottom", box: [260, 470, 700, 820],   mbox: [260, 470, 700, 820] },
+  { id: "path",      label: "Path",      panel: "right",  box: [600, 260, 848, 740],   mbox: [600, 260, 848, 740] },
+  { id: "skills",    label: "Skills",    panel: "right",  box: [20, 700, 380, 900],    mbox: [20, 700, 380, 900] },
+  { id: "interview", label: "Ask",       panel: "left",   box: [330, 800, 640, 990],   mbox: [330, 800, 640, 990] },
+  { id: "card",      label: "About",     panel: "center", box: [150, 980, 760, 1264],  mbox: [150, 980, 760, 1264] }
 ];
 const N = STOPS.length;
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const smoothstep = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
+const easeInOut = t => smoothstep(0, 1, t);
 const ytId = u => { const m = String(u).match(/(?:youtu\.be\/|v=)([\w-]{11})/); return m ? m[1] : null; };
 
 /* ---------- panels ---------- */
 const P = C.person;
 const resumeBtn = (cls = "btn primary") => `<a class="${cls} resume" href="#" download>Resume</a>`;
+function helloPhoto() {
+  const src = P.photo || CFG.PHOTO_URL || "";
+  if (src) return `<img class="hello-photo" src="${esc(src)}" alt="${esc(P.name)}" width="112" height="112" decoding="async" fetchpriority="high">`;
+  const initials = (P.name || "AS").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  return `<span class="hello-photo placeholder" aria-hidden="true">${esc(initials)}</span>`;
+}
 function heroPanel() {
-  const paras = P.aboutIntro || [];
-  const intro = paras.map((p, i) => `<p class="hero-p${i > 0 ? " hero-p-secondary" : ""}">${esc(p)}</p>`).join("");
-  return `<h1>${esc(P.name)}</h1>
-  <div class="hero-intro">${intro}</div>
-  <div class="chips">${P.proof.map(p => `<span class="chip c">${esc(p)}</span>`).join("")}</div>
-  <div class="row">${resumeBtn()}<button class="btn" data-go="1">Research</button><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a></div>
-  <div class="status"><i></i>${esc(P.status)}</div>
-  <p class="hint">Scroll to travel downstream.</p>`;
+  const paras = P.intro || P.aboutIntro || [];
+  const intro = paras.map(p => `<p class="hello-p">${esc(p)}</p>`).join("");
+  const openTo = (P.openTo || []).map(t => `<span class="chip c">${esc(t)}</span>`).join("");
+  return `<div class="hello-head">${helloPhoto()}<h1 class="hello-name">${esc(P.name)}</h1></div>
+  <div class="hello-intro">${intro}</div>
+  <p class="hello-open-label">I'm open to</p>
+  <div class="chips hello-open">${openTo}</div>
+  <div class="row hello-actions">${resumeBtn()}<button type="button" class="btn" data-drop-card>Drop a card</button><a class="btn" href="${esc(P.github)}" target="_blank" rel="noopener">GitHub</a></div>`;
 }
-function mountSlipDock() {
-  const prompts = (C.suggest?.prompts || []).map((t, i) =>
-    `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
-  const sendLabel = C.suggest?.sendLabel || "Send suggestion";
-  const dock = mk(`<aside class="slip-dock open" id="slipDock" data-lenis-prevent aria-label="Leave a slip">
-    <button type="button" class="slip-dock-tab" id="slipDockTab" aria-expanded="true" aria-controls="slipDockPanel">
-      <span class="slip-tab-icon">✉</span>
-      <span class="slip-tab-copy">
-        <strong class="slip-tab-label">Leave a slip</strong>
-        <em class="slip-tab-hint">Open to suggestions</em>
-      </span>
-    </button>
-    <div class="slip-dock-panel" id="slipDockPanel">
-      <button type="button" class="slip-dock-close" id="slipDockClose" aria-label="Close">&times;</button>
-      <div class="slips" id="slips">
-        <p class="slip-eyebrow">Suggestions welcome</p>
-        <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
-        <p class="about-muted">${esc(C.suggest?.blurb || "")}</p>
-        <div class="slip-mailbox" aria-hidden="true">
-          <div class="slip-mailbox-slot"></div>
-          <div class="slip-mailbox-body"></div>
-        </div>
-        <div class="slip-deck">${prompts}</div>
-        <div class="slip-thanks" id="slipThanks" hidden>
-          <div class="slip-thanks-sparkles" aria-hidden="true"></div>
-          <p class="slip-thanks-msg" id="slipThanksMsg"></p>
-          <button type="button" class="btn sm" id="slipThanksAgain">Leave another</button>
-        </div>
-        <form class="slip-form suggestForm" id="suggestForm" novalidate>
-          <label class="sr-only" for="slipMsg">Your suggestion</label>
-          <textarea id="slipMsg" name="message" rows="5" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "")}"></textarea>
-          <div class="slip-meta">
-            <label class="anon"><input type="checkbox" class="slipAnon" id="slipAnon" checked> Stay anonymous</label>
-            <div class="slip-identity" id="slipIdentity" hidden>
-              <input class="slipName" id="slipName" name="name" type="text" maxlength="80" placeholder="Name" autocomplete="name">
-              <input class="slipContact" id="slipContact" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
-            </div>
-          </div>
-          <button class="btn primary slipSend" type="submit">${esc(sendLabel)}</button>
-          <p class="fine slipStatus" id="slipStatus" role="status"></p>
-        </form>
-      </div>
-    </div>
-  </aside>`);
-  document.body.appendChild(dock);
-}
-function ideasPanel() {
-  const main = C.papers.filter(p => p.kind === "published" || p.kind === "preprint");
-  const other = C.papers.filter(p => p.kind !== "published" && p.kind !== "preprint");
-  const highlights = ["n-rename", "n-inject", "n-pos0"].map(id => C.notes.find(n => n.id === id)).filter(Boolean);
+function researchPanel() {
+  const threads = C.research || [];
+  const survey = C.survey;
+  const cards = threads.map(r => {
+    const badgeClass = r.status === "Published" ? "published" : r.status === "Preprint" ? "preprint" : "submitted";
+    const venue = r.venue ? ` · ${esc(r.venue)}` : "";
+    const links = (r.links || []).slice(0, 3).map(([l, u]) => `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)}</a>`).join("");
+    return `<article class="thread-card" data-research="${esc(r.id)}">
+      <div class="thread-top"><span class="badge ${badgeClass}">${esc(r.status)}${venue}</span><span class="thread-label">${esc(r.label)}</span></div>
+      <h3 class="thread-title">${esc(r.title)}</h3>
+      <p class="thread-q">${esc(r.question)}</p>
+      <p class="thread-headline">${esc(r.headline)}</p>
+      <p class="thread-caption">${esc(r.headlineCaption)}</p>
+      <div class="row thread-links">${links}<button type="button" class="btn sm primary" data-research-story="${esc(r.id)}">Read the story</button></div>
+    </article>`;
+  }).join("");
+  const surveyLine = survey
+    ? `<p class="research-survey">Also: a survey on hybrid quantum-classical methods (<a href="${esc(survey.link)}" target="_blank" rel="noopener">PDF</a>)</p>`
+    : "";
   return `<h2>Research</h2>
-  <p class="sub research-thesis">Papers and questions: how models behave under probes, and when confidence matches evidence.</p>
-  <p class="hint tight">Research is the question and the write-up. Projects (next stop) are the systems and code I built to answer it.</p>
-  <div class="sect">Papers &amp; preprints</div>
-  <div class="paper-stack">${main.map(p => `
-    <article class="paper paper-card">
-      <span class="badge ${p.kind}">${esc(p.status)}</span>
-      <b>${esc(p.title)}</b>
-      <small>${esc(p.note)}</small>
-      ${p.links.length ? `<div class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</div>` : ""}
-    </article>`).join("")}</div>
-  ${other.length ? `<div class="sect">More writing</div>
-  <div class="paper-mini">${other.map(p => `
-    <div class="paper-row">
-      <span class="badge ${p.kind}">${esc(p.status)}</span>
-      <span class="paper-row-body"><b>${esc(p.title)}</b><small>${esc(p.note)}</small>
-      ${p.links.length ? `<span class="links">${p.links.map(([l, u]) => ext(u, l)).join("")}</span>` : `<span class="chip warm">In progress</span>`}</span>
-    </div>`).join("")}</div>` : ""}
-  <div class="sect">Highlighted findings</div>
-  <p class="hint tight">Three results I keep coming back to. Open for the full note.</p>
-  <div class="list note-list">${highlights.map(n => `
-    <button class="item note-item" data-note="${n.id}">
-      <span class="note-proj">${esc(n.project)}</span>
-      <h3>${esc(n.headline)}</h3>
-      <p>${esc(n.title)}</p>
-    </button>`).join("")}</div>
-  <button class="btn sm" type="button" data-all-notes>All ${C.notes.length} findings</button>`;
+  <p class="sub research-sub">Three questions I keep pulling on. Each one became a paper.</p>
+  <div class="thread-stack">${cards}</div>
+  ${surveyLine}`;
 }
-const GROUPS = ["All", "Research", "Agents & systems", "Quant"];
+const PROJECT_FILTERS = ["All", "AI systems", "Forecasting and data", "Research code", "Products and platforms", "Early work"];
+function projectSkills(p) { return p.skills || p.chips || []; }
+function projectLinkPairs(p) {
+  const L = p.links;
+  if (!L) return [];
+  if (Array.isArray(L)) return L;
+  const out = [];
+  if (L.live) out.push(["Live", L.live]);
+  if (L.code) out.push(["Code", L.code]);
+  if (L.paper) out.push(["Paper", L.paper]);
+  if (L.site) out.push(["Site", L.site]);
+  return out;
+}
+function projectBtns(p, sm = true) {
+  const pairs = projectLinkPairs(p);
+  const cls = sm ? "btn sm" : "btn";
+  if (!pairs.length) return p.private ? `<span class="chip warm">Private</span>` : "";
+  return pairs.map(([l, u]) => `<a class="${cls}" href="${esc(u)}" target="_blank" rel="noopener" data-stop-prop>${esc(l)}</a>`).join("");
+}
 function projectsPanel() {
-  return `<h2>Projects</h2><p class="sub">Everything I have built. Skills are on each card. A few featured ones sit on the river as shortcuts — the full list is here.</p>
-  <div class="filters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-f="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
-  <div class="list project-list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
-    <h3>${esc(p.title)}</h3><p>${esc(p.line)}</p>
-    <div class="meta">${p.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}${
-      p.links.length ? p.links.map(([l, u]) => ext(u, l)).join("") : `<span class="chip warm">Private</span>`
-    }</div></div>`).join("")}</div>`;
+  const featured = C.projects.filter(p => p.featured);
+  const n = C.projects.length;
+  const cards = featured.map(p => {
+    const chips = projectSkills(p).slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("");
+    return `<article class="strip-card" data-proj="${esc(p.id)}">
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.line)}</p>
+      <div class="chips">${chips}</div>
+      <div class="row strip-actions">${projectBtns(p)}<button type="button" class="btn sm" data-proj="${esc(p.id)}">Details</button></div>
+    </article>`;
+  }).join("");
+  return `<div class="proj-strip-head"><h2>Projects</h2><p class="sub">Featured builds on the river — swipe for more, or open the full index.</p></div>
+  <div class="proj-strip" id="projStrip" data-lenis-prevent>
+    ${cards}
+    <button type="button" class="strip-card strip-all" data-project-index>
+      <h3>See all ${n} projects</h3>
+      <p>Filter, search, and open every public repo.</p>
+      <em>Open index →</em>
+    </button>
+  </div>`;
+}
+function mountProjectIndex() {
+  const filters = PROJECT_FILTERS.map((g, i) => `<button type="button" class="proj-filter" data-pf="${esc(g)}" aria-pressed="${i === 0}">${esc(g)}</button>`).join("");
+  const grid = C.projects.map(p => {
+    const chips = projectSkills(p).slice(0, 4).map(c => `<span class="chip">${esc(c)}</span>`).join("");
+    const priv = p.private ? `<span class="chip warm">Private</span>` : "";
+    return `<button type="button" class="proj-index-card" data-proj="${esc(p.id)}" data-group="${esc(p.group || "")}" data-search="${esc((p.title + " " + p.line + " " + projectSkills(p).join(" ")).toLowerCase())}">
+      <span class="proj-index-group">${esc(p.group || "")}</span>
+      <strong>${esc(p.title)}</strong>
+      <span class="proj-index-line">${esc(p.line)}</span>
+      <span class="chips">${chips}${priv}</span>
+    </button>`;
+  }).join("");
+  const el = mk(`<div class="proj-index" id="projIndex" hidden>
+    <div class="proj-index-sheet" data-lenis-prevent>
+      <header class="proj-index-bar">
+        <div><h2 id="projIndexTitle">All projects</h2><p class="sub">${C.projects.length} repos</p></div>
+        <button type="button" class="btn sm" id="projIndexClose" aria-label="Close">Close</button>
+      </header>
+      <div class="proj-index-tools">
+        <input type="search" id="projIndexSearch" placeholder="Search projects…" aria-label="Search projects" autocomplete="off">
+        <div class="proj-filters" role="group" aria-label="Filter projects">${filters}</div>
+      </div>
+      <div class="proj-index-grid" id="projIndexGrid">${grid}</div>
+    </div>
+  </div>`);
+  document.body.appendChild(el);
 }
 function expPanel() {
-  return `<h2>The path so far</h2><p class="sub">Roles I've held — details open below. Click a company on the arches to jump here too.</p>
-  ${C.jobs.map((j, i) => `<div class="job open" data-job="${i}"><button aria-expanded="true"><span class="mono" style="background:${j.color}">${esc(j.initial)}</span>
-    <span><h3>${esc(j.co)}</h3><small>${esc(j.role)}, ${esc(j.when)}</small></span><span class="tog">Hide</span></button>
-    <ul>${j.pts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}`;
+  return `<h2>The path so far</h2>
+  <p class="sub path-sub">Roles along the right bank. Hover a stone or a role to link them.</p>
+  <div class="path-timeline" id="pathTimeline">${C.jobs.map((j, i) => {
+    const preview = (j.pts || []).slice(0, 2);
+    const rest = (j.pts || []).slice(2);
+    const chips = (j.skills || []).map(s => `<span class="chip">${esc(s)}</span>`).join("");
+    return `<article class="path-role" data-job="${i}" tabindex="0">
+      <button type="button" class="path-role-head" aria-expanded="false">
+        <span class="path-stone-mark" style="background:${j.color}"></span>
+        <span class="path-role-meta">
+          <h3>${esc(j.co)}</h3>
+          <small>${esc(j.role)} · ${esc(j.when)}</small>
+        </span>
+        <span class="tog">${rest.length ? "More" : ""}</span>
+      </button>
+      <ul class="path-bullets">${preview.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+      ${rest.length ? `<ul class="path-bullets path-extra" hidden>${rest.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+      <div class="chips path-skills">${chips}</div>
+    </article>`;
+  }).join("")}</div>`;
 }
 function skillsPanel() {
-  return `<h2>Skills</h2><p class="sub">Hover a skill to see where I used it.</p><div class="skills">
-  ${C.skills.map(([g, items]) => `<div class="skrow"><span>${esc(g)}</span><div class="chips">${items.map(([n, u]) => `<span class="sk" tabindex="0">${esc(n)}<span class="tip">Used in: ${esc(u)}</span></span>`).join("")}</div></div>`).join("")}</div>`;
+  return `<h2>Skills</h2>
+  <p class="sub skills-sub">Hover a row to light the matching crystal.</p>
+  <div class="skills" id="skillsGrid">${C.skills.map(([g, items], i) =>
+    `<div class="skrow" data-skill="${i}" tabindex="0">
+      <span class="sklabel">${esc(g)}</span>
+      <div class="chips">${items.map(n => `<span class="chip">${esc(n)}</span>`).join("")}</div>
+    </div>`
+  ).join("")}</div>
+  <p class="skills-lib"><a class="linkish" href="library.html">Visit the library</a></p>`;
 }
 const GRADS = [["#0b3a4a", "#2a1b5c"], ["#0b4a3f", "#143a63"], ["#3b1f5c", "#0b3a4a"], ["#5c3b1f", "#0b3a4a"], ["#1f4a5c", "#0b2f2a"], ["#0b4a3f", "#4a1f5c"]];
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 4l14 8-14 8z"/></svg>';
@@ -142,7 +174,7 @@ function shelfPanel() {
   const b = C.shelf.book; let gi = 0;
   const TYPE_TONE = { Blog: ["#1a3d38", "#0b2a32"], Video: null, Paper: ["#2a1b5c", "#0b3a4a"], Book: ["#5c3b1f", "#0b3a4a"], Profile: ["#1f4a5c", "#0b2f2a"] };
   return `<h2>On my shelf</h2>
-  <p class="sub">Things I study from. For poetry and older product write-ups, open <button type="button" class="linkish" data-open-more>More</button>.</p>
+  <p class="sub">Things I study from. Open the <a class="linkish" href="library.html">Library</a> for the full shelf.</p>
   <div class="book">
     <div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div>
     <div>
@@ -165,92 +197,185 @@ function shelfPanel() {
   ${C.shelf.sampleNote ? `<p class="hint">${esc(C.shelf.sampleNote)}</p>` : ""}`;
 }
 function guardianPanel() {
-  const A = C.ask || {};
-  const layers = A.layers || [];
-  const tabs = layers.map((L, i) => `<button type="button" class="ask-tab${i === 0 ? " on" : ""}" data-ask-layer="${esc(L.id)}" aria-pressed="${i === 0}">${esc(L.label)}</button>`).join("");
-  return `<h2>${esc(A.title || "Ask")}</h2>
-  <p class="ask-kicker">The stone guardian</p>
-  <p class="sub">${esc(A.blurb || "")}</p>
-  <div class="guardian-chat">
-    <div class="guardian-live" aria-hidden="true"><span class="guardian-pulse"></span> Awake when you ask</div>
-    <div class="chat">
-      <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(C.guardian?.intro || "Ask me anything — type your own question below, or pick a thread.")}</div></div>
-      <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Type your own question…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
+  const IV = C.interview || {};
+  const tracks = IV.tracks || [];
+  const tabs = tracks.map((t, i) =>
+    `<button type="button" class="ask-tab${i === 0 ? " on" : ""}" role="tab" data-iv-track="${esc(t.id)}" aria-selected="${i === 0}">${esc(t.name)}</button>`
+  ).join("");
+  return `<h2>Interview room</h2>
+  <p class="sub iv-intro">${esc(IV.intro || "")}</p>
+  <div class="ask-tabs" role="tablist" aria-label="Interview tracks">${tabs}</div>
+  <div id="ivBrowse" class="ask-browse"></div>
+  <div id="ivAnswer" class="ask-answer" hidden></div>
+  <form class="iv-free" id="ivFreeForm">
+    <label class="iv-free-label" for="ivFreeIn">Ask your own question</label>
+    <div class="iv-free-row">
+      <input id="ivFreeIn" type="text" placeholder="Ask about research, projects, internships…" autocomplete="off" aria-label="Ask your own question">
+      <button class="btn primary sm" type="submit">Ask</button>
     </div>
-  </div>
-  <div class="about-divider"></div>
-  <p class="hint tight">Or walk a prepared interview thread:</p>
-  <div class="ask-tabs" role="tablist">${tabs}</div>
-  <div id="askBrowse" class="ask-browse"></div>
-  <div id="askAnswer" class="ask-answer" hidden></div>`;
+    <div id="ivFreeHits" class="iv-free-hits" hidden></div>
+  </form>`;
+}
+function dropCardHTML() {
+  const S = C.suggest || {};
+  const types = (S.types || ["Suggestion", "Resource", "Hackathon", "Opportunity", "Just saying hi"])
+    .map((t, i) => `<button type="button" class="card-type${i === 0 ? " on" : ""}" data-card-type="${esc(t)}" aria-pressed="${i === 0}">${esc(t)}</button>`).join("");
+  return `<section class="drop-card" id="dropCard" aria-labelledby="dropCardTitle">
+    <header class="drop-card-head">
+      <h2 id="dropCardTitle">${esc(S.title || "Drop me a card")}</h2>
+      <p class="drop-card-sub">${esc(S.blurb || "")}</p>
+    </header>
+    <div class="drop-card-stage" id="dropCardStage">
+      <form class="drop-paper" id="dropForm" novalidate>
+        <label class="sr-only" for="dropMsg">Your message</label>
+        <textarea id="dropMsg" name="message" rows="5" maxlength="1200" required placeholder="${esc(S.placeholder || "")}"></textarea>
+        <div class="card-types" role="group" aria-label="Type of note">${types}</div>
+        <input type="hidden" name="type" id="dropType" value="${esc((S.types || ["Suggestion"])[0])}">
+        <label class="card-anon"><input type="checkbox" id="dropAnon" checked> Anonymous</label>
+        <div class="card-identity" id="dropIdentity" hidden>
+          <input id="dropName" name="name" type="text" maxlength="80" placeholder="Name (optional)" autocomplete="name">
+          <input id="dropEmail" name="email" type="email" maxlength="120" placeholder="Email (optional)" autocomplete="email">
+        </div>
+        <input class="card-hp" type="text" name="_gotcha" id="dropHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn primary" type="submit" id="dropSend">${esc(S.sendLabel || "Send card")}</button>
+        <p class="fine" id="dropStatus" role="status"></p>
+      </form>
+      <div class="drop-postbox" id="dropPostbox" aria-hidden="true">
+        <div class="postbox-roof"></div>
+        <div class="postbox-body">
+          <div class="postbox-flap" id="dropFlap"></div>
+          <div class="postbox-slot"></div>
+          <div class="postbox-door"></div>
+        </div>
+        <div class="postbox-post"></div>
+        <div class="postbox-stamp" id="dropStamp" hidden>Received</div>
+        <div class="postbox-leaves" id="dropLeaves" aria-hidden="true"></div>
+      </div>
+      <div class="drop-fly" id="dropFly" hidden aria-hidden="true"></div>
+    </div>
+    <div class="drop-thanks" id="dropThanks" hidden>
+      <p id="dropThanksMsg"></p>
+      <button type="button" class="btn sm" id="dropAgain">Write another</button>
+    </div>
+  </section>`;
 }
 function aboutPanel() {
-  const photo = CFG.PHOTO_URL
-    ? `<img class="about-photo" src="${esc(CFG.PHOTO_URL)}" alt="${esc(P.name)}" width="112" height="112">`
-    : `<span class="about-photo placeholder" aria-hidden="true">AS</span>`;
-  const core = (P.aboutCore || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
-  return `<div class="about-head">${photo}<div><h2>About me</h2></div></div>
-  <div class="about-block">${core}</div>
-  <div class="row">${resumeBtn()}<a class="btn" href="mailto:${P.email}">Email</a><a class="btn" href="${P.github}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${P.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${P.openreview}" target="_blank" rel="noopener">OpenReview</a></div>
-  <p class="hint tight">Want to say something? Use <button type="button" class="linkish" data-slip-open>Leave a slip</button> on the right.</p>`;
+  const src = P.photo || CFG.PHOTO_URL || "assets/photo.jpg";
+  const photo = `<img class="about-photo" src="${esc(src)}" alt="${esc(P.name)}" width="120" height="120" decoding="async">`;
+  const core = (P.closing || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
+  return `${dropCardHTML()}
+  <div class="about-main">
+    <div class="about-head">${photo}<div><h2>${esc(P.closingTitle || "At the core, I like making things.")}</h2></div></div>
+    <div class="about-block">${core}</div>
+    <div class="row about-links">${resumeBtn()}<a class="btn" href="mailto:${esc(P.email)}">Email</a><a class="btn" href="${esc(P.github)}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${esc(P.openreview)}" target="_blank" rel="noopener">OpenReview</a></div>
+  </div>`;
 }
-const BUILD = [heroPanel, ideasPanel, projectsPanel, expPanel, skillsPanel, shelfPanel, guardianPanel, aboutPanel];
-mountSlipDock();
+const BUILD = [heroPanel, researchPanel, projectsPanel, expPanel, skillsPanel, guardianPanel, aboutPanel];
+mountProjectIndex();
 const panels = STOPS.map((s, i) => {
-  const side = s.side === "hero" ? "left hero" : s.side;
-  const el = mk(`<section class="panel ${side}" data-i="${i}" data-lenis-prevent aria-label="${esc(s.label)}">${BUILD[i]()}</section>`);
+  const extra = i === 0 ? " hello" : "";
+  const el = mk(`<section class="panel ${s.panel}${extra}" data-i="${i}" data-lenis-prevent aria-label="${esc(s.label)}">${BUILD[i]()}</section>`);
   $("#panels").appendChild(el); return el;
 });
-$("#dots").innerHTML = STOPS.map((s, i) => `<button data-go="${i}" aria-label="${esc(s.label)}"><span>${esc(s.label)}</span></button>`).join("");
+$("#dots").innerHTML = STOPS.map((s, i) => `<button type="button" data-go="${i}" aria-label="${esc(s.label)}" aria-current="${i === 0 ? "true" : "false"}"><span>${esc(s.label)}</span></button>`).join("");
 $("#track").innerHTML = STOPS.map(() => "<div></div>").join("");
+document.body.insertAdjacentHTML("beforeend", `<button type="button" class="scroll-chevron" data-go="1" aria-label="Continue downstream"><span></span></button>`);
+document.body.classList.add("at-hello");
 
-/* ---------- map overlays (positions in map pixels) ---------- */
+/* ---------- map overlays (positions in map pixels; data-stop = journey index) ---------- */
 const MI = $("#mapInner");
-const ov = (html, x, y, w, h, rot = 0, extra = "", mapGroup = "") => {
+const ov = (html, x, y, w, h, rot = 0, extra = "", stopIdx = "") => {
   const el = mk(html); el.classList.add("ov");
-  if (mapGroup) { el.classList.add("map-ov"); el.dataset.mapGroup = mapGroup; }
+  if (stopIdx !== "" && stopIdx != null) { el.classList.add("map-ov"); el.dataset.stop = String(stopIdx); }
   el.style.cssText += `left:${x}px;top:${y}px;${w ? `width:${w}px;` : ""}${h ? `height:${h}px;` : ""}${rot ? `transform:rotate(${rot}deg);` : ""}${extra}`;
   MI.appendChild(el); return el;
 };
-const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.find(p => p.id === id);
-/* Featured river cards — research trio + two systems highlights (full list is in the Projects panel). */
-[["p-rvc", 268, 500, 220, 108, -2, 5], ["p-ocr", 286, 585, 236, 112, -2, 4], ["p-ddpm", 304, 668, 220, 118, -3, 3],
- ["p-fraud", 292, 740, 210, 100, -2, 2], ["p-mesh", 310, 812, 210, 100, -2, 1]].forEach(([id, x, y, w, h, r, z]) => {
-  const p = projBy(id); if (!p) return;
-  const cta = (p.group || []).includes("Research") ? "Open research" : "Open project";
-  ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>${esc(cta)}</em></button>`, x, y, w, h, r, `z-index:${z};`, "2");
+const researchBy = id => (C.research || []).find(r => r.id === id);
+const noteBy = id => (C.notes || []).find(n => n.id === id), projBy = id => C.projects.find(p => p.id === id);
+/* Research scrolls on the upper pool (stop 1) */
+[["r-reasoning", 292, 318, 118, 86, -6], ["r-vision", 378, 348, 124, 90, 3], ["r-markets", 455, 310, 118, 86, -2]].forEach(([id, x, y, w, h, r]) => {
+  const t = researchBy(id); if (!t) return;
+  ov(`<button type="button" class="scroll" data-research-story="${esc(id)}" aria-label="${esc(t.label)}: ${esc(t.title)}"><b>${esc(t.label)}</b><span>${esc(t.headline)}</span></button>`, x, y, w, h, r, "z-index:5;", "1");
 });
-/* Arch banners: all four roles */
-[[0, 674, 274, 32, 68], [1, 696, 400, 40, 88], [2, 112, 447, 39, 84], [3, 640, 520, 36, 76]].forEach(([ji, x, y, w, h]) => {
+/* Decorative lanterns in the rapids (stop 2) — pulse when the strip scrolls */
+[[320, 560], [400, 640], [360, 720]].forEach(([x, y], i) => {
+  ov(`<i class="lantern" aria-hidden="true" style="--i:${i}"></i>`, x, y, 28, 28, 0, "z-index:2;", "2");
+});
+/* Arch banners: initials of the 3 most recent roles */
+[[0, 674, 274, 32, 68], [1, 696, 400, 40, 88], [2, 730, 520, 36, 76]].forEach(([ji, x, y, w, h]) => {
   const j = C.jobs[ji]; if (!j) return;
-  ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h, 0, "z-index:3;", "3");
-  const t = mk(`<div class="tag map-ov" data-map-group="3">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 22) + "px"; t.style.zIndex = "4"; MI.appendChild(t);
+  const initial = j.initial || (j.co || "?").charAt(0);
+  ov(`<button type="button" class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(initial)}</button>`, x, y, w, h, 0, "z-index:3;", "3");
 });
-[[0, 140, 780], [1, 260, 760], [2, 360, 800], [3, 220, 860], [4, 340, 900]].forEach(([gi, x, y]) => {
-  const [g, items] = C.skills[gi];
-  ov(`<button class="crystal" data-go="4">${esc(g)}<span class="pop">${items.map(i => esc(i[0])).join(", ")}</span></button>`, x, y, 0, 0, 0, "", "4");
+/* Stepping stones along the right bank */
+C.jobs.forEach((j, i) => {
+  const [x, y] = j.stone || [700, 400 + i * 80];
+  ov(`<button type="button" class="step-stone" data-job="${i}" style="--stone:${j.color}" aria-label="${esc(j.co)}"></button>`, x, y, 22, 22, 0, "z-index:4;", "3");
 });
-{
-  const items = C.shelf.rows.flatMap(r => r.items).slice(0, 4);
-  ov(`<button class="shelfov" data-go="5"><span class="bk">${esc(C.shelf.book.title)}</span>${items.map((it, i) => `<span class="th" style="background:linear-gradient(135deg,${GRADS[i][0]},${GRADS[i][1]})">${esc(it.t)}</span>`).join("")}<span class="cap">On my shelf</span></button>`, 30, 812, 238, 140, 0, "", "5");
-}
-const eyes = [mk('<i class="eye map-ov" data-map-group="6"></i>'), mk('<i class="eye map-ov" data-map-group="6"></i>')];
+/* Crystal glows (no labels) — light up when the matching skill row is hovered */
+[[0, 140, 780], [1, 260, 760], [2, 360, 800], [3, 220, 860], [4, 300, 900], [5, 180, 920]].forEach(([si, x, y]) => {
+  ov(`<i class="crystal-glow" data-skill="${si}" aria-hidden="true"></i>`, x, y, 56, 56, 0, "z-index:2;pointer-events:none;", "4");
+});
+const eyes = [mk('<i class="eye map-ov" data-stop="5"></i>'), mk('<i class="eye map-ov" data-stop="5"></i>')];
 eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:439px;top:881px"; eyes.forEach(e => MI.appendChild(e));
-const MAP_GROUP_FOR_STOP = ["", "1", "2", "3", "4", "5", "6", "7"];
-function updateMapOverlays(stopIdx) {
-  MI.dataset.stop = String(stopIdx);
-  const show = MAP_GROUP_FOR_STOP[stopIdx] || "";
-  $$(".map-ov", MI).forEach(el => {
-    const on = el.dataset.mapGroup === show;
-    el.style.opacity = on ? "1" : "0";
-    el.style.pointerEvents = on ? "auto" : "none";
-  });
-  MI.classList.toggle("guardian-awake", stopIdx === 6);
+const crackSvg = mk(`<svg class="guardian-cracks map-ov" data-stop="5" viewBox="0 0 120 140" aria-hidden="true">
+  <path class="crack" pathLength="1" d="M58 12 C52 38 70 48 48 72 C40 84 62 96 55 118"/>
+  <path class="crack" pathLength="1" d="M72 18 C78 42 60 58 82 78 C94 92 70 108 76 128"/>
+  <path class="crack" pathLength="1" d="M40 55 C55 62 68 58 88 66"/>
+</svg>`);
+crackSvg.style.cssText = "left:370px;top:820px;width:120px;height:140px;z-index:3;pointer-events:none;";
+MI.appendChild(crackSvg);
+
+let guardianAwoke = false, mossBurstUntil = 0;
+const moss = [];
+function statueScreenPos() {
+  const mx = 427, my = 910;
+  return { x: (mx - cam.x0) * cam.k, y: (my - cam.y0) * cam.k };
 }
-updateMapOverlays(0);
+function awakenGuardian() {
+  if (guardianAwoke) {
+    MI.classList.add("guardian-awake");
+    return;
+  }
+  guardianAwoke = true;
+  if (preferReduced) {
+    MI.classList.add("guardian-awake");
+    return;
+  }
+  MI.classList.add("guardian-awakening");
+  const { x, y } = statueScreenPos();
+  pushRip(x, y);
+  setTimeout(() => pushRip(x + 8, y + 12), 280);
+  mossBurstUntil = performance.now() / 1000 + 2.1;
+  for (let i = 0; i < 36; i++) {
+    moss.push({
+      x: x + (Math.random() - .5) * 50, y: y + 20 + Math.random() * 30,
+      vx: (Math.random() - .5) * 28, vy: -(30 + Math.random() * 55),
+      a: 0, l: 1.2 + Math.random() * .9, r: 1.5 + Math.random() * 2.5,
+      leaf: Math.random() < .35, rot: Math.random() * 6
+    });
+  }
+  setTimeout(() => {
+    MI.classList.remove("guardian-awakening");
+    MI.classList.add("guardian-awake");
+  }, 1400);
+}
+function updateMapOverlays(f) {
+  const idx = clamp(Math.round(f), 0, N - 1);
+  MI.dataset.stop = String(idx);
+  $$(".map-ov", MI).forEach(el => {
+    const stop = +el.dataset.stop;
+    const opacity = 1 - smoothstep(0.35, 0.6, Math.abs(f - stop));
+    el.style.opacity = String(opacity);
+    el.style.pointerEvents = opacity < 0.5 ? "none" : "auto";
+  });
+  if (idx === 5) awakenGuardian();
+  else if (!guardianAwoke) MI.classList.remove("guardian-awake", "guardian-awakening");
+}
 
 /* ---------- Lenis scroll + hold / travel / snap ---------- */
 let W = innerWidth, H = innerHeight, docH = 1, scrollY = 0, scrollDir = 1, lastF = 0;
+const isMobileView = () => W < 760 || W / H < .9;
 const measure = () => { W = innerWidth; H = innerHeight; docH = document.documentElement.scrollHeight; };
 const range = () => Math.max(1, docH - H);
 const progressFromScroll = y => clamp(y / range(), 0, 1) * (N - 1);
@@ -258,19 +383,36 @@ const scrollForStop = i => (clamp(i, 0, N - 1) / (N - 1)) * range();
 
 const preferReduced = reducedMotion();
 const lenis = window.Lenis ? new Lenis({
-  duration: preferReduced ? 0 : 0.72,
+  duration: preferReduced ? 0 : 0.9,
   easing: t => 1 - Math.pow(1 - t, 3),
   smoothWheel: !preferReduced,
   syncTouch: true,
   touchMultiplier: 1.6,
-  wheelMultiplier: 1.35,
-  lerp: preferReduced ? 1 : 0.14
+  wheelMultiplier: preferReduced ? 1 : 1.15,
+  lerp: preferReduced ? 1 : 0.12
 }) : null;
 
-let snapping = false, snapTimer = null, chatFocused = false, busy = false;
+let snapping = false, snapTimer = null, chatFocused = false, busy = false, overScrollable = false;
+function markLenisPrevent() {
+  $$(".panel, .modal .sheet, .rail, .drop-card, .project-list, .list, [style*=\"overflow\"], .ask-browse, .ask-answer").forEach(el => {
+    el.setAttribute("data-lenis-prevent", "");
+  });
+  $$(".panel, .modal .sheet, .rail, .drop-paper, .project-list").forEach(el => {
+    el.style.overscrollBehavior = "contain";
+  });
+}
+markLenisPrevent();
+document.addEventListener("pointermove", e => {
+  overScrollable = !!e.target.closest("[data-lenis-prevent]");
+}, { passive: true });
 function canSnap() {
   const m = document.getElementById("modal");
-  return !snapping && !chatFocused && !busy && !(m && m.classList.contains("on"));
+  if (snapping || chatFocused || busy || overScrollable) return false;
+  if (m && m.classList.contains("on")) return false;
+  if (document.body.classList.contains("proj-index-open")) return false;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return false;
+  return true;
 }
 function snapToNearest() {
   if (!canSnap()) return;
@@ -278,7 +420,7 @@ function snapToNearest() {
   const target = scrollForStop(i);
   if (Math.abs(scrollY - target) < 4) return;
   snapping = true;
-  go(i, preferReduced ? 0 : 0.5, () => { snapping = false; });
+  go(i, preferReduced ? 0 : 0.9, () => { snapping = false; });
 }
 function onScrollUpdate(y) {
   const prev = scrollY;
@@ -287,7 +429,7 @@ function onScrollUpdate(y) {
   dirty = true;
   if (!canSnap()) return;
   clearTimeout(snapTimer);
-  snapTimer = setTimeout(snapToNearest, 110);
+  snapTimer = setTimeout(snapToNearest, 160);
 }
 if (lenis) {
   lenis.on("scroll", ({ scroll }) => onScrollUpdate(scroll));
@@ -298,7 +440,7 @@ if (lenis) {
 function go(i, duration, done) {
   i = clamp(i | 0, 0, N - 1);
   const top = scrollForStop(i);
-  const d = duration == null ? (preferReduced ? 0 : 0.55) : duration;
+  const d = duration == null ? (preferReduced ? 0 : 0.9) : duration;
   if (lenis) {
     lenis.scrollTo(top, { duration: d, force: true, lock: true, onComplete: () => done && done() });
   } else {
@@ -308,13 +450,47 @@ function go(i, duration, done) {
 }
 document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); go(+g.dataset.go); } });
 
+/* Dots: arrow-key roving tabindex within the journey nav */
+$("#dots")?.addEventListener("keydown", e => {
+  const keys = ["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft", "Home", "End"];
+  if (!keys.includes(e.key)) return;
+  const i = dots.indexOf(document.activeElement);
+  if (i < 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  let next = i;
+  if (e.key === "ArrowDown" || e.key === "ArrowRight") next = Math.min(N - 1, i + 1);
+  else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = Math.max(0, i - 1);
+  else if (e.key === "Home") next = 0;
+  else if (e.key === "End") next = N - 1;
+  dots[next]?.focus();
+  if (next !== i) go(next);
+});
+
+/* Site tabs: Left/Right moves between section links */
+$(".site-tabs")?.addEventListener("keydown", e => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") return;
+  const links = $$(".site-tabs a");
+  const i = links.indexOf(document.activeElement);
+  if (i < 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  let next = i;
+  if (e.key === "ArrowRight") next = (i + 1) % links.length;
+  else if (e.key === "ArrowLeft") next = (i - 1 + links.length) % links.length;
+  else if (e.key === "Home") next = 0;
+  else if (e.key === "End") next = links.length - 1;
+  links[next]?.focus();
+});
+
 /* Keyboard: one stop at a time */
 addEventListener("keydown", e => {
   if (chatFocused) return;
   const m = document.getElementById("modal");
   if (m && m.classList.contains("on")) return;
   const tag = (e.target && e.target.tagName) || "";
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (tag === "INPUT" || tag === "TEXTAREA" || (e.target && e.target.isContentEditable)) return;
+  if (e.target?.closest?.("#dots, .site-tabs, .ask-tabs, .lib-tabs")) return;
   const cur = clamp(Math.round(progressFromScroll(scrollY)), 0, N - 1);
   if (["ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(cur + 1); }
   else if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(cur - 1); }
@@ -322,43 +498,113 @@ addEventListener("keydown", e => {
   else if (e.key === "End") { e.preventDefault(); go(N - 1); }
 });
 
-/* ---------- camera: hold centre of each stop, ease only in travel bands ---------- */
+/* ---------- camera: fit focus box into free area (screen minus panel) ---------- */
 const lerp = (a, b, t) => a + (b - a) * t;
 const cam = { x0: 0, y0: 0, vw: MAP_W, vh: MAP_H, k: 1 };
-/** Map scroll progress f → camera parameter with 50% hold per stop. */
-function cameraParam(f) {
-  if (preferReduced) return clamp(Math.round(f), 0, N - 1);
-  const nearest = clamp(Math.round(f), 0, N - 1);
-  const d = f - nearest;
-  if (Math.abs(d) <= 0.25) return nearest;
-  if (d > 0) {
-    const u = clamp((d - 0.25) / 0.5, 0, 1);
-    return nearest + smoothstep(0, 1, u);
+
+/** Largest free rectangle after subtracting the panel (plus 24px padding). */
+function freeAreaForPanel(panelEl, side) {
+  const pad = 24;
+  let fx = pad, fy = pad, fw = Math.max(40, W - 2 * pad), fh = Math.max(40, H - 2 * pad);
+  if (!panelEl) return { fx, fy, fw, fh };
+  const r = panelEl.getBoundingClientRect();
+  /* On small screens every panel is a bottom sheet (see CSS). */
+  const effective = isMobileView() ? "bottom" : side;
+  if (effective === "left") {
+    const left = Math.max(pad, r.right + pad);
+    fx = left; fw = Math.max(40, W - pad - left);
+  } else if (effective === "right") {
+    fw = Math.max(40, r.left - pad - fx);
+  } else if (effective === "bottom" || effective === "center") {
+    fh = Math.max(40, r.top - pad - fy);
   }
-  const u = clamp((-d - 0.25) / 0.5, 0, 1);
-  return nearest - smoothstep(0, 1, u);
+  return { fx, fy, fw, fh };
 }
-function computeCam(f) {
-  const mob = W < 760 || W / H < .9;
-  const cf = cameraParam(f);
-  const i = clamp(Math.floor(cf), 0, N - 1), j = Math.min(N - 1, i + 1), t = cf - i;
-  const a = mob ? STOPS[i].m : STOPS[i].d, b = mob ? STOPS[j].m : STOPS[j].d;
-  const cx = lerp(a[0], b[0], t), cy = lerp(a[1], b[1], t), ax = lerp(a[3], b[3], t), ay = lerp(a[4], b[4], t);
-  let vw = Math.exp(lerp(Math.log(a[2]), Math.log(b[2]), t));
-  let k = W / vw;
+
+function camForStop(i) {
+  const stop = STOPS[i];
+  const mob = isMobileView();
+  const box = mob ? stop.mbox : stop.box;
+  const [bx0, by0, bx1, by1] = box;
+  const bw = Math.max(1, bx1 - bx0), bh = Math.max(1, by1 - by0);
+  const bx = (bx0 + bx1) / 2, by = (by0 + by1) / 2;
+  const { fx, fy, fw, fh } = freeAreaForPanel(panels[i], stop.panel);
+  const [kMin, kMax] = mob ? [0.9, 1.5] : [0.9, 1.9];
+  let k = Math.min(fw / bw, fh / bh);
+  k = clamp(k, kMin, kMax);
   if (H / k > MAP_H) k = H / MAP_H;
   if (W / k > MAP_W) k = W / MAP_W;
-  vw = W / k; const vh = H / k;
-  cam.x0 = clamp(cx - ax * vw, 0, MAP_W - vw); cam.y0 = clamp(cy - ay * vh, 0, MAP_H - vh);
-  cam.vw = vw; cam.vh = vh; cam.k = k;
+
+  const vw = W / k, vh = H / k;
+  const mapHiX = Math.max(0, MAP_W - vw);
+  const mapHiY = Math.max(0, MAP_H - vh);
+
+  /* Centre the focus box in the free area. */
+  let x0 = bx - (fx + fw / 2) / k;
+  let y0 = by - (fy + fh / 2) / k;
+
+  /* Keep the box inside the free rect when map bounds allow. */
+  const xLo = bx1 - (fx + fw) / k;
+  const xHi = bx0 - fx / k;
+  const yLo = by1 - (fy + fh) / k;
+  const yHi = by0 - fy / k;
+  if (xLo <= xHi) x0 = clamp(x0, Math.max(0, xLo), Math.min(mapHiX, xHi));
+  else x0 = clamp(x0, 0, mapHiX);
+  if (yLo <= yHi) y0 = clamp(y0, Math.max(0, yLo), Math.min(mapHiY, yHi));
+  else y0 = clamp(y0, 0, mapHiY);
+
+  /* Nudge away from the panel if a slice of the box still sits under it. */
+  const pad = 24;
+  const pr = panels[i] ? panels[i].getBoundingClientRect() : null;
+  if (pr) {
+    let sx0 = (bx0 - x0) * k, sy0 = (by0 - y0) * k;
+    let sx1 = (bx1 - x0) * k, sy1 = (by1 - y0) * k;
+    const side = mob ? "bottom" : stop.panel;
+    if (side === "left" && sx0 < pr.right + pad) x0 = clamp(x0 - (pr.right + pad - sx0) / k, 0, mapHiX);
+    if (side === "right" && sx1 > pr.left - pad) x0 = clamp(x0 + (sx1 - (pr.left - pad)) / k, 0, mapHiX);
+    if ((side === "bottom" || side === "center") && sy1 > pr.top - pad) y0 = clamp(y0 + (sy1 - (pr.top - pad)) / k, 0, mapHiY);
+  }
+
+  return { x0, y0, vw, vh, k, cx: x0 + vw / 2, cy: y0 + vh / 2 };
+}
+
+/** Hold each stop while |f − i| < 0.3; ease between stops. Reduced motion: jump. */
+function cameraParam(f) {
+  if (preferReduced) return clamp(Math.round(f), 0, N - 1);
+  const i = clamp(Math.floor(f), 0, N - 1);
+  const j = Math.min(N - 1, i + 1);
+  if (i === j) return i;
+  const local = f - i;
+  if (local < 0.3) return i;
+  if (local > 0.7) return j;
+  return i + easeInOut((local - 0.3) / 0.4);
+}
+
+function computeCam(f) {
+  const cf = cameraParam(f);
+  const i = clamp(Math.floor(cf), 0, N - 1);
+  const j = Math.min(N - 1, i + 1);
+  const t = cf - i;
+  const a = camForStop(i), b = camForStop(j);
+  const k = t <= 0 ? a.k : Math.exp(lerp(Math.log(a.k), Math.log(b.k), t));
+  const cx = lerp(a.cx, b.cx, t), cy = lerp(a.cy, b.cy, t);
+  const vw = W / k, vh = H / k;
+  cam.k = k; cam.vw = vw; cam.vh = vh;
+  cam.x0 = clamp(cx - vw / 2, 0, Math.max(0, MAP_W - vw));
+  cam.y0 = clamp(cy - vh / 2, 0, Math.max(0, MAP_H - vh));
 }
 
 /* ---------- WebGL scene ---------- */
 const canvas = $("#scene");
-let gl = null, prog = null, U = {}, texReady = false;
+let gl = null, prog = null, U = {}, texReady = false, isWebGL2 = false;
 function shader(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; } return s; }
 function initGL() {
-  try { gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: "high-performance" }); } catch (e) { gl = null; }
+  const opts = { antialias: false, alpha: false, powerPreference: "high-performance" };
+  try { gl = canvas.getContext("webgl2", opts); } catch (e) { gl = null; }
+  isWebGL2 = !!(gl && typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext);
+  if (!gl) {
+    try { gl = canvas.getContext("webgl", opts) || canvas.getContext("experimental-webgl", opts); } catch (e) { gl = null; }
+  }
   if (!gl) return false;
   const vs = shader(gl.VERTEX_SHADER, "attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}");
   const fs = shader(gl.FRAGMENT_SHADER, $("#sceneFrag").textContent);
@@ -373,7 +619,7 @@ function initGL() {
   return true;
 }
 const loadImg = src => new Promise((res, rej) => { const im = new Image(); im.decoding = "async"; im.onload = () => res(im); im.onerror = rej; im.src = src; });
-function upload(unit, img, fmt) {
+function upload(unit, img, fmt, { mipmap = false } = {}) {
   const max = gl.getParameter(gl.MAX_TEXTURE_SIZE);
   let src = img;
   if (img.width > max || img.height > max) {
@@ -384,17 +630,25 @@ function upload(unit, img, fmt) {
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, unit === 0 ? gl.BROWSER_DEFAULT_WEBGL : gl.NONE);
   gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
   gl.texImage2D(gl.TEXTURE_2D, 0, fmt, fmt, gl.UNSIGNED_BYTE, src);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  if (mipmap && isWebGL2) {
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    const aniso = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+    if (aniso) {
+      const maxAniso = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT) || 1;
+      gl.texParameterf(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxAniso));
+    }
+  } else {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  }
 }
-let rs = 1;
+let rs = 1, dprCap = Math.min(Math.max(devicePixelRatio || 1, 1), 2);
+let frameMsSum = 0, frameMsCount = 0, perfWindowStart = 0, dprLocked = false;
 function resize() {
   measure();
-  /* Full device pixels for a sharp painting (cap 2×; gentle throttle only on huge canvases). */
-  const dpr = Math.min(Math.max(devicePixelRatio || 1, 1), 2);
-  rs = dpr;
-  const px = W * H * rs * rs;
-  if (px > 9e6) rs = Math.max(1.25, rs * Math.sqrt(9e6 / px));
+  rs = dprCap;
   canvas.width = Math.round(W * rs); canvas.height = Math.round(H * rs);
   canvas.style.width = W + "px"; canvas.style.height = H + "px";
   fxc.width = Math.round(W * Math.min(devicePixelRatio || 1, 2));
@@ -404,15 +658,45 @@ function resize() {
   if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
   dirty = true;
 }
+function noteFrameTime(dtMs, now) {
+  if (dprLocked || preferReduced) return;
+  frameMsSum += dtMs; frameMsCount++;
+  if (!perfWindowStart) perfWindowStart = now;
+  if (now - perfWindowStart < 2000 || frameMsCount < 30) return;
+  const avg = frameMsSum / frameMsCount;
+  frameMsSum = 0; frameMsCount = 0; perfWindowStart = now;
+  if (avg > 22 && dprCap > 1.25) {
+    dprCap = 1.25;
+    dprLocked = true;
+    resize();
+  }
+}
 
 /* ---------- effects layer ---------- */
 const fxc = $("#fx"), fx = fxc.getContext("2d");
-const flies = Array.from({ length: 30 }, () => ({ x: Math.random(), y: Math.random(), z: .35 + Math.random() * .9, p: Math.random() * 6.28, warm: Math.random() < .4 }));
+const flies = Array.from({ length: 16 }, () => ({ x: Math.random(), y: Math.random(), z: .35 + Math.random() * .9, p: Math.random() * 6.28, warm: Math.random() < .4 }));
 const drops = [];
 const SPRAY = [[420, 262, 180, 5], [650, 948, 60, 2]];
 function drawFx(t, dt) {
   fx.clearRect(0, 0, W, H);
-  if (!motion) return;
+  const drawMoss = () => {
+    for (let i = moss.length - 1; i >= 0; i--) {
+      const m = moss[i]; m.a += dt;
+      if (m.a > m.l) { moss.splice(i, 1); continue; }
+      m.vy -= 12 * dt; m.x += m.vx * dt; m.y += m.vy * dt; m.rot += dt * 1.2;
+      const life = 1 - m.a / m.l;
+      if (m.leaf) {
+        fx.save(); fx.translate(m.x, m.y); fx.rotate(m.rot);
+        fx.fillStyle = `rgba(120,170,90,${life * .75})`;
+        fx.beginPath(); fx.ellipse(0, 0, m.r * 1.6, m.r * .7, 0, 0, 6.283); fx.fill();
+        fx.restore();
+      } else {
+        fx.fillStyle = `rgba(90,140,70,${life * .65})`;
+        fx.beginPath(); fx.arc(m.x, m.y, m.r, 0, 6.283); fx.fill();
+      }
+    }
+  };
+  if (!motion) { drawMoss(); return; }
   fx.globalCompositeOperation = "lighter";
   for (const f of flies) {
     const x = f.x * W + Math.sin(t * .3 + f.p * 2) * 40, y = ((f.y * H + Math.sin(t * .45 + f.p) * 30) % H + H) % H;
@@ -432,6 +716,7 @@ function drawFx(t, dt) {
     fx.fillStyle = `rgba(220,248,255,${(1 - d.a / d.l) * .6})`; fx.beginPath(); fx.arc(d.x, d.y, d.r, 0, 6.283); fx.fill();
   }
   fx.globalCompositeOperation = "source-over";
+  drawMoss();
 }
 
 /* ---------- ripples ---------- */
@@ -445,7 +730,9 @@ addEventListener("pointerdown", e => pushRip(e.clientX, e.clientY), { passive: t
 let motion = !preferReduced, dirty = true;
 let t0 = performance.now(), last = t0;
 const dots = $$("#dots button"), navl = $$(".nav .l");
+dots.forEach((d, i) => { d.tabIndex = i === 0 ? 0 : -1; });
 let activeIdx = -1;
+const scrollChevron = $(".scroll-chevron");
 function updatePanels(f) {
   const idx = clamp(Math.round(f), 0, N - 1);
   panels.forEach((p, i) => {
@@ -458,16 +745,35 @@ function updatePanels(f) {
     p.style.pointerEvents = opacity < 0.5 ? "none" : "auto";
     p.classList.toggle("on", opacity >= 0.5);
   });
+  updateMapOverlays(f);
+  if (scrollChevron) {
+    const showChev = f < 0.35;
+    scrollChevron.style.opacity = showChev ? "1" : "0";
+    scrollChevron.style.pointerEvents = showChev ? "auto" : "none";
+    scrollChevron.hidden = !showChev;
+  }
+  document.body.classList.toggle("at-hello", idx === 0);
+  document.body.classList.toggle("at-about", idx === 6);
   if (idx !== activeIdx) {
     activeIdx = idx;
-    dots.forEach((d, i) => d.classList.toggle("on", i === idx));
-    navl.forEach(l => l.classList.toggle("on", +l.dataset.go === idx));
-    updateMapOverlays(idx);
+    dots.forEach((d, i) => {
+      const on = i === idx;
+      d.classList.toggle("on", on);
+      d.setAttribute("aria-current", on ? "true" : "false");
+      d.tabIndex = on ? 0 : -1;
+    });
+    navl.forEach(l => {
+      const on = +l.dataset.go === idx;
+      l.classList.toggle("on", on);
+      if (on) l.setAttribute("aria-current", "true");
+      else l.removeAttribute("aria-current");
+    });
   }
 }
 function frame(now) {
   if (lenis) lenis.raf(now);
   const dt = Math.min(.05, (now - last) / 1000) || .016; last = now;
+  noteFrameTime(dt * 1000, now);
   const f = progressFromScroll(scrollY);
   lastF = f;
   computeCam(f);
@@ -494,12 +800,126 @@ function setMotion(m) { motion = m; calmBtn.setAttribute("aria-pressed", String(
 calmBtn.onclick = () => setMotion(!motion);
 setMotion(motion);
 
-/* ---------- filters, jobs ---------- */
-$$(".filters button").forEach(b => b.onclick = () => {
-  $$(".filters button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  $$(".item[data-groups]").forEach(it => it.classList.toggle("hide", b.dataset.f !== "All" && !it.dataset.groups.split("|").includes(b.dataset.f)));
+/* ---------- path timeline + stepping stones ---------- */
+function setPathHighlight(i) {
+  $$(".path-role").forEach(el => el.classList.toggle("lit", i != null && +el.dataset.job === i));
+  $$(".step-stone", MI).forEach(el => el.classList.toggle("lit", i != null && +el.dataset.job === i));
+  $$(".banner", MI).forEach(el => el.classList.toggle("lit", i != null && +el.dataset.job === i));
+}
+$$(".path-role").forEach(role => {
+  const i = +role.dataset.job;
+  role.addEventListener("pointerenter", () => setPathHighlight(i));
+  role.addEventListener("pointerleave", () => setPathHighlight(null));
+  role.addEventListener("focusin", () => setPathHighlight(i));
+  role.addEventListener("focusout", () => setPathHighlight(null));
+  const head = $(".path-role-head", role);
+  head?.addEventListener("click", () => {
+    const extra = $(".path-extra", role);
+    if (!extra) return;
+    const open = role.classList.toggle("open");
+    head.setAttribute("aria-expanded", String(open));
+    extra.hidden = !open;
+    const tog = $(".tog", head);
+    if (tog) tog.textContent = open ? "Less" : "More";
+  });
 });
-$$(".job > button").forEach(b => b.onclick = () => { const j = b.parentElement, o = j.classList.toggle("open"); b.setAttribute("aria-expanded", String(o)); $(".tog", b).textContent = o ? "Hide" : "Details"; });
+$$(".step-stone", MI).forEach(stone => {
+  const i = +stone.dataset.job;
+  stone.addEventListener("pointerenter", () => setPathHighlight(i));
+  stone.addEventListener("pointerleave", () => setPathHighlight(null));
+  stone.addEventListener("click", () => {
+    go(3);
+    const role = $(`.path-role[data-job="${i}"]`);
+    role?.scrollIntoView({ block: "nearest" });
+    setPathHighlight(i);
+  });
+});
+$$(".banner", MI).forEach(b => {
+  const i = +b.dataset.job;
+  b.addEventListener("pointerenter", () => setPathHighlight(i));
+  b.addEventListener("pointerleave", () => setPathHighlight(null));
+});
+
+/* ---------- skills ↔ crystal glows ---------- */
+function setSkillGlow(i) {
+  $$(".skrow").forEach(el => el.classList.toggle("lit", i != null && +el.dataset.skill === i));
+  $$(".crystal-glow", MI).forEach(el => el.classList.toggle("lit", i != null && +el.dataset.skill === i));
+}
+$$(".skrow").forEach(row => {
+  const i = +row.dataset.skill;
+  row.addEventListener("pointerenter", () => setSkillGlow(i));
+  row.addEventListener("pointerleave", () => setSkillGlow(null));
+  row.addEventListener("focusin", () => setSkillGlow(i));
+  row.addEventListener("focusout", () => setSkillGlow(null));
+});
+
+/* ---------- project strip + index ---------- */
+const projStrip = $("#projStrip");
+const projIndex = $("#projIndex");
+let projFilter = "All", projQuery = "";
+function pulseLanterns() {
+  $$(".lantern", MI).forEach(el => {
+    el.classList.remove("pulse");
+    void el.offsetWidth;
+    el.classList.add("pulse");
+  });
+}
+function bindProjStrip() {
+  if (!projStrip) return;
+  projStrip.addEventListener("wheel", e => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      projStrip.scrollLeft += e.deltaY;
+      pulseLanterns();
+    }
+  }, { passive: false });
+  let dragging = false, startX = 0, startLeft = 0;
+  projStrip.addEventListener("pointerdown", e => {
+    if (e.target.closest("a,button")) return;
+    dragging = true; startX = e.clientX; startLeft = projStrip.scrollLeft;
+    projStrip.setPointerCapture(e.pointerId);
+  });
+  projStrip.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    projStrip.scrollLeft = startLeft - (e.clientX - startX);
+  });
+  const endDrag = () => { if (dragging) { dragging = false; pulseLanterns(); } };
+  projStrip.addEventListener("pointerup", endDrag);
+  projStrip.addEventListener("pointercancel", endDrag);
+  projStrip.addEventListener("scroll", () => { clearTimeout(projStrip._t); projStrip._t = setTimeout(pulseLanterns, 80); }, { passive: true });
+}
+function applyProjectIndexFilter() {
+  $$(".proj-index-card", projIndex).forEach(card => {
+    const groupOk = projFilter === "All" || card.dataset.group === projFilter;
+    const q = projQuery.trim().toLowerCase();
+    const searchOk = !q || (card.dataset.search || "").includes(q);
+    card.hidden = !(groupOk && searchOk);
+  });
+}
+function openProjectIndex() {
+  if (!projIndex) return;
+  projIndex.hidden = false;
+  document.body.classList.add("proj-index-open");
+  clearTimeout(snapTimer);
+  $("#projIndexSearch")?.focus();
+}
+function closeProjectIndex() {
+  if (!projIndex) return;
+  projIndex.hidden = true;
+  document.body.classList.remove("proj-index-open");
+}
+bindProjStrip();
+$("#projIndexClose")?.addEventListener("click", closeProjectIndex);
+projIndex?.addEventListener("click", e => { if (e.target === projIndex) closeProjectIndex(); });
+$$(".proj-filter", projIndex).forEach(b => b.addEventListener("click", () => {
+  projFilter = b.dataset.pf;
+  $$(".proj-filter", projIndex).forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  applyProjectIndexFilter();
+}));
+$("#projIndexSearch")?.addEventListener("input", e => { projQuery = e.target.value; applyProjectIndexFilter(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && projIndex && !projIndex.hidden) { closeProjectIndex(); e.stopPropagation(); }
+});
 
 /* ---------- modal + demos ---------- */
 const modal = $("#modal"), mBody = $("#mBody"); let lastFocus = null;
@@ -539,9 +959,28 @@ function closeModal() { modal.classList.remove("on"); if (lastFocus) lastFocus.f
 const linksRow = links => links && links.length ? mk(`<div class="mlinks">${links.map(([l, u], i) => `<a class="btn ${i === 0 ? "primary" : ""}" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)}</a>`).join("")}</div>`) : null;
 function openProject(id) {
   const p = projBy(id); if (!p) return;
-  openModal(`<h3 id="mTitle">${esc(p.title)}</h3><div class="chips">${p.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div>
-    <h4>The problem</h4><p>${esc(p.problem)}</p><h4>What I built</h4><ul>${p.built.map(b => `<li>${esc(b)}</li>`).join("")}</ul><h4>Why it matters</h4><p>${esc(p.impact)}</p>`,
-    [p.demo ? DEMOS[p.demo]() : null, linksRow(p.links)]);
+  const skills = projectSkills(p);
+  const pairs = projectLinkPairs(p);
+  const researchHint = p.researchId
+    ? mk(`<p class="hint tight"><button type="button" class="linkish" data-go="1" data-research-story="${esc(p.researchId)}">Read the research story</button></p>`)
+    : null;
+  openModal(`<h3 id="mTitle">${esc(p.title)}</h3>
+    <div class="chips">${skills.map(c => `<span class="chip">${esc(c)}</span>`).join("")}${p.private ? `<span class="chip warm">Private</span>` : ""}</div>
+    <h4>The problem</h4><p>${esc(p.problem)}</p>
+    <h4>What I built</h4><ul>${(p.built || []).map(b => `<li>${esc(b)}</li>`).join("")}</ul>
+    <h4>Why it matters</h4><p>${esc(p.impact)}</p>`,
+    [researchHint, p.demo ? DEMOS[p.demo]?.() : null, linksRow(pairs)]);
+}
+function openResearchStory(id) {
+  const r = researchBy(id); if (!r) return;
+  const findings = (r.found || []).map(f => `<li>${esc(f)}</li>`).join("");
+  openModal(`<h3 id="mTitle">${esc(r.title)}</h3>
+    <div class="chips"><span class="chip c">${esc(r.label)}</span><span class="chip">${esc(r.status)}${r.venue ? " · " + esc(r.venue) : ""}</span></div>
+    <h4>The question</h4><p>${esc(r.question)}</p>
+    <h4>What I did</h4><p>${esc(r.did)}</p>
+    <h4>What I found</h4><ul>${findings}</ul>
+    <h4>What's next</h4><p>${esc(r.next)}</p>`,
+    [linksRow(r.links)]);
 }
 function openNote(id) {
   const n = noteBy(id); if (!n) return;
@@ -549,10 +988,19 @@ function openNote(id) {
     <h4>The question</h4><p>${esc(n.q)}</p><h4>What happened</h4><p>${esc(n.found)}</p><h4>Why it matters</h4><p>${esc(n.why)}</p>`, [linksRow([n.link])]);
 }
 function openJob(i) {
-  const j = C.jobs[i]; openModal(`<h3 id="mTitle">${esc(j.co)}</h3><p style="color:var(--muted)">${esc(j.role)}, ${esc(j.when)}</p><ul style="margin-top:14px">${j.pts.map(p => `<li>${esc(p)}</li>`).join("")}</ul>`);
+  const j = C.jobs[i]; if (!j) return;
+  go(3);
+  setTimeout(() => {
+    const role = $(`.path-role[data-job="${i}"]`);
+    role?.scrollIntoView({ block: "nearest" });
+    setPathHighlight(i);
+    role?.focus();
+  }, preferReduced ? 0 : 500);
 }
 document.addEventListener("click", e => {
-  if (e.target.closest(".meta a, .paper a")) return;
+  if (e.target.closest(".meta a, .paper a, .thread-links a, .research-survey a, .strip-actions a, [data-stop-prop]")) return;
+  if (e.target.closest("[data-project-index]")) { e.preventDefault(); return openProjectIndex(); }
+  const story = e.target.closest("[data-research-story]"); if (story) return openResearchStory(story.dataset.researchStory);
   const n = e.target.closest("[data-note]"); if (n) return openNote(n.dataset.note);
   const p = e.target.closest("[data-proj]"); if (p) return openProject(p.dataset.proj);
   const j = e.target.closest(".banner[data-job]"); if (j) return openJob(+j.dataset.job);
@@ -569,298 +1017,322 @@ const toast = $("#toast"); let tt;
 const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("on"), 3600); };
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
 
-/* ---------- suggestion slip dock (right side) ---------- */
-const slipDock = $("#slipDock"), slipPanel = $("#slipDockPanel"), slipTab = $("#slipDockTab");
-const slips = $("#slips"), slipForm = $("#suggestForm"), slipMsg = $("#slipMsg");
-const slipAnon = $("#slipAnon"), slipIdentity = $("#slipIdentity"), slipName = $("#slipName"), slipContact = $("#slipContact");
-const slipStatus = $("#slipStatus"), slipSend = slipForm?.querySelector(".slipSend");
-const slipThanks = $("#slipThanks"), slipThanksMsg = $("#slipThanksMsg"), slipThanksAgain = $("#slipThanksAgain");
-const slipMailbox = $(".slip-mailbox", slips);
+/* ---------- Drop a card (stop 6) ---------- */
+const dropForm = $("#dropForm"), dropMsg = $("#dropMsg"), dropAnon = $("#dropAnon");
+const dropIdentity = $("#dropIdentity"), dropName = $("#dropName"), dropEmail = $("#dropEmail");
+const dropStatus = $("#dropStatus"), dropSend = $("#dropSend"), dropType = $("#dropType");
+const dropThanks = $("#dropThanks"), dropThanksMsg = $("#dropThanksMsg"), dropAgain = $("#dropAgain");
+const dropStage = $("#dropCardStage"), dropFly = $("#dropFly"), dropFlap = $("#dropFlap");
+const dropStamp = $("#dropStamp"), dropLeaves = $("#dropLeaves"), dropPostbox = $("#dropPostbox");
+const dropHp = $("#dropHp");
+let lastDropAt = 0;
 const pickThankYou = () => {
   const list = C.suggest?.thankYou || ["Thank you."];
   return list[Math.floor(Math.random() * list.length)];
 };
-function openSlipDock() {
-  slipPanel.hidden = false;
-  slipDock.classList.add("open");
-  slipTab.setAttribute("aria-expanded", "true");
-  slipMsg?.focus();
-}
-function closeSlipDock() {
-  slipPanel.hidden = true;
-  slipDock.classList.remove("open");
-  slipTab.setAttribute("aria-expanded", "false");
-}
-function resetSlipThanks() {
-  slipThanks.hidden = true;
-  slipForm.hidden = false;
-  $(".slip-deck", slips).style.display = "";
-  slipMailbox?.classList.remove("caught");
-  slips.classList.remove("sent");
-}
-slipTab?.addEventListener("click", () => (slipDock.classList.contains("open") ? closeSlipDock() : openSlipDock()));
-$("#slipDockClose")?.addEventListener("click", closeSlipDock);
-slipThanksAgain?.addEventListener("click", () => { resetSlipThanks(); slipForm.reset(); syncSlipAnon(); slipMsg?.focus(); });
-document.addEventListener("click", e => {
-  if (e.target.closest("[data-slip-open]")) { e.preventDefault(); openSlipDock(); }
-});
-const syncSlipAnon = () => {
-  if (!slipAnon || !slipIdentity) return;
-  slipIdentity.hidden = slipAnon.checked;
-  if (slipAnon.checked && slipName && slipContact) { slipName.value = ""; slipContact.value = ""; }
+const syncDropAnon = () => {
+  if (!dropAnon || !dropIdentity) return;
+  dropIdentity.hidden = dropAnon.checked;
+  if (dropAnon.checked) {
+    if (dropName) dropName.value = "";
+    if (dropEmail) dropEmail.value = "";
+  }
 };
-slipAnon?.addEventListener("change", syncSlipAnon); syncSlipAnon();
-[slipMsg, slipName, slipContact].forEach(el => {
+dropAnon?.addEventListener("change", syncDropAnon); syncDropAnon();
+$$(".card-type").forEach(btn => {
+  btn.addEventListener("click", () => {
+    $$(".card-type").forEach(b => { b.classList.remove("on"); b.setAttribute("aria-pressed", "false"); });
+    btn.classList.add("on"); btn.setAttribute("aria-pressed", "true");
+    if (dropType) dropType.value = btn.dataset.cardType || "";
+  });
+});
+[dropMsg, dropName, dropEmail].forEach(el => {
   if (!el) return;
   el.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
   el.addEventListener("blur", () => { chatFocused = false; });
 });
-slips?.addEventListener("click", e => {
-  const chip = e.target.closest("[data-slip-prompt]");
-  if (!chip || !slipMsg) return;
-  const seed = chip.dataset.slipPrompt;
-  if (!slipMsg.value.trim()) slipMsg.value = seed + " — ";
-  else if (!slipMsg.value.includes(seed)) slipMsg.value = slipMsg.value.trim() + "\n" + seed + " — ";
-  slipMsg.focus();
-});
-function playSlipAnimation(done) {
-  const dock = slipDock;
-  const paper = mk('<div class="slip-paper-fly"><span>Your note</span></div>');
-  dock.appendChild(paper);
-  requestAnimationFrame(() => {
-    paper.classList.add("fly");
-    slipMailbox?.classList.add("waiting");
-  });
-  const finish = () => {
-    paper.remove();
-    slipMailbox?.classList.remove("waiting");
-    slipMailbox?.classList.add("caught");
-    done();
-  };
-  paper.addEventListener("animationend", finish, { once: true });
-  setTimeout(finish, preferReduced ? 50 : 1600);
+function resetDropCard() {
+  dropThanks.hidden = true;
+  if (dropStage) dropStage.hidden = false;
+  dropForm.hidden = false;
+  dropForm.classList.remove("sending", "sent");
+  dropFly.hidden = true; dropFly.className = "drop-fly";
+  dropFlap?.classList.remove("closed");
+  dropStamp.hidden = true;
+  dropPostbox?.classList.remove("caught");
+  if (dropLeaves) dropLeaves.innerHTML = "";
+  dropStatus.textContent = "";
 }
-slipForm?.addEventListener("submit", async e => {
+dropAgain?.addEventListener("click", () => { resetDropCard(); dropForm.reset(); syncDropAnon(); $$(".card-type").forEach((b, i) => { b.classList.toggle("on", i === 0); b.setAttribute("aria-pressed", String(i === 0)); }); if (dropType) dropType.value = (C.suggest?.types || ["Suggestion"])[0]; dropMsg?.focus(); });
+
+document.addEventListener("click", e => {
+  if (!e.target.closest("[data-drop-card]")) return;
   e.preventDefault();
-  const text = slipMsg.value.trim();
-  if (!text) { slipStatus.textContent = "Write something first."; return; }
-  const endpoint = CFG.SUGGEST_ENDPOINT;
-  if (!endpoint) { slipStatus.textContent = "Suggestions aren’t wired yet."; return; }
-  const sendLabel = C.suggest?.sendLabel || "Send suggestion";
-  if (slipSend) { slipSend.disabled = true; slipSend.textContent = "Sending…"; }
-  slipStatus.textContent = "";
-  const payload = {
-    _subject: "Portfolio slip" + (slipAnon.checked ? " (anonymous)" : ""),
-    _template: "table",
-    _captcha: "false",
-    suggestion: text,
-    from: slipAnon.checked ? "anonymous" : (slipName.value.trim() || "unnamed"),
-    contact: slipAnon.checked ? "none" : (slipContact.value.trim() || "none"),
-    page: location.href
-  };
-  let ok = false;
-  try {
-    const r = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload)
-    });
-    ok = r.ok;
-  } catch { ok = false; }
-  const afterAnim = () => {
-    if (!ok) {
-      slipStatus.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
-      if (slipSend) { slipSend.disabled = false; slipSend.textContent = sendLabel; }
-      return;
-    }
-    slips.classList.add("sent");
-    slipForm.hidden = true;
-    $(".slip-deck", slips).style.display = "none";
-    const thanks = pickThankYou();
-    slipThanksMsg.textContent = thanks;
-    slipThanks.hidden = false;
-    say(thanks);
-    slipForm.reset(); syncSlipAnon();
-    if (slipSend) { slipSend.disabled = false; slipSend.textContent = sendLabel; }
-  };
-  if (preferReduced) afterAnim();
-  else playSlipAnimation(afterAnim);
+  go(N - 1);
+  setTimeout(() => {
+    $("#dropCard")?.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
+    dropMsg?.focus();
+  }, preferReduced ? 0 : 700);
 });
 
-function openMoreModal() {
-  const more = C.more || {}, m = C.shelf.meraki;
-  const off = (more.offProjects || []).map(it => `
-    <a class="meraki-card more-pdf" href="${esc(it.url)}" download>
-      <span class="meraki-meta">${esc(it.type)}</span>
-      <strong>${esc(it.t)}</strong>
-      <em>${esc(it.why)}</em>
-    </a>`).join("");
-  const meraki = m ? `<div class="meraki" style="margin:0 0 18px">
-    <p class="meraki-kicker">Personal writing</p>
-    <h3 class="meraki-title">${esc(m.title)}</h3>
-    <p class="meraki-tag">${esc(m.tagline)}</p>
-    <p class="sub">${esc(m.about)}</p>
-    <div class="row"><a class="btn primary sm" href="${esc(m.home)}" target="_blank" rel="noopener">Open Meraki</a>
-    <button class="btn sm" type="button" data-meraki-all>Browse poems</button></div></div>` : "";
-  openModal(`<h3 id="mTitle">${esc(more.title || "More")}</h3>
-    <p class="sub">${esc(more.blurb || "")}</p>${meraki}
-    <div class="sect">Off-thread write-ups</div>
-    <div class="meraki-grid modal-grid">${off || "<p class=\"hint\">Nothing here yet.</p>"}</div>`);
+function playDropAnimation(done) {
+  if (preferReduced) { done(); return; }
+  const text = (dropMsg?.value || "…").trim().slice(0, 40);
+  dropFly.hidden = false;
+  dropFly.textContent = text || "…";
+  dropFly.className = "drop-fly";
+  dropForm.classList.add("sending");
+  requestAnimationFrame(() => dropFly.classList.add("fly"));
+  setTimeout(() => dropFlap?.classList.add("closed"), 520);
+  setTimeout(() => {
+    dropStamp.hidden = false;
+    dropPostbox?.classList.add("caught");
+    if (dropLeaves) {
+      dropLeaves.innerHTML = Array.from({ length: 8 }, (_, i) =>
+        `<i style="--i:${i};--x:${(Math.random() * 60 - 30).toFixed(1)}px"></i>`).join("");
+    }
+  }, 700);
+  setTimeout(() => { dropFly.hidden = true; done(); }, 1100);
 }
 
-/* ---------- Ask: async interview browser ---------- */
-const ASK = C.ask || { layers: [], qa: {} };
-const askQA = ASK.qa || {};
-const askBrowse = $("#askBrowse"), askAnswer = $("#askAnswer");
-let askLayer = (ASK.layers[0] && ASK.layers[0].id) || "me";
-let askProject = null;
-const paraHtml = t => String(t || "").split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("");
-function qBtn(id) {
-  const item = askQA[id]; if (!item) return "";
-  return `<button type="button" class="ask-q" data-ask-open="${esc(id)}">${esc(item.q)}</button>`;
+async function deliverCard(payload) {
+  const endpoint = CFG.SUGGESTION_ENDPOINT || CFG.SUGGEST_ENDPOINT || "";
+  if (!endpoint) {
+    const body = encodeURIComponent(
+      `Type: ${payload.type}\nFrom: ${payload.name}\nEmail: ${payload.email}\n\n${payload.message}`
+    );
+    location.href = `mailto:${P.email || "srivastavadya@gmail.com"}?subject=${encodeURIComponent("Portfolio card")}&body=${body}`;
+    return true;
+  }
+  const isFormspree = /formspree\.io/i.test(endpoint);
+  const body = isFormspree
+    ? { message: payload.message, type: payload.type, name: payload.name, email: payload.email || undefined, _gotcha: payload._gotcha }
+    : {
+      _subject: "Portfolio card" + (payload.anonymous ? " (anonymous)" : ""),
+      _template: "table",
+      _captcha: "false",
+      message: payload.message,
+      type: payload.type,
+      name: payload.name,
+      email: payload.email,
+      page: location.href,
+      _gotcha: payload._gotcha
+    };
+  const r = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) return false;
+  try {
+    const data = await r.json();
+    if (data && (data.success === false || data.success === "false" || data.error)) return false;
+  } catch { /* some endpoints return empty 200 */ }
+  return true;
 }
-function renderAskBrowse() {
-  const layer = ASK.layers.find(L => L.id === askLayer) || ASK.layers[0];
-  if (!layer) { askBrowse.innerHTML = ""; return; }
-  if (layer.kind === "projects") {
-    if (askProject) {
-      const proj = layer.projects.find(p => p.id === askProject);
-      if (!proj) { askProject = null; return renderAskBrowse(); }
-      askBrowse.innerHTML = `<button type="button" class="ask-back" data-ask-proj="">← All projects</button>
-        <div class="ask-proj-head"><b>${esc(proj.title)}</b><span>${esc(proj.tag || "")}</span></div>
-        ${proj.sections.map(s => `<div class="ask-sec"><div class="sect">${esc(s.label)}</div><div class="ask-qlist">${s.ids.map(qBtn).join("")}</div></div>`).join("")}`;
-      return;
-    }
-    askBrowse.innerHTML = `<p class="about-muted" style="margin-top:0">Pick a project and walk the interview tree.</p>
-      <div class="ask-proj-grid">${layer.projects.map(p => `<button type="button" class="ask-proj" data-ask-proj="${esc(p.id)}"><b>${esc(p.title)}</b><span>${esc(p.tag || "")}</span></button>`).join("")}</div>`;
+
+dropForm?.addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = dropMsg?.value.trim() || "";
+  if (!text) { dropStatus.textContent = "Write something first."; return; }
+  if (dropHp?.value) return; // honeypot
+  const now = Date.now();
+  if (now - lastDropAt < 10000) {
+    dropStatus.textContent = "Please wait a few seconds before sending another.";
     return;
   }
-  askBrowse.innerHTML = `<div class="ask-qlist">${(layer.ids || []).map(qBtn).join("")}</div>`;
+  const sendLabel = C.suggest?.sendLabel || "Send card";
+  if (dropSend) { dropSend.disabled = true; dropSend.textContent = "Sending…"; }
+  dropStatus.textContent = "";
+  const anon = !!dropAnon?.checked;
+  const payload = {
+    message: text,
+    type: dropType?.value || "Suggestion",
+    name: anon ? "anonymous" : (dropName?.value.trim() || "unnamed"),
+    email: anon ? "" : (dropEmail?.value.trim() || ""),
+    anonymous: anon,
+    _gotcha: dropHp?.value || ""
+  };
+  let ok = false;
+  try { ok = await deliverCard(payload); } catch { ok = false; }
+  if (!ok) {
+    dropStatus.textContent = `Couldn't send right now. Email ${P.email || "srivastavadya@gmail.com"} instead.`;
+    if (dropSend) { dropSend.disabled = false; dropSend.textContent = sendLabel; }
+    return;
+  }
+  playDropAnimation(() => {
+    lastDropAt = Date.now();
+    const thanks = pickThankYou();
+    dropForm.hidden = true;
+    dropStage.hidden = true;
+    dropThanksMsg.textContent = thanks;
+    dropThanks.hidden = false;
+    say(thanks);
+    dropForm.reset(); syncDropAnon();
+    if (dropSend) { dropSend.disabled = false; dropSend.textContent = sendLabel; }
+  });
+});
+
+/* ---------- Interview room ---------- */
+const IV = C.interview || { tracks: [] };
+const ivBrowse = $("#ivBrowse"), ivAnswer = $("#ivAnswer"), ivHits = $("#ivFreeHits");
+let ivTrack = (IV.tracks[0] && IV.tracks[0].id) || "start";
+const allIvQuestions = () => IV.tracks.flatMap(t => (t.questions || []).map(q => ({ ...q, track: t.id })));
+const ivById = id => allIvQuestions().find(q => q.id === id);
+const paraHtml = t => String(t || "").split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("");
+
+function renderIvBrowse() {
+  const track = IV.tracks.find(t => t.id === ivTrack) || IV.tracks[0];
+  if (!track || !ivBrowse) return;
+  ivBrowse.innerHTML = `<div class="ask-qlist">${(track.questions || []).map(q =>
+    `<button type="button" class="ask-q" data-iv-open="${esc(q.id)}">${esc(q.q)}</button>`
+  ).join("")}</div>`;
 }
-function openAskQuestion(id) {
-  const item = askQA[id]; if (!item) return;
-  askAnswer.hidden = false;
+function openIvQuestion(id) {
+  const item = ivById(id); if (!item || !ivAnswer) return;
+  ivAnswer.hidden = false;
+  if (ivHits) ivHits.hidden = true;
   const next = (item.next || []).map(nid => {
-    const n = askQA[nid]; return n ? `<button type="button" class="ask-follow" data-ask-open="${esc(nid)}">${esc(n.q)}</button>` : "";
+    const n = ivById(nid);
+    return n ? `<button type="button" class="ask-follow" data-iv-open="${esc(nid)}">${esc(n.q)}</button>` : "";
   }).join("");
-  askAnswer.innerHTML = `<button type="button" class="ask-back" data-ask-close>← Back to questions</button>
+  ivAnswer.innerHTML = `<button type="button" class="ask-back" data-iv-close>← Back to questions</button>
     <h3 class="ask-qtitle">${esc(item.q)}</h3>
     <div class="ask-short">${paraHtml(item.short)}</div>
-    ${item.deep ? `<details class="ask-deep"><summary>Go deeper ↓</summary><div class="ask-deep-body">${paraHtml(item.deep)}</div></details>` : ""}
+    ${item.long ? `<details class="ask-deep"><summary>Go deeper</summary><div class="ask-deep-body">${paraHtml(item.long)}</div></details>` : ""}
+    ${item.challenge ? `<div class="ask-challenge"><span>What you might challenge</span><p>${esc(item.challenge)}</p></div>` : ""}
     ${next ? `<div class="ask-next"><span>You might ask next</span><div class="ask-qlist">${next}</div></div>` : ""}`;
-  askAnswer.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
+  ivAnswer.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
   MI.classList.add("speaking");
-  setTimeout(() => MI.classList.remove("speaking"), preferReduced ? 0 : 900);
+  setTimeout(() => MI.classList.remove("speaking"), preferReduced ? 400 : 1600);
 }
-function setAskLayer(id) {
-  askLayer = id; askProject = null; askAnswer.hidden = true; askAnswer.innerHTML = "";
+function setIvTrack(id) {
+  ivTrack = id;
+  if (ivAnswer) { ivAnswer.hidden = true; ivAnswer.innerHTML = ""; }
   $$(".ask-tab").forEach(b => {
-    const on = b.dataset.askLayer === id;
-    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+    const on = b.dataset.ivTrack === id;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-selected", String(on));
   });
-  renderAskBrowse();
+  renderIvBrowse();
 }
-renderAskBrowse();
-document.addEventListener("click", e => {
-  const tab = e.target.closest("[data-ask-layer]");
-  if (tab) { setAskLayer(tab.dataset.askLayer); return; }
-  const proj = e.target.closest("[data-ask-proj]");
-  if (proj) { askProject = proj.dataset.askProj || null; askAnswer.hidden = true; renderAskBrowse(); return; }
-  if (e.target.closest("[data-ask-close]")) { askAnswer.hidden = true; askAnswer.innerHTML = ""; return; }
-  const open = e.target.closest("[data-ask-open]");
-  if (open) {
-    const id = open.dataset.askOpen;
-    // Jump to Ask stop if coming from the map bubble
-    if (!e.target.closest(".panel")) go(6);
-    // Reveal the right layer/project for deep links
-    const layer = ASK.layers.find(L => L.kind === "list" && (L.ids || []).includes(id))
-      || ASK.layers.find(L => L.kind === "projects" && L.projects.some(p => p.sections.some(s => s.ids.includes(id))));
-    if (layer) {
-      askLayer = layer.id;
-      if (layer.kind === "projects") {
-        const p = layer.projects.find(pr => pr.sections.some(s => s.ids.includes(id)));
-        askProject = p ? p.id : null;
-      } else askProject = null;
-      $$(".ask-tab").forEach(b => {
-        const on = b.dataset.askLayer === askLayer;
-        b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
-      });
-      renderAskBrowse();
+renderIvBrowse();
+
+function scoreQuestion(q, words) {
+  const hay = `${q.q} ${q.short} ${q.long || ""}`.toLowerCase();
+  let s = 0;
+  for (const w of words) if (w.length > 2 && hay.includes(w)) s += w.length > 5 ? 2 : 1;
+  if (q.q.toLowerCase().includes(words.slice(0, 4).join(" "))) s += 5;
+  return s;
+}
+function closestQuestions(text, n = 3) {
+  const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  return allIvQuestions()
+    .map(q => ({ q, s: scoreQuestion(q, words) }))
+    .filter(x => x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, n)
+    .map(x => x.q);
+}
+async function askFreeform(question) {
+  const q = question.trim(); if (!q || busy) return;
+  busy = true; clearTimeout(snapTimer);
+  MI.classList.add("speaking");
+  if (CFG.GUARDIAN_API) {
+    if (ivHits) {
+      ivHits.hidden = false;
+      ivHits.innerHTML = `<p class="iv-thinking">Thinking…</p>`;
     }
-    setTimeout(() => openAskQuestion(id), e.target.closest(".panel") ? 0 : 550);
+    try {
+      const r = await fetch(CFG.GUARDIAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
+      if (r.ok) {
+        const d = await r.json();
+        if (ivAnswer) {
+          ivAnswer.hidden = false;
+          ivAnswer.innerHTML = `<button type="button" class="ask-back" data-iv-close>← Back to questions</button>
+            <h3 class="ask-qtitle">${esc(q)}</h3>
+            <div class="ask-short">${paraHtml(d.answer || "")}</div>
+            ${d.source ? `<p class="ask-source">From: ${esc(d.source)}</p>` : ""}`;
+        }
+        if (ivHits) ivHits.hidden = true;
+        busy = false;
+        setTimeout(() => MI.classList.remove("speaking"), 1200);
+        return;
+      }
+    } catch (_) { /* fall through to bank search */ }
+  }
+  const hits = closestQuestions(q, 3);
+  if (ivHits) {
+    ivHits.hidden = false;
+    ivHits.innerHTML = hits.length
+      ? `<p class="iv-hits-label">Closest matches — pick one:</p><div class="ask-qlist">${hits.map(h =>
+          `<button type="button" class="ask-q" data-iv-open="${esc(h.id)}">${esc(h.q)}</button>`
+        ).join("")}</div>`
+      : `<p class="iv-hits-label">No close match. Try a track above, or email ${esc(P.email || "srivastavadya@gmail.com")}.</p>`;
+  }
+  busy = false;
+  setTimeout(() => MI.classList.remove("speaking"), 600);
+}
+
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-iv-track]");
+  if (tab) { setIvTrack(tab.dataset.ivTrack); return; }
+  if (e.target.closest("[data-iv-close]")) {
+    if (ivAnswer) { ivAnswer.hidden = true; ivAnswer.innerHTML = ""; }
+    MI.classList.remove("speaking");
+    return;
+  }
+  const open = e.target.closest("[data-iv-open]");
+  if (open) {
+    const id = open.dataset.ivOpen;
+    const item = ivById(id);
+    if (item && item.track && item.track !== ivTrack) setIvTrack(item.track);
+    if (!e.target.closest(".panel")) go(5);
+    setTimeout(() => openIvQuestion(id), e.target.closest(".panel") ? 0 : 550);
   }
 });
 
-/* ---------- guardian freeform (Still have a question?) ---------- */
-const msgs = $("#msgs"), statueEyes = MI;
-const KB = C.guardian.kb, kbById = id => KB.find(k => k.id === id);
-const rx = k => new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b");
-function findKB(q) { q = q.toLowerCase(); let best = null, bs = 0; KB.forEach(e => { let s = 0; e.keys.forEach(k => { if (rx(k).test(q)) s++; }); if (s > bs) { bs = s; best = e; } }); return best; }
-function addMsg(cls, text) { const m = mk(`<div class="m ${cls}"></div>`); m.textContent = text; msgs.appendChild(m); msgs.scrollTop = msgs.scrollHeight; return m; }
-function typeOut(m, text, src, done) {
-  const words = text.split(/\s+/); let i = 0;
-  const tick = () => { m.textContent = words.slice(0, ++i).join(" "); msgs.scrollTop = msgs.scrollHeight;
-    if (i < words.length) setTimeout(tick, motion ? 18 : 0); else { if (src) { const s = document.createElement("small"); s.textContent = "From: " + src; m.appendChild(s); } done(); } };
-  tick();
+const ivForm = $("#ivFreeForm"), ivIn = $("#ivFreeIn");
+if (ivForm) ivForm.onsubmit = e => {
+  e.preventDefault();
+  const v = ivIn?.value.trim();
+  if (!v) return;
+  if (ivIn) ivIn.value = "";
+  askFreeform(v);
+};
+if (ivIn) {
+  ivIn.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
+  ivIn.addEventListener("blur", () => { chatFocused = false; });
 }
-async function ask(question, kbId, label) {
-  if (busy) return; busy = true; clearTimeout(snapTimer);
-  const q = question || label; addMsg("u", q); statueEyes.classList.add("speaking");
-  const m = addMsg("b", ""); m.classList.add("typing"); m.textContent = "Thinking…";
-  let answer = null, src = null;
-  // Prefer scripted interview answers when the freeform text matches a known question closely
-  if (!kbId) {
-    const hit = Object.values(askQA).find(item => item.q.toLowerCase() === q.toLowerCase() || q.toLowerCase().includes(item.q.toLowerCase().slice(0, 28)));
-    if (hit) { answer = hit.short + (hit.deep ? "\n\n" + hit.deep : ""); src = null; }
-  }
-  if (!answer && !kbId && CFG.GUARDIAN_API) {
-    try {
-      const r = await fetch(CFG.GUARDIAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
-      if (r.ok) { const d = await r.json(); answer = d.answer; src = null; }
-    } catch (e) { /* fall back */ }
-  }
-  if (!answer) { const e = kbId ? kbById(kbId) : findKB(q); answer = e ? e.a : C.guardian.fallback; src = null; }
-  m.classList.remove("typing"); m.textContent = "";
-  typeOut(m, answer, src, () => { statueEyes.classList.remove("speaking"); busy = false; });
-}
-$("#askForm").onsubmit = e => { e.preventDefault(); const v = $("#askIn").value.trim(); if (!v) return; $("#askIn").value = ""; ask(v); };
-const askIn = $("#askIn");
-askIn.addEventListener("focus", () => { chatFocused = true; clearTimeout(snapTimer); });
-askIn.addEventListener("blur", () => { chatFocused = false; });
 
-/* Show-all modals for notes / projects */
+/* Show-all modals for projects */
 document.addEventListener("click", e => {
-  if (e.target.closest("[data-open-more]")) { e.preventDefault(); return openMoreModal(); }
-  if (e.target.closest("[data-all-notes]")) {
-    openModal(`<h3 id="mTitle">Research findings</h3><p class="sub" style="margin-bottom:12px">Probe results from the papers above. Click one for the full note.</p><div class="list">${C.notes.map(n => `<button class="item note-item" data-note="${n.id}"><span class="note-proj">${esc(n.project)}</span><h3>${esc(n.headline)}</h3><p>${esc(n.title)}</p></button>`).join("")}</div>`);
-  }
   if (e.target.closest("[data-all-proj]")) {
     openModal(`<h3 id="mTitle">All projects</h3><div class="list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}"><h3>${esc(p.title)}</h3><p>${esc(p.line)}</p></div>`).join("")}</div>`);
-  }
-  if (e.target.closest("[data-meraki-all]") && C.shelf.meraki) {
-    const m = C.shelf.meraki;
-    openModal(`<div class="meraki-modal"><p class="meraki-kicker">Personal writing</p><h3 id="mTitle">${esc(m.title)}</h3><p class="meraki-tag">${esc(m.tagline)}</p><p class="sub">${esc(m.about)}</p>
-      <div class="meraki-grid modal-grid">${m.posts.map(p => `
-        <a class="meraki-card" href="${esc(p.url)}" target="_blank" rel="noopener">
-          <span class="meraki-meta">${esc(p.date)} · ${esc(p.min)}</span>
-          <strong>${esc(p.t)}</strong>
-          <em>${esc(p.blurb)}</em>
-        </a>`).join("")}</div>
-      <div class="row" style="margin-top:16px"><a class="btn primary" href="${esc(m.home)}" target="_blank" rel="noopener">Open full Meraki site</a></div></div>`);
   }
 });
 
 /* ---------- start ---------- */
 addEventListener("resize", resize);
 new ResizeObserver(measure).observe(document.body);
+MI.classList.add("plate-ph");
 resize();
 const glOk = initGL();
 const done = () => document.body.classList.remove("loading");
+const plateUrl = () => {
+  if (!gl) return A.plate3x || A.plate;
+  const max = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+  return max >= 5056 ? (A.plate4x || A.plate) : (A.plate3x || A.plate);
+};
+const clearPlatePh = (imgUrl) => {
+  MI.classList.remove("plate-ph");
+  if (imgUrl) MI.style.backgroundImage = `url(${imgUrl})`;
+};
 if (glOk) {
-  Promise.all([loadImg(A.plate), loadImg(A.flow), loadImg(A.foam)]).then(([pl, fl, fo]) => {
-    upload(0, pl, gl.RGB); upload(1, fl, gl.RGB); upload(2, fo, gl.LUMINANCE);
-    texReady = true; dirty = true; done();
-  }).catch(() => { MI.classList.add("fallback"); MI.style.backgroundImage = `url(${A.plate})`; done(); });
-} else { MI.classList.add("fallback"); MI.style.backgroundImage = `url(${A.plate})`; calmBtn.hidden = true; done(); }
+  Promise.all([loadImg(plateUrl()), loadImg(A.flow), loadImg(A.foam)]).then(([pl, fl, fo]) => {
+    upload(0, pl, gl.RGB, { mipmap: true }); upload(1, fl, gl.RGB); upload(2, fo, gl.LUMINANCE);
+    texReady = true; dirty = true; clearPlatePh(); done();
+  }).catch(() => { MI.classList.add("fallback"); clearPlatePh(A.plate3x || A.plate); done(); });
+} else { MI.classList.add("fallback"); clearPlatePh(A.plate3x || A.plate); calmBtn.hidden = true; done(); }
 requestAnimationFrame(frame);
 })();

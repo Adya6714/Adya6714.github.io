@@ -5,31 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Adya Srivastava | ML research engineer</title>
 <meta name="description" content="Adya Srivastava: research on how language models solve problems, vision-language confidence, and shipped ML systems.">
+<meta name="theme-color" content="#06191c">
+<meta property="og:type" content="website">
 <meta property="og:title" content="Adya Srivastava | ML research engineer">
 <meta property="og:description" content="Follow the river: research, projects, and an async interview where you can Ask Adya how she thinks.">
+<meta property="og:image" content="https://adya6714.github.io/adya-portfolio/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Painted waterfall and river path through a mossy forest">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Adya Srivastava | ML research engineer">
+<meta name="twitter:description" content="Follow the river: research, projects, and an async interview where you can Ask Adya how she thinks.">
+<meta name="twitter:image" content="https://adya6714.github.io/adya-portfolio/assets/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/photo.jpg" fetchpriority="high">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="loading">
+<a class="skip-link" href="#panels">Skip to content</a>
 <canvas id="scene" aria-hidden="true"></canvas>
 <div id="map"><div id="mapInner" aria-label="Interactive map of the river"></div></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div class="loader"><span>Following the river…</span></div>
 
 <header class="nav">
-  <button class="brand" data-go="0">Adya Srivastava</button>
-  <button class="l" data-go="1">Research</button><button class="l" data-go="2">Projects</button><button class="l" data-go="3">Experience</button><button class="l" data-go="4">Skills</button><button class="l" data-go="5">Shelf</button><button class="l" data-go="6">Ask</button><button class="l" data-go="7">About</button>
-  <button class="l" type="button" data-open-more>More</button>
-  <button class="btn sm" id="calmBtn" aria-pressed="false" title="Stops the water animation">Calm mode</button>
-  <a class="btn primary sm resume" href="#" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>Resume</a>
+  <button type="button" class="brand" data-go="0">Adya Srivastava</button>
+  <nav class="site-tabs" aria-label="Site sections">
+    <a href="index.html" aria-current="page">River</a>
+    <a href="library.html">Library</a>
+    <a href="writing.html">Writing</a>
+    <a href="other.html">Other work</a>
+  </nav>
+  <button type="button" class="l" data-go="1">Research</button>
+  <button type="button" class="l" data-go="2">Projects</button>
+  <button type="button" class="l" data-go="3">Path</button>
+  <button type="button" class="l" data-go="4">Skills</button>
+  <button type="button" class="l" data-go="5">Ask</button>
+  <button type="button" class="l" data-go="6">About</button>
+  <button type="button" class="btn sm" id="calmBtn" aria-pressed="false" title="Stops the water animation">Calm mode</button>
+  <a class="btn primary sm resume" href="#" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>Resume</a>
 </header>
 <nav class="dots" id="dots" aria-label="Journey stops"></nav>
 <div id="panels"></div>
 <main id="track" aria-hidden="true"></main>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="sheet"><button class="x" id="mClose" aria-label="Close">&times;</button><div id="mBody"></div></div></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="sheet" data-lenis-prevent><button class="x" id="mClose" aria-label="Close">&times;</button><div id="mBody"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script id="sceneFrag" type="x-shader/x-fragment">
@@ -93,7 +115,7 @@ void main(){
     // glints on calm water
     float calm = 1.0 - smoothstep(0.2, 0.5, spd);
     float gl = pow(noise(vec2(px.x*0.55, px.y*0.9) + vec2(0.0, -t*0.6)), 24.0);
-    moving += vec3(0.9,1.0,1.0)*gl*calm*(1.0-foam)*0.9*uMotion;
+    moving += vec3(0.9,1.0,1.0)*gl*calm*(1.0-foam)*0.6*uMotion;
 
     col = mix(base, moving, water);
   }
@@ -115,17 +137,17 @@ void main(){
   vec2 m2 = (px - vec2(650.0, 945.0))/vec2(110.0, 55.0);
   float mist = exp(-dot(m1,m1))*0.55 + exp(-dot(m2,m2))*0.40;
   mist *= 0.55 + 0.9*fbm(px*0.012 + vec2(t*0.05, -t*0.11));
-  col += vec3(0.80,0.93,0.96)*mist*0.22*(0.6+0.4*uMotion);
+  col += vec3(0.80,0.93,0.96)*mist*0.16*(0.6+0.4*uMotion);
 
   float vg = smoothstep(1.25, 0.35, length((s-0.5)*vec2(1.0,1.1)));
-  col *= mix(0.72, 1.0, vg);
+  col *= mix(0.85, 1.0, vg);
   gl_FragColor = vec4(col, 1.0);
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script src="js/vendor/lenis.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/content.js"></script>
-<script src="js/interview.js"></script>
+<script src="js/interview.js?v=c10"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
