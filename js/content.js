@@ -11,7 +11,7 @@ window.CONTENT = {
     openreview: "https://openreview.net/forum?id=d8w4gMVQ1w",
     aboutIntro: [
       "I'm Adya, an engineer who genuinely enjoys building things from scratch and figuring out how they work along the way. I'm especially interested in AI and ML, but what keeps me excited is the engineering and research around them: taking a vague question, digging into it, experimenting, breaking things, and eventually turning an idea into something that actually works. I love learning by building, and I'm constantly trying to go one level deeper than what I already know.",
-      "I'm currently looking for opportunities where I can work closely with interesting problems in AI/ML, research, and engineering. But I'm also here because I like talking to people who are building, experimenting, and thinking about the same things. If you're working on something interesting, have a different way of looking at AI/ML, have recently discovered something that changed how you think about the field, or simply have a few things you think I should know, I'd genuinely love to hear from you. I'm always up for a good conversation."
+      "I'm currently looking for opportunities where I can work closely on interesting problems in AI/ML, research, and engineering. I'm also here for the people side of it: if you're building something, thinking about a hackathon team, or found a resource that actually helped you learn, I want to hear about that too. Papers, repos, courses, events, or a half-formed idea are all fair game. Leave a slip below or say hi anytime."
     ],
     aboutCore: [
       "At the core, I like making things. I like starting with a blank page, learning whatever I need to learn, and slowly turning an idea into something real. Research gives me the opportunity to chase questions that don't have obvious answers, while engineering gives me the satisfaction of actually building the answer. AI and ML happen to sit at a particularly exciting intersection of the two for me.",
@@ -21,8 +21,15 @@ window.CONTENT = {
 
   suggest: {
     title: "Leave a slip",
-    blurb: "Drop a suggestion, a lead, or something you think I should explore. Stay anonymous, or leave a way to reach you.",
-    prompts: ["Something I should explore", "A conversation worth having", "A paper or idea to chase"]
+    blurb: "Suggestions, leads, hackathon teammates, or resources worth knowing. Stay anonymous, or leave a way to reach you.",
+    heroBlurb: "Ideas, collab, hackathon teams, or resources you swear by. I read every slip.",
+    placeholder: "What should I explore, build, or read? Hackathon team-up? A course or repo that clicked for you?",
+    prompts: [
+      "Something I should explore",
+      "Hackathon or build together",
+      "A resource that actually helped",
+      "A paper or idea to chase"
+    ]
   },
 
   papers: [

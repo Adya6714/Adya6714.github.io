@@ -36,12 +36,12 @@ function slipBlock(variant = "about") {
     .map((t, i) => `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
   return `<div class="slips${hero ? " slips-compact" : ""}" id="${rootId}">
     <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
-    <p class="about-muted">${esc(hero ? "Drop a suggestion or a way to reach you. I read every slip." : (C.suggest?.blurb || ""))}</p>
+    <p class="about-muted">${esc(hero ? (C.suggest?.heroBlurb || C.suggest?.blurb || "") : (C.suggest?.blurb || ""))}</p>
     <div class="phone-booth" aria-hidden="true"><div class="phone-slot"></div><div class="phone-card">☎</div></div>
     <div class="slip-deck" aria-hidden="true">${prompts}</div>
     <form class="slip-form suggestForm" data-slip-root="${rootId}" novalidate>
       <label class="sr-only" for="slipMsg${sfx}">Your suggestion</label>
-      <textarea id="slipMsg${sfx}" name="message" rows="${hero ? 2 : 3}" maxlength="1200" required placeholder="What should I explore, build, or talk about?"></textarea>
+      <textarea id="slipMsg${sfx}" name="message" rows="${hero ? 2 : 3}" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "What should I explore, build, or talk about?")}"></textarea>
       <div class="slip-meta">
         <label class="anon"><input type="checkbox" class="slipAnon" data-slip-root="${rootId}" checked> Stay anonymous</label>
         <div class="slip-identity slipIdentity" data-slip-root="${rootId}" hidden>
