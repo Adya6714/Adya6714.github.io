@@ -1,8 +1,8 @@
 /* Async interview content for the Ask stop. Edit answers here. */
 window.CONTENT.ask = {
   title: "Ask",
-  kicker: "A little more than a FAQ.",
-  blurb: "If you want to understand how I think, build, research, or approach problems, start here. Pick a thread and walk through it like an interview.",
+  kicker: "The stone guardian",
+  blurb: "Ask in your own words, or walk a prepared interview thread. The guardian answers from Adya's work.",
   still: {
     title: "Still have a question?",
     blurb: "I've tried to answer the questions I'm most often asked, but there's a good chance I've missed yours. Ask about my work, research, how I approach problems, or anything you think I should be thinking about."

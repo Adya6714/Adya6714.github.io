@@ -13,12 +13,12 @@ const MAP_W = 848, MAP_H = 1264;
 const STOPS = [
   { id: "hero",       label: "Waterfall",  side: "hero",   d: [410, 175, 680, .68, .40], m: [420, 190, 460, .5, .22] },
   { id: "ideas",      label: "Research",   side: "left",   d: [390, 340, 500, .70, .40], m: [380, 340, 360, .55, .26] },
-  { id: "projects",   label: "Projects",   side: "left",   d: [480, 555, 560, .72, .44], m: [470, 555, 400, .56, .28] },
-  { id: "experience", label: "Experience", side: "left",   d: [720, 440, 680, .76, .42], m: [700, 455, 420, .62, .26] },
-  { id: "skills",     label: "Skills",     side: "right",  d: [230, 830, 540, .32, .48], m: [220, 820, 360, .45, .22] },
+  { id: "projects",   label: "Projects",   side: "left",   d: [400, 560, 640, .52, .42], m: [390, 560, 420, .48, .28] },
+  { id: "experience", label: "Experience", side: "left",   d: [620, 420, 720, .70, .40], m: [600, 430, 440, .58, .26] },
+  { id: "skills",     label: "Skills",     side: "right",  d: [280, 820, 520, .38, .46], m: [260, 810, 360, .42, .24] },
   { id: "shelf",      label: "Shelf",      side: "right",  d: [170, 885, 500, .34, .48], m: [160, 885, 340, .5, .22] },
-  { id: "guardian",   label: "Ask",        side: "left",   d: [480, 895, 500, .60, .48], m: [470, 895, 340, .5, .22] },
-  { id: "about",      label: "About",      side: "center", d: [440, 1150, 848, .5, .62], m: [445, 1196, 420, .5, .28] }
+  { id: "guardian",   label: "Ask",        side: "left",   d: [460, 900, 480, .58, .48], m: [450, 900, 340, .5, .22] },
+  { id: "about",      label: "About",      side: "center", d: [440, 1180, 848, .5, .72], m: [445, 1200, 420, .5, .32] }
 ];
 const N = STOPS.length;
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -113,7 +113,7 @@ function ideasPanel() {
 }
 const GROUPS = ["All", "Research", "Agents & systems", "Quant"];
 function projectsPanel() {
-  return `<h2>Projects</h2><p class="sub">Everything I have built: research code, ML systems, and applied work. Skills are the chips on each card.</p>
+  return `<h2>Projects</h2><p class="sub">Everything I have built. Skills are on each card. A few featured ones sit on the river as shortcuts — the full list is here.</p>
   <div class="filters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-f="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
   <div class="list project-list">${C.projects.map(p => `<div class="item" role="button" tabindex="0" data-proj="${p.id}" data-groups="${esc(p.group.join("|"))}">
     <h3>${esc(p.title)}</h3><p>${esc(p.line)}</p>
@@ -122,9 +122,9 @@ function projectsPanel() {
     }</div></div>`).join("")}</div>`;
 }
 function expPanel() {
-  return `<h2>The path so far</h2><p class="sub">From production speech models to research engineering. Open one for details.</p>
-  ${C.jobs.map((j, i) => `<div class="job" data-job="${i}"><button aria-expanded="false"><span class="mono" style="background:${j.color}">${esc(j.initial)}</span>
-    <span><h3>${esc(j.co)}</h3><small>${esc(j.role)}, ${esc(j.when)}</small></span><span class="tog">Details</span></button>
+  return `<h2>The path so far</h2><p class="sub">Roles I've held — details open below. Click a company on the arches to jump here too.</p>
+  ${C.jobs.map((j, i) => `<div class="job open" data-job="${i}"><button aria-expanded="true"><span class="mono" style="background:${j.color}">${esc(j.initial)}</span>
+    <span><h3>${esc(j.co)}</h3><small>${esc(j.role)}, ${esc(j.when)}</small></span><span class="tog">Hide</span></button>
     <ul>${j.pts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}`;
 }
 function skillsPanel() {
@@ -137,10 +137,17 @@ function shelfPanel() {
   const b = C.shelf.book; let gi = 0;
   const TYPE_TONE = { Blog: ["#1a3d38", "#0b2a32"], Video: null, Paper: ["#2a1b5c", "#0b3a4a"], Book: ["#5c3b1f", "#0b3a4a"], Profile: ["#1f4a5c", "#0b2f2a"] };
   return `<h2>On my shelf</h2>
-  <p class="sub">Study material I learn from: papers, videos, and notes. For poetry and older product write-ups, open <button type="button" class="linkish" data-open-more>More</button>.</p>
-  <div class="book"><div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div><div><small>Featured</small><h3>${esc(b.title)}</h3><p>${esc(b.blurb)}</p>
-    ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
-    ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open study module</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
+  <p class="sub">Things I study from. For poetry and older product write-ups, open <button type="button" class="linkish" data-open-more>More</button>.</p>
+  <div class="book">
+    <div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div>
+    <div>
+      <small>My study notes</small>
+      <h3>${esc(b.title)}</h3>
+      <p>${esc(b.blurb)}</p>
+      ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
+      ${b.link ? `<div class="row" style="margin:0"><a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open on Drive</a></div>` : `<span class="chip warm">Link coming soon</span>`}
+    </div>
+  </div>
   ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail" data-lenis-prevent>${r.items.map(it => {
     const yid = it.type === "Video" ? ytId(it.url) : null;
     const tone = TYPE_TONE[it.type] || GRADS[gi++ % GRADS.length];
@@ -157,20 +164,20 @@ function guardianPanel() {
   const layers = A.layers || [];
   const tabs = layers.map((L, i) => `<button type="button" class="ask-tab${i === 0 ? " on" : ""}" data-ask-layer="${esc(L.id)}" aria-pressed="${i === 0}">${esc(L.label)}</button>`).join("");
   return `<h2>${esc(A.title || "Ask")}</h2>
-  <p class="ask-kicker">${esc(A.kicker || "A little more than a FAQ.")}</p>
+  <p class="ask-kicker">The stone guardian</p>
   <p class="sub">${esc(A.blurb || "")}</p>
-  <p class="hint tight">Pick a tab, choose a question, read the short answer, then open “Go deeper” or follow the next prompts.</p>
+  <div class="guardian-chat">
+    <div class="guardian-live" aria-hidden="true"><span class="guardian-pulse"></span> Awake when you ask</div>
+    <div class="chat">
+      <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(C.guardian?.intro || "Ask me anything — type your own question below, or pick a thread.")}</div></div>
+      <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Type your own question…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
+    </div>
+  </div>
+  <div class="about-divider"></div>
+  <p class="hint tight">Or walk a prepared interview thread:</p>
   <div class="ask-tabs" role="tablist">${tabs}</div>
   <div id="askBrowse" class="ask-browse"></div>
-  <div id="askAnswer" class="ask-answer" hidden></div>
-  <details class="ask-freeform">
-    <summary>Still have a question?</summary>
-    <p class="about-muted">${esc(A.still?.blurb || "")}</p>
-    <div class="chat still-chat">
-      <div class="msgs" id="msgs" aria-live="polite"><div class="m b">${esc(C.guardian?.intro || "Ask me anything I missed above.")}</div></div>
-      <form class="ask" id="askForm"><input id="askIn" type="text" placeholder="Ask anything I missed…" aria-label="Your question" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
-    </div>
-  </details>`;
+  <div id="askAnswer" class="ask-answer" hidden></div>`;
 }
 function aboutPanel() {
   const photo = CFG.PHOTO_URL
@@ -201,17 +208,20 @@ const ov = (html, x, y, w, h, rot = 0, extra = "", mapGroup = "") => {
   MI.appendChild(el); return el;
 };
 const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.find(p => p.id === id);
-[["p-rvc", 352, 488, 244, 120, -3, 4], ["p-ocr", 368, 578, 268, 128, -3, 3], ["p-ddpm", 448, 652, 228, 140, -4, 2]].forEach(([id, x, y, w, h, r, z]) => {
+/* Featured river cards — research trio + two systems highlights (full list is in the Projects panel). */
+[["p-rvc", 268, 500, 220, 108, -2, 5], ["p-ocr", 286, 585, 236, 112, -2, 4], ["p-ddpm", 304, 668, 220, 118, -3, 3],
+ ["p-fraud", 292, 740, 210, 100, -2, 2], ["p-mesh", 310, 812, 210, 100, -2, 1]].forEach(([id, x, y, w, h, r, z]) => {
   const p = projBy(id); if (!p) return;
   const cta = (p.group || []).includes("Research") ? "Open research" : "Open project";
   ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>${esc(cta)}</em></button>`, x, y, w, h, r, `z-index:${z};`, "2");
 });
-[[0, 674, 274, 32, 68], [1, 696, 452, 40, 92], [2, 112, 447, 39, 84]].forEach(([ji, x, y, w, h]) => {
+/* Arch banners: all four roles */
+[[0, 674, 274, 32, 68], [1, 696, 400, 40, 88], [2, 112, 447, 39, 84], [3, 640, 520, 36, 76]].forEach(([ji, x, y, w, h]) => {
   const j = C.jobs[ji]; if (!j) return;
   ov(`<button class="banner" data-job="${ji}" style="background:${j.color}" aria-label="${esc(j.co)}">${esc(j.initial)}</button>`, x, y, w, h, 0, "z-index:3;", "3");
   const t = mk(`<div class="tag map-ov" data-map-group="3">${esc(j.co.split(" (")[0])}</div>`); t.style.left = (x + w / 2) + "px"; t.style.top = (y - 22) + "px"; t.style.zIndex = "4"; MI.appendChild(t);
 });
-[[0, 90, 800], [1, 248, 772], [2, 329, 832], [3, 768, 872], [4, 784, 1000]].forEach(([gi, x, y]) => {
+[[0, 140, 780], [1, 260, 760], [2, 360, 800], [3, 220, 860], [4, 340, 900]].forEach(([gi, x, y]) => {
   const [g, items] = C.skills[gi];
   ov(`<button class="crystal" data-go="4">${esc(g)}<span class="pop">${items.map(i => esc(i[0])).join(", ")}</span></button>`, x, y, 0, 0, 0, "", "4");
 });
@@ -219,7 +229,6 @@ const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.f
   const items = C.shelf.rows.flatMap(r => r.items).slice(0, 4);
   ov(`<button class="shelfov" data-go="5"><span class="bk">${esc(C.shelf.book.title)}</span>${items.map((it, i) => `<span class="th" style="background:linear-gradient(135deg,${GRADS[i][0]},${GRADS[i][1]})">${esc(it.t)}</span>`).join("")}<span class="cap">On my shelf</span></button>`, 30, 812, 238, 140, 0, "", "5");
 }
-ov(`<div class="bubble"><button data-ask-open="me-yourself">Tell me about yourself</button><button data-ask-open="rvc-what">Retrieval vs Computation?</button><button data-ask-open="hd-hire">Why hire you?</button></div>`, 470, 846, 134, 0, 0, "", "6");
 const eyes = [mk('<i class="eye map-ov" data-map-group="6"></i>'), mk('<i class="eye map-ov" data-map-group="6"></i>')];
 eyes[0].style.cssText = "left:415px;top:881px"; eyes[1].style.cssText = "left:439px;top:881px"; eyes.forEach(e => MI.appendChild(e));
 const MAP_GROUP_FOR_STOP = ["", "1", "2", "3", "4", "5", "6", "7"];
@@ -231,6 +240,7 @@ function updateMapOverlays(stopIdx) {
     el.style.opacity = on ? "1" : "0";
     el.style.pointerEvents = on ? "auto" : "none";
   });
+  MI.classList.toggle("guardian-awake", stopIdx === 6);
 }
 updateMapOverlays(0);
 

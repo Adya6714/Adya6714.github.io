@@ -342,7 +342,7 @@ window.CONTENT = {
   },
 
   guardian: {
-    intro: "If none of the threads above cover what you wanted to know, ask here. Research, projects, experience, what I'm looking for next. I'll answer as best I can.",
+    intro: "I'm the stone guardian on Adya's river. Type any question about her research, projects, experience, or what she's looking for — or pick an interview thread below.",
     chips: [
       ["Walk me through your research", "research"],
       ["What did you ship at Nurix?", "nurix"],
