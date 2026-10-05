@@ -41,14 +41,19 @@ function heroPanel() {
 function mountSlipDock() {
   const prompts = (C.suggest?.prompts || []).map((t, i) =>
     `<button type="button" class="slip-chip" data-slip-prompt="${esc(t)}" style="--i:${i}">${esc(t)}</button>`).join("");
-  const dock = mk(`<aside class="slip-dock" id="slipDock" data-lenis-prevent aria-label="Leave a slip">
-    <div class="slip-chute" aria-hidden="true"><div class="slip-chute-glow"></div></div>
-    <button type="button" class="slip-dock-tab" id="slipDockTab" aria-expanded="false" aria-controls="slipDockPanel">
-      <span class="slip-tab-icon">✉</span><span class="slip-tab-label">Leave a slip</span>
+  const sendLabel = C.suggest?.sendLabel || "Send suggestion";
+  const dock = mk(`<aside class="slip-dock open" id="slipDock" data-lenis-prevent aria-label="Leave a slip">
+    <button type="button" class="slip-dock-tab" id="slipDockTab" aria-expanded="true" aria-controls="slipDockPanel">
+      <span class="slip-tab-icon">✉</span>
+      <span class="slip-tab-copy">
+        <strong class="slip-tab-label">Leave a slip</strong>
+        <em class="slip-tab-hint">Open to suggestions</em>
+      </span>
     </button>
-    <div class="slip-dock-panel" id="slipDockPanel" hidden>
+    <div class="slip-dock-panel" id="slipDockPanel">
       <button type="button" class="slip-dock-close" id="slipDockClose" aria-label="Close">&times;</button>
       <div class="slips" id="slips">
+        <p class="slip-eyebrow">Suggestions welcome</p>
         <h3 class="about-h3">${esc(C.suggest?.title || "Leave a slip")}</h3>
         <p class="about-muted">${esc(C.suggest?.blurb || "")}</p>
         <div class="slip-mailbox" aria-hidden="true">
@@ -63,7 +68,7 @@ function mountSlipDock() {
         </div>
         <form class="slip-form suggestForm" id="suggestForm" novalidate>
           <label class="sr-only" for="slipMsg">Your suggestion</label>
-          <textarea id="slipMsg" name="message" rows="4" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "")}"></textarea>
+          <textarea id="slipMsg" name="message" rows="5" maxlength="1200" required placeholder="${esc(C.suggest?.placeholder || "")}"></textarea>
           <div class="slip-meta">
             <label class="anon"><input type="checkbox" class="slipAnon" id="slipAnon" checked> Stay anonymous</label>
             <div class="slip-identity" id="slipIdentity" hidden>
@@ -71,7 +76,7 @@ function mountSlipDock() {
               <input class="slipContact" id="slipContact" name="contact" type="text" maxlength="120" placeholder="Email or handle" autocomplete="email">
             </div>
           </div>
-          <button class="btn primary slipSend" type="submit">Drop it in the chute</button>
+          <button class="btn primary slipSend" type="submit">${esc(sendLabel)}</button>
           <p class="fine slipStatus" id="slipStatus" role="status"></p>
         </form>
       </div>
@@ -624,18 +629,16 @@ function playSlipAnimation(done) {
   dock.appendChild(paper);
   requestAnimationFrame(() => {
     paper.classList.add("fly");
-    dock.classList.add("chute-active");
     slipMailbox?.classList.add("waiting");
   });
   const finish = () => {
     paper.remove();
-    dock.classList.remove("chute-active");
     slipMailbox?.classList.remove("waiting");
     slipMailbox?.classList.add("caught");
     done();
   };
   paper.addEventListener("animationend", finish, { once: true });
-  setTimeout(finish, preferReduced ? 50 : 2200);
+  setTimeout(finish, preferReduced ? 50 : 1600);
 }
 slipForm?.addEventListener("submit", async e => {
   e.preventDefault();
@@ -643,6 +646,7 @@ slipForm?.addEventListener("submit", async e => {
   if (!text) { slipStatus.textContent = "Write something first."; return; }
   const endpoint = CFG.SUGGEST_ENDPOINT;
   if (!endpoint) { slipStatus.textContent = "Suggestions aren’t wired yet."; return; }
+  const sendLabel = C.suggest?.sendLabel || "Send suggestion";
   if (slipSend) { slipSend.disabled = true; slipSend.textContent = "Sending…"; }
   slipStatus.textContent = "";
   const payload = {
@@ -666,7 +670,7 @@ slipForm?.addEventListener("submit", async e => {
   const afterAnim = () => {
     if (!ok) {
       slipStatus.textContent = "Couldn’t send right now. Email srivastavadya@gmail.com instead.";
-      if (slipSend) { slipSend.disabled = false; slipSend.textContent = "Drop it in the chute"; }
+      if (slipSend) { slipSend.disabled = false; slipSend.textContent = sendLabel; }
       return;
     }
     slips.classList.add("sent");
@@ -677,7 +681,7 @@ slipForm?.addEventListener("submit", async e => {
     slipThanks.hidden = false;
     say(thanks);
     slipForm.reset(); syncSlipAnon();
-    if (slipSend) { slipSend.disabled = false; slipSend.textContent = "Drop it in the chute"; }
+    if (slipSend) { slipSend.disabled = false; slipSend.textContent = sendLabel; }
   };
   if (preferReduced) afterAnim();
   else playSlipAnimation(afterAnim);

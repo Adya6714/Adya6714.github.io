@@ -21,9 +21,10 @@ window.CONTENT = {
 
   suggest: {
     title: "Leave a slip",
-    blurb: "Suggestions, leads, hackathon teammates, or resources worth knowing. Stay anonymous, or leave a way to reach you.",
-    heroBlurb: "Ideas, collab, hackathon teams, or resources you swear by. I read every slip.",
+    blurb: "I am actively looking for suggestions. Drop a lead, a hackathon idea, a resource, or anything you think I should explore. Stay anonymous, or leave a way to reach you.",
+    heroBlurb: "I am open to suggestions — ideas, collab, hackathon teams, or resources. I read every slip.",
     placeholder: "What should I explore, build, or read? Hackathon team-up? A course or repo that clicked for you?",
+    sendLabel: "Send suggestion",
     prompts: [
       "Something I should explore",
       "Hackathon or build together",
