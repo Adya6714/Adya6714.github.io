@@ -91,16 +91,19 @@ const GRADS = [["#0b3a4a", "#2a1b5c"], ["#0b4a3f", "#143a63"], ["#3b1f5c", "#0b3
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 4l14 8-14 8z"/></svg>';
 function shelfPanel() {
   const b = C.shelf.book; let gi = 0;
+  const TYPE_TONE = { Blog: ["#1a3d38", "#0b2a32"], Video: null, Paper: ["#2a1b5c", "#0b3a4a"], Book: ["#5c3b1f", "#0b3a4a"], Profile: ["#1f4a5c", "#0b2f2a"] };
   return `<h2>On my shelf</h2>
   <div class="book"><div class="cover">${esc(b.title)}<i>${esc(b.status)}</i></div><div><small>Featured</small><h3>${esc(b.title)}</h3><p>${esc(b.blurb)}</p>
     ${b.chapters.length ? `<ol>${b.chapters.slice(0, 5).map(c => `<li>${esc(c)}</li>`).join("")}</ol>` : ""}
     ${b.link ? `<a class="btn primary sm" href="${esc(b.link)}" target="_blank" rel="noopener">Open study module</a>` : `<span class="chip warm">Link coming soon</span>`}</div></div>
   ${C.shelf.rows.map(r => `<div class="sect">${esc(r.topic)}</div><div class="rail">${r.items.map(it => {
-    const g = GRADS[gi++ % GRADS.length], yid = it.type === "Video" ? ytId(it.url) : null;
+    const yid = it.type === "Video" ? ytId(it.url) : null;
+    const tone = TYPE_TONE[it.type] || GRADS[gi++ % GRADS.length];
     const bg = yid
       ? `background-image:url(https://img.youtube.com/vi/${yid}/hqdefault.jpg);background-size:cover;background-position:center`
-      : `background:linear-gradient(135deg,${g[0]},${g[1]})`;
-    return `<a class="vid" href="${esc(it.url)}" target="_blank" rel="noopener"><div class="thumb" style="${bg}"><span class="ty">${esc(it.type)}</span><span class="play">${PLAY}</span><span class="len">${esc(it.len)}</span></div>
+      : `background:linear-gradient(135deg,${tone[0]},${tone[1]})`;
+    const local = it.url && !/^https?:\/\//i.test(it.url);
+    return `<a class="vid" href="${esc(it.url)}" ${local ? "" : 'target="_blank" rel="noopener"'}${local ? ' download' : ""}><div class="thumb" style="${bg}"><span class="ty">${esc(it.type)}</span>${it.type === "Video" ? `<span class="play">${PLAY}</span>` : ""}<span class="len">${esc(it.len)}</span></div>
     <h5>${esc(it.t)}</h5><small>${esc(it.by)}</small>${it.why ? `<em>${esc(it.why)}</em>` : ""}</a>`; }).join("")}</div>`).join("")}
   ${C.shelf.sampleNote ? `<p class="hint">${esc(C.shelf.sampleNote)}</p>` : ""}`;
 }

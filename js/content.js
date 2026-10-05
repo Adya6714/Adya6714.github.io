@@ -256,8 +256,18 @@ window.CONTENT = {
         "RL for control and hedging"
       ]
     },
-    sampleNote: "More library rows coming: LeetCode profile, watchlist videos, and reading notes. Swap sample items below when you have the real links.",
+    sampleNote: "Scroll the rows for papers, videos, and my own technical blogs from past case work.",
     rows: [
+      { topic: "Technical blogs & case studies", items: [
+        { t: "Citizen Services App", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/citizen-services-app.pdf", why: "Product and systems write-up for a civic services app." },
+        { t: "Cloud Computing in Healthcare", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/cloud-computing-healthcare.pdf", why: "How cloud patterns show up in clinical and hospital workflows." },
+        { t: "Zepto assignment", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/zepto-assignment.pdf", why: "Case work on quick-commerce operations and product thinking." },
+        { t: "Consulting case", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/consulting-case.pdf", why: "Structured consulting-style analysis from coursework." },
+        { t: "Business case study", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/business-case-study.pdf", why: "End-to-end case framing and recommendation." },
+        { t: "Idea guidebook", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/idea-guidebook.pdf", why: "Notes on turning a rough idea into a scoped product." },
+        { t: "Pitch deck", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/pitch-deck.pdf", why: "Narrative and slides for a startup-style pitch." },
+        { t: "TAS write-up", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/tas.pdf", why: "Technical assignment / systems analysis notes." },
+        { t: "MT assignment", by: "Adya", type: "Blog", len: "PDF", url: "assets/case-studies/mt-assignment.pdf", why: "Course technical write-up kept as a blog-style PDF." } ] },
       { topic: "Transformers and LLMs", items: [
         { t: "Let's build GPT from scratch", by: "Andrej Karpathy", type: "Video", len: "1h 56m", url: "https://www.youtube.com/watch?v=kCc8FmEb1nY", why: "Best hands-on walkthrough of attention and training a tiny GPT." },
         { t: "Attention in transformers, visually explained", by: "3Blue1Brown", type: "Video", len: "26 min", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc", why: "Clearest visual intuition for Q/K/V." },
@@ -269,8 +279,8 @@ window.CONTENT = {
         { t: "Denoising Diffusion Probabilistic Models", by: "Ho, Jain, Abbeel", type: "Paper", len: "Paper", url: "https://arxiv.org/abs/2006.11239", why: "Foundation for the volatility-surface work." },
         { t: "What are diffusion models?", by: "Lilian Weng", type: "Blog", len: "Blog", url: "https://lilianweng.github.io/posts/2021-07-11-diffusion-models/", why: "Clean survey before reading the DDPM paper." },
         { t: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", len: "Book", url: "http://incompleteideas.net/book/the-book.html", why: "Reference for the hedging RL agent." } ] },
-      { topic: "Practice and profiles (add yours)", items: [
-        { t: "LeetCode — add profile link", by: "Adya", type: "Profile", len: "Soon", url: "#", why: "Paste your LeetCode URL here in content.js." } ] }
+      { topic: "Practice and profiles", items: [
+        { t: "LeetCode — add profile link", by: "Adya", type: "Profile", len: "Soon", url: "#", why: "Paste your LeetCode URL here in content.js when ready." } ] }
     ]
   },
 
@@ -309,8 +319,8 @@ window.CONTENT = {
         a: "I like clear write-ups and small demos that make a result checkable. At Nurix I worked inside a production speech stack with other engineers. I ask for the failure case early and prefer experiments you can re-run." },
       { id: "weak", keys: ["weakness", "weaknesses", "improve", "growth", "challenge", "hardest"], src: "Profile",
         a: "I can over-invest in getting the evaluation story right before shipping a rough prototype. I am getting better at landing a thin vertical slice first, then deepening the probes once something runs end to end." },
-      { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive"], src: "Shelf",
-        a: "I keep an ML study module on Google Drive — maths, papers and experiments in my own words. Open it from the Shelf stop, or ask me about a topic and I will point to the closest project or paper." },
+      { id: "study", keys: ["study", "book", "module", "learn", "learning", "shelf", "drive", "blog", "blogs", "case study", "case studies", "writing"], src: "Shelf",
+        a: "On the Shelf stop I keep an ML study module on Google Drive, plus a row of technical blogs from past case work — citizen services, healthcare cloud, Zepto-style quick commerce, consulting cases and pitch material. Open any PDF from that row." },
       { id: "contact", keys: ["contact", "email", "reach", "resume", "cv", "github", "linkedin", "hello"], src: "Resume",
         a: "You can email srivastavadya@gmail.com, find code at github.com/Adya6714, or download the resume with the button at the top of the page." }
     ],
