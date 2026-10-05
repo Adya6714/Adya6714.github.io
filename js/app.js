@@ -119,7 +119,9 @@ const noteBy = id => C.notes.find(n => n.id === id), projBy = id => C.projects.f
   const n = noteBy(id); ov(`<button class="scroll" data-note="${id}"><b>${esc(n.title)}</b><span>${esc(n.project)}</span></button>`, x, y, w, h, r);
 });
 [["p-rvc", 294, 486, 244, 120, -4, 3], ["p-ocr", 318, 574, 284, 136, -4, 2], ["p-ddpm", 428, 658, 240, 152, -5, 1]].forEach(([id, x, y, w, h, r, z]) => {
-  const p = projBy(id); ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>Open case study</em></button>`, x, y, w, h, r, `z-index:${z};`);
+  const p = projBy(id); if (!p) return;
+  const cta = (p.group || []).includes("Research") ? "Open research" : "Open project";
+  ov(`<button class="pcard" data-proj="${id}" style="display:flex;flex-direction:column;justify-content:flex-end"><b>${esc(p.title)}</b><span>${esc(p.line)}</span><em>${esc(cta)}</em></button>`, x, y, w, h, r, `z-index:${z};`);
 });
 /* Arch banners: Nurix (top), FidelFolio (middle), Grasim (left). Khageshvara is panel-only. */
 [[0, 674, 274, 32, 68], [1, 696, 452, 40, 92], [2, 112, 447, 39, 84]].forEach(([ji, x, y, w, h]) => {
