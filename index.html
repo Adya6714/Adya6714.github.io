@@ -3,58 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Adya Srivastava | ML research engineer</title>
-<meta name="description" content="Adya Srivastava: research on how language models solve problems, vision-language confidence, and shipped ML systems.">
-<meta name="theme-color" content="#06191c">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Adya Srivastava | ML research engineer">
-<meta property="og:description" content="Follow the river: research, projects, and an async interview where you can Ask Adya how she thinks.">
-<meta property="og:image" content="https://adya6714.github.io/assets/og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Painted waterfall and river path through a mossy forest">
+<title>Adya Srivastava | ML research and engineering</title>
+<meta name="description" content="Adya Srivastava: research on how language models reason, vision-language confidence, generative models for markets, and shipped ML systems.">
+<meta name="theme-color" content="#03141a">
+<meta property="og:title" content="Adya Srivastava | ML research and engineering">
+<meta property="og:description" content="Research, projects and an interview room where you can question my work.">
+<meta property="og:image" content="assets/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Adya Srivastava | ML research engineer">
-<meta name="twitter:description" content="Follow the river: research, projects, and an async interview where you can Ask Adya how she thinks.">
-<meta name="twitter:image" content="https://adya6714.github.io/assets/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=ux2">
-<link rel="preload" as="image" href="assets/photo.jpg" fetchpriority="high">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Adya Srivastava","jobTitle":"ML research engineer","alumniOf":"BITS Pilani","sameAs":["https://github.com/Adya6714","https://www.linkedin.com/in/adyasri","https://openreview.net/forum?id=d8w4gMVQ1w"]}</script>
 </head>
 <body class="loading">
-<a class="skip-link" href="#panels">Skip to content</a>
-<canvas id="scene" aria-hidden="true"></canvas>
-<div id="map"><div id="mapInner" aria-label="Interactive map of the river"></div></div>
+<div id="bg"><canvas id="scene" aria-hidden="true"></canvas></div>
+<div id="veil"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
-<div class="loader"><span>Following the river…</span></div>
+<div id="progress"><i></i></div>
 
-<header class="nav">
-  <button type="button" class="brand" data-go="0">Adya Srivastava</button>
-  <nav class="site-tabs" aria-label="Site sections">
-    <a href="index.html" aria-current="page">River</a>
-    <a href="writing.html">Writing</a>
-    <a href="other.html">Other work</a>
+<header class="nav" id="nav">
+  <a class="brand" href="#hero">Adya Srivastava</a>
+  <nav class="links" id="navLinks" aria-label="Sections">
+    <a href="#research">Research</a><a href="#projects">Projects</a><a href="#path">Path</a><a href="#shelf">Shelf</a><a href="#ask">Ask</a><a href="#pond">Koi</a><a href="#about">About</a>
   </nav>
-  <button type="button" class="l" data-go="1">Research</button>
-  <button type="button" class="l" data-go="2">Projects</button>
-  <button type="button" class="l" data-go="3">Path</button>
-  <button type="button" class="l" data-go="4">Skills</button>
-  <button type="button" class="l" data-go="5">Ask</button>
-  <button type="button" class="l" data-go="6">About</button>
-  <button type="button" class="btn sm" id="calmBtn" aria-pressed="false" title="Stops the water animation">Calm mode</button>
-  <a class="btn primary sm resume" href="#" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>Resume</a>
+  <div class="tools">
+    <button class="icon" id="nightBtn" aria-pressed="false" aria-label="Night mode" title="Night mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="icon" id="calmBtn" aria-pressed="false" aria-label="Calm mode, stops animation" title="Calm mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></button>
+    <a class="btn primary sm resume" href="assets/Resume_Adya_Srivastava.pdf" download>Resume</a>
+    <button class="icon menu" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
 </header>
-<nav class="dots" id="dots" aria-label="Journey stops"></nav>
-<div id="panels"></div>
-<main id="track" aria-hidden="true"></main>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="sheet" data-lenis-prevent><button class="x" id="mClose" aria-label="Close">&times;</button><div id="mBody"></div></div></div>
+<aside class="rail" id="rail" aria-label="Find me"></aside>
+<button class="dropTab" id="dropTab" aria-label="Drop me a card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Drop me a card</span></button>
+
+<main id="main">
+  <section id="hero" aria-label="Introduction"></section>
+  <section id="research"></section>
+  <section id="projects"></section>
+  <section id="path"></section>
+  <section id="shelf"></section>
+  <section id="ask"></section>
+  <section id="pond"></section>
+  <section id="about"></section>
+  <section id="card"></section>
+</main>
+<footer class="foot" id="foot"></footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="sheet"><button class="x" id="mClose" aria-label="Close">&times;</button><div id="mBody"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
+<noscript><div style="position:relative;z-index:5;padding:120px 24px;max-width:720px;margin:auto;color:#eef8f5;font:17px/1.6 sans-serif"><h1>Adya Srivastava</h1><p>ML research and engineering. Research on how language models reason, vision-language confidence, and generative models for markets. This page needs JavaScript. Find me on <a href="https://github.com/Adya6714" style="color:#72f1df">GitHub</a> and <a href="https://www.linkedin.com/in/adyasri" style="color:#72f1df">LinkedIn</a>, or email srivastavadya@gmail.com.</p></div></noscript>
 
-<script id="sceneFrag" type="x-shader/x-fragment">
-#ifdef GL_FRAGMENT_PRECISION_HIGH
+<script id="sceneFrag" type="x-shader/x-fragment">#ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
 #else
 precision mediump float;
@@ -66,7 +67,8 @@ uniform vec4 uCam;      // visible map rect in UV: x0, y0, w, h
 uniform vec2 uRes;      // canvas size in pixels
 uniform vec2 uMap;      // map size in source pixels (848, 1264)
 uniform float uTime;
-uniform float uMotion;  // 1 = animated, 0 = calm mode
+uniform float uMotion;
+uniform float uNight;  // 1 = animated, 0 = calm mode
 uniform vec3 uRip[8];   // screen uv x, y (top-left origin), age in seconds
 
 float hash(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p,p+45.32); return fract(p.x*p.y); }
@@ -114,7 +116,7 @@ void main(){
     // glints on calm water
     float calm = 1.0 - smoothstep(0.2, 0.5, spd);
     float gl = pow(noise(vec2(px.x*0.55, px.y*0.9) + vec2(0.0, -t*0.6)), 24.0);
-    moving += vec3(0.9,1.0,1.0)*gl*calm*(1.0-foam)*0.6*uMotion;
+    moving += vec3(0.9,1.0,1.0)*gl*calm*(1.0-foam)*0.9*uMotion;
 
     col = mix(base, moving, water);
   }
@@ -136,16 +138,23 @@ void main(){
   vec2 m2 = (px - vec2(650.0, 945.0))/vec2(110.0, 55.0);
   float mist = exp(-dot(m1,m1))*0.55 + exp(-dot(m2,m2))*0.40;
   mist *= 0.55 + 0.9*fbm(px*0.012 + vec2(t*0.05, -t*0.11));
-  col += vec3(0.80,0.93,0.96)*mist*0.16*(0.6+0.4*uMotion);
+  col += vec3(0.80,0.93,0.96)*mist*0.22*(0.6+0.4*uMotion);
 
   float vg = smoothstep(1.25, 0.35, length((s-0.5)*vec2(1.0,1.1)));
-  col *= mix(0.85, 1.0, vg);
+  col *= mix(0.72, 1.0, vg);
+  vec3 nc = col*vec3(0.50,0.66,1.0)*0.82 + vec3(0.008,0.014,0.05);
+  nc += vec3(0.20,0.45,0.60)*water*0.05 + vec3(0.30,0.75,0.9)*pow(max(base.g-0.55,0.0),2.0)*0.4;
+  col = mix(col, nc, uNight);
   gl_FragColor = vec4(col, 1.0);
 }
 </script>
-<script src="js/config.js?v=ux2"></script>
-<script src="js/content.js?v=ux2"></script>
-<script src="js/interview.js?v=d8b"></script>
-<script src="js/app.js?v=ux2"></script>
+<script src="js/assets.js"></script>
+<script src="js/config.js"></script>
+<script src="js/content.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/interview.js"></script>
+<script src="js/koi.js"></script>
+<script src="js/site.js"></script>
+
 </body>
 </html>
