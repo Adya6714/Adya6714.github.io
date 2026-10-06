@@ -395,5 +395,5 @@ const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { 
 function setCalm(v) { S.calm = v; document.body.classList.toggle("calm", v); $("#calmBtn").setAttribute("aria-pressed", String(v)); store.set("calm", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
 function setNight(v) { S.night = v; document.body.classList.toggle("night", v); $("#nightBtn").setAttribute("aria-pressed", String(v)); store.set("night", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
 $("#calmBtn").onclick = () => setCalm(!S.calm); $("#nightBtn").onclick = () => setNight(!S.night);
-setCalm(store.get("calm") === "1" || reduce); setNight(store.get("night") === "1");
+setCalm(store.get("calm") === "1" || reduce); setNight(store.get("night") !== "0");
 })();
