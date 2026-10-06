@@ -336,7 +336,7 @@ function dropCard() {
 
 /* ---------- Rail, footer ---------- */
 function rail() {
-  const items = [["GitHub", L.github, I.gh], ["LinkedIn", L.linkedin, I.in], ["OpenReview", L.openreview, I.or], ["Kaggle", L.kaggle, I.kg], ["Email", "mailto:" + L.email, I.mail], ["Resume", L.resume, I.cv]];
+  const items = [["GitHub", L.github, I.gh], ["LinkedIn", L.linkedin, I.in], ["OpenReview", L.openreview, I.or], ["Email", "mailto:" + L.email, I.mail], ["Resume", L.resume, I.cv]];
   $("#rail").innerHTML = items.map(([l, u, ic]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : u.endsWith(".pdf") ? "download" : ""} aria-label="${l}">${ic}<span>${l}</span></a>`).join("");
   $("#foot").innerHTML = `<div class="fl">${[["GitHub", L.github], ["LinkedIn", L.linkedin], ["OpenReview", L.openreview], ["Kaggle", L.kaggle], ["Meraki", L.meraki], ["Email", "mailto:" + L.email], ["Resume", L.resume]].map(([l, u]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${l}</a>`).join("")}</div><div>Built by Adya Srivastava. Last updated ${window.BUILD_DATE || ""}</div>`;
 }
