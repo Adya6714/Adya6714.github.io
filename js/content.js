@@ -293,16 +293,16 @@ window.CONTENT = {
   },
 
   cases: [
-    { t: "SBI Life – IdeationX 2.0", type: "Case study", line: "Insurance innovation for Gen Z, underserved customers, and everyday financial planning.", url: "assets/case-studies/sbi-life-ideationx-2.pdf" },
-    { t: "Kshana – Your Health at Your Fingertips", type: "Pitch deck", line: "Unified medical records across hospitals, diagnostics, wearables and insurance.", url: "assets/case-studies/kshana-health-at-your-fingertips.pdf" },
-    { t: "Zepto Café – Quick-Commerce Strategy", type: "Case study", line: "Private-label café strategy, hyperlocal infra, unit economics and growth bets.", url: "assets/case-studies/zepto-cafe-quick-commerce-strategy.pdf" },
-    { t: "Quick Commerce – Market & Growth Strategy", type: "Case study", line: "India’s Q-commerce market: dark stores, behaviour, bundling and SKU design.", url: "assets/case-studies/zepto-cafe-quick-commerce-strategy.pdf" },
-    { t: "AI-Powered Citizen Services – EY Techathon 5.0", type: "Case study", line: "Scheme eligibility, DigiLocker, multilingual AI help and grievance tracking.", url: "assets/case-studies/ai-powered-citizen-services-ey-techathon.pdf" },
-    { t: "E-Waste Management – Holistic Recycling Ecosystem", type: "Case study", line: "Collection, tracking, partnerships and blockchain traceability for e-waste.", url: "assets/case-studies/e-waste-management-recycling-ecosystem.pdf" },
+    { t: "SBI Life - IdeationX 2.0", type: "Case study", line: "Insurance innovation for Gen Z, underserved customers, and everyday financial planning.", url: "assets/case-studies/sbi-life-ideationx-2.pdf" },
+    { t: "Kshana - Your Health at Your Fingertips", type: "Pitch deck", line: "Unified medical records across hospitals, diagnostics, wearables and insurance.", url: "assets/case-studies/kshana-health-at-your-fingertips.pdf" },
+    { t: "Zepto Café - Quick-Commerce Strategy", type: "Case study", line: "Private-label café strategy, hyperlocal infra, unit economics and growth bets.", url: "assets/case-studies/zepto-cafe-quick-commerce-strategy.pdf" },
+    { t: "Quick Commerce - Market & Growth Strategy", type: "Case study", line: "India’s Q-commerce market: dark stores, behaviour, bundling and SKU design.", url: "assets/case-studies/zepto-cafe-quick-commerce-strategy.pdf" },
+    { t: "AI-Powered Citizen Services - EY Techathon 5.0", type: "Case study", line: "Scheme eligibility, DigiLocker, multilingual AI help and grievance tracking.", url: "assets/case-studies/ai-powered-citizen-services-ey-techathon.pdf" },
+    { t: "E-Waste Management - Holistic Recycling Ecosystem", type: "Case study", line: "Collection, tracking, partnerships and blockchain traceability for e-waste.", url: "assets/case-studies/e-waste-management-recycling-ecosystem.pdf" },
     { t: "Cloud Computing in Healthcare", type: "Case study", line: "Cloud-first health records, telemedicine and clinical decision support in India.", url: "assets/case-studies/cloud-computing-in-healthcare.pdf" },
-    { t: "Indian Financial System – Marxian Analysis", type: "Assignment", line: "Banking, credit, NPAs and exclusion through a Marxian lens.", url: "assets/case-studies/indian-financial-system-marxian-analysis.pdf" },
-    { t: "Parag Milk Foods – Equity & Portfolio Analysis", type: "Equity research", line: "Price, ratios and portfolio work with a cautious / avoid recommendation.", url: "assets/case-studies/parag-milk-foods-equity-portfolio-analysis.xlsx" },
-    { t: "Indian Hemp Market – Market Entry Strategy", type: "Case study", line: "Market sizing, value chain, risks and entry paths for hemp in India.", url: "assets/case-studies/indian-hemp-market-entry-strategy.pdf" }
+    { t: "Indian Financial System - Marxian Analysis", type: "Assignment", line: "Banking, credit, NPAs and exclusion through a Marxian lens.", url: "assets/case-studies/indian-financial-system-marxian-analysis.pdf" },
+    { t: "Parag Milk Foods - Equity & Portfolio Analysis", type: "Equity research", line: "Price, ratios and portfolio work with a cautious / avoid recommendation.", url: "assets/case-studies/parag-milk-foods-equity-portfolio-analysis.xlsx" },
+    { t: "Indian Hemp Market - Market Entry Strategy", type: "Case study", line: "Market sizing, value chain, risks and entry paths for hemp in India.", url: "assets/case-studies/indian-hemp-market-entry-strategy.pdf" }
   ],
 
   suggest: {
