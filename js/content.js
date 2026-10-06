@@ -4,8 +4,8 @@ window.CONTENT = {
     name: "Adya Srivastava",
     photo: "assets/photo.jpg",
     intro: [
-      "I'm Adya, an engineer who genuinely enjoys building things from scratch and figuring out how they work along the way. I'm especially interested in AI and ML, but what keeps me excited is the engineering and research around them: taking a vague question, digging into it, experimenting, breaking things, and eventually turning an idea into something that actually works. I love learning by building, and I'm constantly trying to go one level deeper than what I already know.",
-      "I'm currently looking for opportunities where I can work closely with interesting problems in AI/ML, research, and engineering. But I'm also here because I like talking to people who are building, experimenting, and thinking about the same things. If you're working on something interesting, have a different way of looking at AI/ML, have recently discovered something that changed how you think about the field, or simply have a few things you think I should know, I'd genuinely love to hear from you. I'm always up for a good conversation."
+      "I'm Adya — I build AI/ML systems end to end: take a fuzzy question, run the experiments, break what doesn't hold up, and ship what does. Research for the hard questions; engineering for making the answer real.",
+      "I'm looking for ML research and engineering roles, and I'm always glad to talk — a hackathon idea, a paper I should read, a different take on the field, or just hello. If you're building something interesting, drop me a note."
     ],
     openTo: ["ML research and engineering roles", "Hackathon teammates", "Resources you think I should know", "Conversations about AI/ML"],
     closingTitle: "At the core, I like making things.",
@@ -321,9 +321,10 @@ window.CONTENT = {
       co: "Khageshvara Aviation",
       role: "Product Development Lead and ML Intern",
       when: "May to Oct 2023",
+      flagText: "Khageshvara",
       stoneText: "Drone vision that spots people",
       stone: [640, 760],
-      color: "#8fd0ff",
+      color: "#7ec8e8",
       bullets: [
         "Built CNN vision pipelines for real-time human detection from drones.",
         "Built the financial model and pitch behind a successful DST funding round.",
@@ -336,14 +337,15 @@ window.CONTENT = {
       co: "Grasim (Aditya Birla Group)",
       role: "Research Engineer",
       when: "May to Jul 2024",
-      stoneText: "Railway track safety with sensors",
+      flagText: "Grasim",
+      stoneText: "Sensors and industrial control",
       stone: [690, 700],
-      color: "#ffc977",
+      color: "#e8c07a",
       bullets: [
-        "Designed 20+ PLC railway simulations for autonomous control and safety validation.",
-        "Built IR and IoT sensor networks for real-time track monitoring.",
+        "Designed 20+ PLC simulations for autonomous control and safety validation.",
+        "Built IR and IoT sensor networks for real-time monitoring on site.",
       ],
-      impact: ["98% trespassing detection accuracy", "20+ simulations"],
+      impact: ["98% detection accuracy on the monitoring task", "20+ simulations"],
       skills: ["IoT", "PLC", "Sensors"],
     },
     {
@@ -351,9 +353,10 @@ window.CONTENT = {
       co: "FidelFolio Investments",
       role: "Quant Investment Analyst",
       when: "May to Jun 2025",
+      flagText: "FidelFolio",
       stoneText: "Portfolio research, Sharpe up 42%",
       stone: [745, 610],
-      color: "#b9a6ff",
+      color: "#c4b4f0",
       bullets: [
         "Built a research workflow for portfolio analytics and Sharpe evaluation.",
         "Used genetic algorithms and Bayesian optimisation for risk-aware portfolios.",
@@ -371,9 +374,10 @@ window.CONTENT = {
       co: "Nurix AI",
       role: "ML Engineering Intern",
       when: "Jul to Dec 2025",
+      flagText: "Nurix AI",
       stoneText: "Speech AI in production",
       stone: [715, 470],
-      color: "#6ff0df",
+      color: "#6fd4c8",
       bullets: [
         "Built and deployed a TinyBERT voicemail detector with backend integration.",
         "Designed a word-error correction pipeline using Word2Vec, phonetic normalisation and LLM scoring.",

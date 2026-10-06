@@ -11,12 +11,12 @@ const MAP_W = 848, MAP_H = 1264;
 /* ---------- journey stops: focus box (map px) + panel side ---------- */
 const STOPS = [
   { id: "hello",     label: "Hello",     panel: "left",   box: [230, 0, 640, 300],     mbox: [230, 0, 640, 300] },
-  { id: "research",  label: "Research",  panel: "left",   box: [270, 280, 545, 500],   mbox: [270, 280, 545, 500] },
+  { id: "research",  label: "Research",  panel: "left",   box: [400, 250, 820, 520],   mbox: [400, 250, 820, 520] },
   { id: "projects",  label: "Projects",  panel: "bottom", box: [260, 470, 700, 820],   mbox: [260, 470, 700, 820] },
-  { id: "path",      label: "Path",      panel: "right",  box: [600, 260, 848, 740],   mbox: [600, 260, 848, 740] },
+  { id: "path",      label: "Path",      panel: "left",   box: [560, 280, 848, 760],   mbox: [560, 280, 848, 760] },
   { id: "shelf",     label: "Shelf",     panel: "right",  box: [20, 700, 380, 900],    mbox: [20, 700, 380, 900] },
   { id: "interview", label: "Ask",       panel: "left",   box: [330, 800, 640, 990],   mbox: [330, 800, 640, 990] },
-  { id: "card",      label: "About",     panel: "center", box: [150, 980, 760, 1264],  mbox: [150, 980, 760, 1264] }
+  { id: "card",      label: "About",     panel: "left",   box: [150, 980, 760, 1264],  mbox: [150, 980, 760, 1264] }
 ];
 const N = STOPS.length;
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,13 +31,20 @@ function heroPanel() {
   const paras = P.intro || P.aboutIntro || [];
   const intro = paras.map(p => `<p class="hello-p">${esc(p)}</p>`).join("");
   const openTo = (P.openTo || []).map(t => `<span class="chip c">${esc(t)}</span>`).join("");
+  const links = [
+    resumeBtn("btn sm"),
+    P.github ? `<a class="btn sm" href="${esc(P.github)}" target="_blank" rel="noopener">GitHub</a>` : "",
+    P.linkedin ? `<a class="btn sm" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : "",
+    P.openreview ? `<a class="btn sm" href="${esc(P.openreview)}" target="_blank" rel="noopener">OpenReview</a>` : "",
+    P.email ? `<a class="btn sm" href="mailto:${esc(P.email)}">Email</a>` : ""
+  ].filter(Boolean).join("");
   return `<h1 class="hello-name">${esc(P.name)}</h1>
   <div class="hello-intro">${intro}</div>
+  <div class="row hello-links">${links}</div>
   <p class="hello-open-label">I'm open to</p>
   <div class="chips hello-open">${openTo}</div>
   <div class="row hello-actions">
     <button type="button" class="btn primary" data-tour>Take the 60 second tour</button>
-    ${resumeBtn("btn")}
     <button type="button" class="btn" data-drop-card>Drop me a card</button>
   </div>`;
 }
@@ -110,7 +117,7 @@ function projectCardHTML(p) {
 function projectsPanel() {
   const filters = PROJECT_FILTERS.map((g, i) => `<button type="button" class="proj-filter ring-filter" data-ring-filter="${esc(g)}" aria-pressed="${i === 0}">${esc(g)}</button>`).join("");
   return `<div class="proj-ring-bar">
-    <div><h2>Projects</h2><p class="sub">${C.projects.length} builds on the river</p></div>
+    <div><h2>Projects</h2><p class="sub">${C.projects.length} repositories</p></div>
     <div class="proj-filters" role="group" aria-label="Filter projects">${filters}</div>
     <button type="button" class="btn sm" data-project-index>See all as a list</button>
   </div>`;
@@ -144,21 +151,33 @@ function mountProjectIndex() {
 }
 function jobBullets(j) { return j.bullets || j.pts || []; }
 function expPanel() {
+  const roles = C.jobs.map((j, i) => {
+    const year = (j.when || "").match(/\d{4}/g);
+    const yr = year ? year[year.length - 1] : "";
+    return `<button type="button" class="path-role" data-job="${i}">
+      <span class="path-role-flag" style="--flag:${esc(j.color || "#7ef5e4")}" aria-hidden="true"></span>
+      <span class="path-role-body">
+        <strong>${esc(j.flagText || j.co)}</strong>
+        <span>${esc(j.role)}${yr ? " · " + esc(yr) : ""}</span>
+        <em>${esc(j.stoneText || "")}</em>
+      </span>
+    </button>`;
+  }).join("");
   return `<h2>The path so far</h2>
-  <p class="sub path-sub">Follow the stones from 2023 to now. Tap one for the full story.</p>
+  <p class="sub path-sub">Four stops from 2023 to now. Tap a flag on the map or a row here for the story.</p>
+  <div class="path-roles" id="pathRoles">${roles}</div>
   <p class="path-progress" id="pathProgress"><span id="pathOpened">0</span> of ${C.jobs.length} opened</p>
   <p class="path-done" id="pathDone" hidden>That is the whole path. Questions? Ask the guardian.</p>`;
 }
 function skillsPanel() {
   return `<h2>Skills</h2>
-  <p class="sub skills-sub">Hover a row to light the matching crystal.</p>
+  <p class="sub skills-sub">What I reach for most often.</p>
   <div class="skills" id="skillsGrid">${C.skills.map(([g, items], i) =>
     `<div class="skrow" data-skill="${i}" tabindex="0">
       <span class="sklabel">${esc(g)}</span>
       <div class="chips">${items.map(n => `<span class="chip">${esc(n)}</span>`).join("")}</div>
     </div>`
-  ).join("")}</div>
-  <p class="skills-lib"><a class="linkish" href="library.html">Visit the library</a></p>`;
+  ).join("")}</div>`;
 }
 const GRADS = [["#0b3a4a", "#2a1b5c"], ["#0b4a3f", "#143a63"], ["#3b1f5c", "#0b3a4a"], ["#5c3b1f", "#0b3a4a"], ["#1f4a5c", "#0b2f2a"], ["#0b4a3f", "#4a1f5c"]];
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 4l14 8-14 8z"/></svg>';
@@ -206,6 +225,7 @@ function shelfPanel() {
     </a>`
   ).join("");
   return `<h2>Shelf</h2>
+  <p class="sub shelf-sub">Skills, study notes, watching list, practice, and writing beyond ML.</p>
   <div class="shelf-tabs" role="tablist">${tabs}</div>
   <div class="shelf-panels">
     <div class="shelf-pane on" data-shelf-pane="0" role="tabpanel">${skillRows}</div>
@@ -286,12 +306,13 @@ function dropCardHTML() {
 function aboutPanel() {
   const src = P.photo || CFG.PHOTO_URL || "assets/photo.jpg";
   const initials = (P.name || "AS").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
-  const photo = `<img class="about-photo" src="${esc(src)}" alt="${esc(P.name)}" width="140" height="140" loading="eager" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'about-photo placeholder',textContent:'${esc(initials)}'}));console.warn('photo missing');">`;
+  const photo = `<img class="about-photo" src="${esc(src)}?v=2" alt="${esc(P.name)}" width="160" height="160" loading="eager" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'about-photo placeholder',textContent:'${esc(initials)}'}));">`;
   const core = (P.closing || []).map(p => `<p class="about-p">${esc(p)}</p>`).join("");
   return `<div class="about-main">
     <div class="about-head">${photo}<div><h2>${esc(P.closingTitle || "At the core, I like making things.")}</h2></div></div>
     <div class="about-block">${core}</div>
     <div class="row about-links">${resumeBtn()}<a class="btn" href="mailto:${esc(P.email)}">Email</a><a class="btn" href="${esc(P.github)}" target="_blank" rel="noopener">GitHub</a><a class="btn" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="${esc(P.openreview)}" target="_blank" rel="noopener">OpenReview</a></div>
+    <p class="about-koi-hint">While you are here — feed the koi in the pool.</p>
   </div>`;
 }
 const BUILD = [heroPanel, researchPanel, projectsPanel, expPanel, shelfPanel, guardianPanel, aboutPanel];
@@ -321,44 +342,51 @@ const ov = (html, x, y, w, h, rot = 0, extra = "", stopIdx = "", id = "") => {
 };
 const researchBy = id => (C.research || []).find(r => r.id === id);
 const noteBy = id => (C.notes || []).find(n => n.id === id), projBy = id => C.projects.find(p => p.id === id);
-/* Research post-it notes (stop 1), 2 x 2 grid */
+/* Research post-it notes (stop 1), 2 x 2 grid on the visible bank */
 (() => { const id = "r-reasoning"; const paper = researchBy(id); if (!paper) return;
   const tag = researchTag(paper); const what = (paper.note && paper.note.what) || ""; const hl = researchHeadline(paper); const cap = researchCaption(paper);
-  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#f3d9a4"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 545, 300, 190, 120, -2, "z-index:5;", "1", id);
+  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#f3d9a4"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 470, 300, 170, 115, -2, "z-index:5;", "1", id);
 })();
 (() => { const id = "r-vision"; const paper = researchBy(id); if (!paper) return;
   const tag = researchTag(paper); const what = (paper.note && paper.note.what) || ""; const hl = researchHeadline(paper); const cap = researchCaption(paper);
-  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#b8e8d4"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 749, 300, 190, 120, 2, "z-index:5;", "1", id);
+  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#b8e8d4"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 660, 300, 170, 115, 2, "z-index:5;", "1", id);
 })();
 (() => { const id = "r-markets"; const paper = researchBy(id); if (!paper) return;
   const tag = researchTag(paper); const what = (paper.note && paper.note.what) || ""; const hl = researchHeadline(paper); const cap = researchCaption(paper);
-  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#d4c4f5"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 545, 434, 190, 120, 2, "z-index:5;", "1", id);
+  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#d4c4f5"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 470, 430, 170, 115, 2, "z-index:5;", "1", id);
 })();
 (() => { const id = "r-quantum"; const paper = researchBy(id); if (!paper) return;
   const tag = researchTag(paper); const what = (paper.note && paper.note.what) || ""; const hl = researchHeadline(paper); const cap = researchCaption(paper);
-  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#b5d4f5"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 749, 434, 190, 120, -2, "z-index:5;", "1", id);
+  ov(`<button type="button" class="postit" data-research-story="${esc(id)}" data-research="${esc(id)}" aria-label="${esc(tag)}: ${esc(paper.title)}" style="--postit:#b5d4f5"><i class="postit-pin" aria-hidden="true"></i><b>${esc(tag)}</b><span class="postit-what">${esc(what)}</span><strong class="postit-hl">${esc(hl)}</strong><em class="postit-cap">${esc(cap)}</em></button>`, 660, 430, 170, 115, -2, "z-index:5;", "1", id);
 })();
 /* Decorative lanterns in the rapids (stop 2), pulse when the strip scrolls */
 [[320, 560], [400, 640], [360, 720]].forEach(([x, y], i) => {
   ov(`<i class="lantern" aria-hidden="true" style="--i:${i}"></i>`, x, y, 28, 28, 0, "z-index:2;", "2", `lantern-${i}`);
 });
-/* Path stones (stop 3): oldest bottom to newest top, plus What's next */
+/* Path flags (stop 3): oldest bottom to newest top, plus What's next */
 const STONE_POS = [[680, 735], [715, 640], [700, 520], [690, 410]];
 C.jobs.forEach((j, i) => {
   const [x, y] = STONE_POS[i] || j.stone || [700, 400 + i * 80];
   j.stone = [x, y];
   const year = (j.when || "").match(/\d{4}/g);
   const yr = year ? year[year.length - 1] : "";
-  ov(`<button type="button" class="path-stone" data-job="${i}" style="--stone:${j.color}" aria-label="${esc(j.co)}: ${esc(j.stoneText || j.role)}">
-    <strong>${esc(j.stoneText || j.co)}</strong>
-    <span>${esc(j.co)}${yr ? " · " + esc(yr) : ""}</span>
-  </button>`, x, y, 130, 70, 0, "z-index:4;", "3", `stone-${i}`);
+  const label = j.flagText || j.co;
+  ov(`<button type="button" class="path-flag" data-job="${i}" style="--flag:${j.color}" aria-label="${esc(j.co)}: ${esc(j.stoneText || j.role)}">
+    <i class="flag-pole" aria-hidden="true"></i>
+    <span class="flag-cloth">
+      <strong>${esc(label)}</strong>
+      <span>${esc(j.stoneText || j.role)}${yr ? " · " + esc(yr) : ""}</span>
+    </span>
+  </button>`, x, y, 150, 72, 0, "z-index:4;", "3", `stone-${i}`);
 });
-ov(`<button type="button" class="path-stone path-stone-next" data-whats-next aria-label="What's next">
-  <strong>What's next</strong>
-  <span>Drop me a card</span>
-</button>`, 650, 320, 130, 70, 0, "z-index:4;", "3", "stone-next");
-/* Glowing dashed path through stones */
+ov(`<button type="button" class="path-flag path-flag-next" data-whats-next aria-label="What's next">
+  <i class="flag-pole" aria-hidden="true"></i>
+  <span class="flag-cloth">
+    <strong>What's next</strong>
+    <span>Drop me a card</span>
+  </span>
+</button>`, 650, 320, 150, 72, 0, "z-index:4;", "3", "stone-next");
+/* Soft dashed path through flags */
 (() => {
   const pts = [...STONE_POS, [650, 320]];
   const d = pts.map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join(" ");
@@ -369,22 +397,15 @@ ov(`<button type="button" class="path-stone path-stone-next" data-whats-next ari
   svg.style.cssText = "z-index:3;pointer-events:none;";
   MI.appendChild(svg);
 })();
-/* Crystal glows (no labels), light up when the matching skill row is hovered */
-[[0, 140, 780], [1, 260, 760], [2, 360, 800], [3, 220, 860], [4, 300, 900], [5, 180, 920]].forEach(([si, x, y]) => {
-  ov(`<i class="crystal-glow" data-skill="${si}" aria-hidden="true"></i>`, x, y, 56, 56, 0, "z-index:2;pointer-events:none;", "4", `crystal-${si}`);
-});
 const eyes = [mk('<i class="eye map-ov ov" data-stop="5"></i>'), mk('<i class="eye map-ov ov" data-stop="5"></i>')];
 eyes[0].dataset.mapX = "415"; eyes[0].dataset.mapY = "881"; eyes[0].dataset.mapW = "10"; eyes[0].dataset.mapH = "10";
 eyes[1].dataset.mapX = "439"; eyes[1].dataset.mapY = "881"; eyes[1].dataset.mapW = "10"; eyes[1].dataset.mapH = "10";
 eyes.forEach(e => MI.appendChild(e));
-const crackSvg = mk(`<svg class="guardian-cracks map-ov ov" data-stop="5" data-map-x="370" data-map-y="820" data-map-w="120" data-map-h="140" viewBox="0 0 120 140" aria-hidden="true">
-  <path class="crack" pathLength="1" d="M58 12 C52 38 70 48 48 72 C40 84 62 96 55 118"/>
-  <path class="crack" pathLength="1" d="M72 18 C78 42 60 58 82 78 C94 92 70 108 76 128"/>
-  <path class="crack" pathLength="1" d="M40 55 C55 62 68 58 88 66"/>
-</svg>`);
-crackSvg.dataset.mapX = "370"; crackSvg.dataset.mapY = "820"; crackSvg.dataset.mapW = "120"; crackSvg.dataset.mapH = "140";
-crackSvg.style.cssText = "z-index:3;pointer-events:none;";
-MI.appendChild(crackSvg);
+/* Feed-the-koi hit target (visible at About) */
+ov(`<button type="button" class="koi-feed-zone map-ov" data-feed-koi aria-label="Feed the koi">
+  <span>Feed the koi</span>
+  <em id="koiFedCount">Fed: 0</em>
+</button>`, 420, 1080, 200, 56, 0, "z-index:6;", "6", "koi-feed");
 
 /* ---------- work constellation (stop 0) ---------- */
 const CONSTELLATION = [
@@ -418,7 +439,7 @@ function mountConstellation() {
     <div class="const-counters" id="constCounters" aria-live="polite">
       <span data-count="papers" data-to="${(C.research || []).length}"><b>0</b> papers</span>
       <span data-count="projects" data-to="${(C.projects || []).length}"><b>0</b> projects</span>
-      <span data-count="roles" data-to="${(C.jobs || []).length}"><b>0</b> roles</span>
+      <span data-count="roles" data-to="${(C.jobs || []).length}"><b>0</b> internships</span>
     </div>
   </div>`);
   document.body.appendChild(host);
@@ -810,7 +831,7 @@ function layoutOverlays() {
     const rot = parseFloat(el.dataset.mapRot) || 0;
     const sx = (mx - x0) * k;
     const sy = (my - y0) * k;
-    const center = el.classList.contains("step-stone") || el.classList.contains("path-stone") || el.classList.contains("crystal-glow") || el.classList.contains("lantern") || el.classList.contains("eye");
+    const center = el.classList.contains("step-stone") || el.classList.contains("path-stone") || el.classList.contains("path-flag") || el.classList.contains("crystal-glow") || el.classList.contains("lantern") || el.classList.contains("eye") || el.classList.contains("koi-feed-zone");
     let tx = sx, ty = sy;
     if (center && mw && mh) { tx = sx - (mw * k) / 2; ty = sy - (mh * k) / 2; }
     let transform = `translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0)`;
@@ -905,6 +926,113 @@ const fxc = $("#fx"), fx = fxc.getContext("2d");
 const flies = Array.from({ length: 16 }, () => ({ x: Math.random(), y: Math.random(), z: .35 + Math.random() * .9, p: Math.random() * 6.28, warm: Math.random() < .4 }));
 const drops = [];
 const SPRAY = [[420, 262, 180, 5], [650, 948, 60, 2]];
+const KOI_POOL = { cx: 480, cy: 1120, rx: 160, ry: 70 };
+const KOI_COLORS = ["#f08a3a", "#f5f0e6", "#e8c547", "#e87840", "#fff6e8", "#d4a017"];
+const koi = Array.from({ length: 6 }, (_, i) => ({
+  a: (i / 6) * Math.PI * 2,
+  r: 0.35 + (i % 3) * 0.18,
+  speed: 0.35 + (i % 4) * 0.08,
+  phase: Math.random() * 6.28,
+  color: KOI_COLORS[i],
+  thankUntil: 0
+}));
+const pellets = [];
+let koiFed = 0, koiCircleUntil = 0;
+function mapToScreen(mx, my) {
+  return { x: (mx - cam.x0) * cam.k, y: (my - cam.y0) * cam.k };
+}
+function dropKoiPellet(clientX, clientY) {
+  if (!document.body.classList.contains("at-about")) return;
+  const mx = cam.x0 + clientX / cam.k;
+  const my = cam.y0 + clientY / cam.k;
+  const dx = (mx - KOI_POOL.cx) / KOI_POOL.rx;
+  const dy = (my - KOI_POOL.cy) / KOI_POOL.ry;
+  if (dx * dx + dy * dy > 1.35) {
+    /* still allow feed button */
+  }
+  pellets.push({ x: mx, y: my, life: 4.5, eaten: false });
+  if (pellets.length > 5) pellets.shift();
+  pushRip(clientX, clientY);
+}
+function feedKoiFromUI() {
+  const sx = mapToScreen(KOI_POOL.cx + (Math.random() - .5) * 40, KOI_POOL.cy + (Math.random() - .5) * 20);
+  dropKoiPellet(sx.x, sx.y);
+}
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-feed-koi]")) {
+    e.preventDefault();
+    feedKoiFromUI();
+    return;
+  }
+  if (!document.body.classList.contains("at-about")) return;
+  if (e.target.closest("a,button,input,textarea,select,.panel,.drop-final,.drop-drawer,.nav,.dots,.modal")) return;
+  dropKoiPellet(e.clientX, e.clientY);
+});
+function drawKoi(t, dt) {
+  const atAbout = document.body.classList.contains("at-about");
+  if (!atAbout && !pellets.length) return;
+  const circle = t < koiCircleUntil;
+  for (const p of pellets) {
+    if (p.eaten) continue;
+    p.life -= dt;
+    const s = mapToScreen(p.x, p.y);
+    fx.fillStyle = `rgba(255,220,140,${Math.max(0, Math.min(1, p.life))})`;
+    fx.beginPath(); fx.arc(s.x, s.y, 3.5 * Math.sqrt(cam.k), 0, 6.283); fx.fill();
+  }
+  for (let i = pellets.length - 1; i >= 0; i--) if (pellets[i].life <= 0 || pellets[i].eaten) pellets.splice(i, 1);
+  koi.forEach((f, i) => {
+    if (!preferReduced && motion) {
+      if (circle) f.a += dt * 1.4;
+      else f.a += dt * f.speed;
+    }
+    let tx = KOI_POOL.cx + Math.cos(f.a) * KOI_POOL.rx * f.r;
+    let ty = KOI_POOL.cy + Math.sin(f.a * 1.1 + f.phase) * KOI_POOL.ry * f.r;
+    let angle = f.a + Math.PI / 2;
+    const target = pellets.find(p => !p.eaten && p.life > 0.2);
+    if (target && !circle) {
+      const dx = target.x - tx, dy = target.y - ty;
+      const dist = Math.hypot(dx, dy) || 1;
+      tx += (dx / dist) * Math.min(dist, 90 * dt);
+      ty += (dy / dist) * Math.min(dist, 90 * dt);
+      angle = Math.atan2(dy, dx);
+      if (dist < 14) {
+        target.eaten = true;
+        koiFed++;
+        f.thankUntil = t + 1.4;
+        const count = $("#koiFedCount");
+        if (count) count.textContent = `Fed: ${koiFed}`;
+        const sc = mapToScreen(tx, ty);
+        pushRip(sc.x, sc.y);
+        say(koiFed >= 10 && koiFed % 10 === 0 ? "They like you." : "Thank you!");
+        if (koiFed === 10) koiCircleUntil = t + 3.2;
+      }
+    }
+    const s = mapToScreen(tx, ty);
+    const len = 16 * Math.min(1.4, Math.max(0.7, cam.k));
+    const wag = preferReduced || !motion ? 0 : Math.sin(t * 8 + f.phase) * 0.35;
+    fx.save();
+    fx.translate(s.x, s.y);
+    fx.rotate(angle + wag);
+    fx.fillStyle = f.color;
+    fx.beginPath();
+    fx.ellipse(0, 0, len, len * 0.38, 0, 0, 6.283);
+    fx.fill();
+    fx.beginPath();
+    fx.moveTo(-len * 0.85, 0);
+    fx.lineTo(-len * 1.35, len * 0.35 + wag * 6);
+    fx.lineTo(-len * 1.35, -len * 0.35 - wag * 6);
+    fx.closePath();
+    fx.fill();
+    fx.fillStyle = "rgba(20,20,20,.55)";
+    fx.beginPath(); fx.arc(len * 0.45, -len * 0.08, 1.4, 0, 6.283); fx.fill();
+    fx.restore();
+    if (f.thankUntil > t) {
+      fx.fillStyle = `rgba(230,255,250,${(f.thankUntil - t) / 1.4})`;
+      fx.font = `600 ${Math.round(12 * Math.min(1.2, cam.k))}px ${getComputedStyle(document.body).getPropertyValue("--display") || "sans-serif"}`;
+      fx.fillText("thanks!", s.x + 10, s.y - 14);
+    }
+  });
+}
 function drawFx(t, dt) {
   fx.clearRect(0, 0, W, H);
   const drawMoss = () => {
@@ -924,7 +1052,7 @@ function drawFx(t, dt) {
       }
     }
   };
-  if (!motion) { drawMoss(); return; }
+  if (!motion) { drawMoss(); drawKoi(t, dt); return; }
   fx.globalCompositeOperation = "lighter";
   for (const f of flies) {
     const x = f.x * W + Math.sin(t * .3 + f.p * 2) * 40, y = ((f.y * H + Math.sin(t * .45 + f.p) * 30) % H + H) % H;
@@ -945,6 +1073,7 @@ function drawFx(t, dt) {
   }
   fx.globalCompositeOperation = "source-over";
   drawMoss();
+  drawKoi(t, dt);
 }
 
 /* ---------- ripples ---------- */
@@ -1082,7 +1211,7 @@ function openPathStone(i) {
     ${impact ? `<h4>Impact</h4><ul class="path-impact">${impact}</ul>` : ""}
     <div class="chips">${chips}</div>
     <div class="row" style="margin-top:12px">
-      ${nextI != null ? `<button type="button" class="btn primary" data-next-stone="${nextI}">Next stone</button>` : `<button type="button" class="btn primary" data-whats-next>What's next</button>`}
+      ${nextI != null ? `<button type="button" class="btn primary" data-next-stone="${nextI}">Next stop</button>` : `<button type="button" class="btn primary" data-whats-next>What's next</button>`}
       <button type="button" class="btn" data-path-dive-close>Close</button>
     </div>
   </div>`);
@@ -1092,10 +1221,11 @@ function openPathStone(i) {
 document.addEventListener("click", e => {
   if (e.target.closest("[data-path-dive-close]") || e.target.id === "pathDive" && e.target === e.currentTarget) closePathDive();
   const ns = e.target.closest("[data-next-stone]"); if (ns) { openPathStone(+ns.dataset.nextStone); return; }
-  const stone = e.target.closest(".path-stone[data-job]"); if (stone) { go(3, 400); openPathStone(+stone.dataset.job); return; }
+  const stone = e.target.closest(".path-flag[data-job], .path-stone[data-job]"); if (stone) { go(3, 400); openPathStone(+stone.dataset.job); return; }
+  const roleBtn = e.target.closest(".path-role[data-job]"); if (roleBtn) { openPathStone(+roleBtn.dataset.job); return; }
   if (e.target.closest("[data-whats-next]")) {
     go(6, 700);
-    setTimeout(() => document.querySelector("[data-drop-card]")?.click(), 750);
+    setTimeout(() => { if (window.__openDropDrawer) window.__openDropDrawer(); else $("#dropMsg")?.focus(); }, 750);
   }
 });
 document.addEventListener("keydown", e => {
@@ -1105,7 +1235,7 @@ document.addEventListener("keydown", e => {
 
 function setPathHighlight(i) {
   $$(".path-role").forEach(el => el.classList.toggle("lit", i != null && +el.dataset.job === i));
-  $$(".path-stone", MI).forEach(el => el.classList.toggle("lit", i != null && el.dataset.job != null && +el.dataset.job === i));
+  $$(".path-flag, .path-stone", MI).forEach(el => el.classList.toggle("lit", i != null && el.dataset.job != null && +el.dataset.job === i));
 }
 $$(".path-role").forEach(role => {
   const i = +role.dataset.job;
@@ -1113,27 +1243,11 @@ $$(".path-role").forEach(role => {
   role.addEventListener("pointerleave", () => setPathHighlight(null));
   role.addEventListener("focusin", () => setPathHighlight(i));
   role.addEventListener("focusout", () => setPathHighlight(null));
-  const head = $(".path-role-head", role);
-  head?.addEventListener("click", () => {
-    const extra = $(".path-extra", role);
-    if (!extra) return;
-    const open = role.classList.toggle("open");
-    head.setAttribute("aria-expanded", String(open));
-    extra.hidden = !open;
-    const tog = $(".tog", head);
-    if (tog) tog.textContent = open ? "Less" : "More";
-  });
 });
-$$(".step-stone", MI).forEach(stone => {
+$$(".path-flag[data-job], .step-stone", MI).forEach(stone => {
   const i = +stone.dataset.job;
   stone.addEventListener("pointerenter", () => setPathHighlight(i));
   stone.addEventListener("pointerleave", () => setPathHighlight(null));
-  stone.addEventListener("click", () => {
-    go(3);
-    const role = $(`.path-role[data-job="${i}"]`);
-    role?.scrollIntoView({ block: "nearest" });
-    setPathHighlight(i);
-  });
 });
 $$(".banner", MI).forEach(b => {
   const i = +b.dataset.job;
@@ -1141,17 +1255,27 @@ $$(".banner", MI).forEach(b => {
   b.addEventListener("pointerleave", () => setPathHighlight(null));
 });
 
-/* ---------- skills ↔ crystal glows ---------- */
-function setSkillGlow(i) {
-  $$(".skrow").forEach(el => el.classList.toggle("lit", i != null && +el.dataset.skill === i));
-  $$(".crystal-glow", MI).forEach(el => el.classList.toggle("lit", i != null && +el.dataset.skill === i));
-}
+/* ---------- shelf tabs + skill rows ---------- */
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-shelf-tab]");
+  if (!tab) return;
+  const i = +tab.dataset.shelfTab;
+  $$(".shelf-tab").forEach(t => {
+    const on = +t.dataset.shelfTab === i;
+    t.setAttribute("aria-selected", String(on));
+    t.classList.toggle("on", on);
+  });
+  $$(".shelf-pane").forEach(p => {
+    const on = +p.dataset.shelfPane === i;
+    p.classList.toggle("on", on);
+    p.hidden = !on;
+  });
+});
 $$(".skrow").forEach(row => {
-  const i = +row.dataset.skill;
-  row.addEventListener("pointerenter", () => setSkillGlow(i));
-  row.addEventListener("pointerleave", () => setSkillGlow(null));
-  row.addEventListener("focusin", () => setSkillGlow(i));
-  row.addEventListener("focusout", () => setSkillGlow(null));
+  row.addEventListener("pointerenter", () => row.classList.add("lit"));
+  row.addEventListener("pointerleave", () => row.classList.remove("lit"));
+  row.addEventListener("focusin", () => row.classList.add("lit"));
+  row.addEventListener("focusout", () => row.classList.remove("lit"));
 });
 
 /* ---------- project strip + index ---------- */
@@ -1450,7 +1574,7 @@ const say = m => { toast.textContent = m; toast.classList.add("on"); clearTimeou
 $$(".resume").forEach(b => { if (CFG.RESUME_URL) b.href = CFG.RESUME_URL; else b.addEventListener("click", e => { e.preventDefault(); say("Resume download is set up in the codebase (assets/Resume_Adya_Srivastava.pdf)."); }); });
 
 mountDropCardUI();
-/* ---------- Drop a card (stop 6) ---------- */
+/* ---------- Drop a card ---------- */
 const dropForm = $("#dropForm"), dropMsg = $("#dropMsg"), dropAnon = $("#dropAnon");
 const dropIdentity = $("#dropIdentity"), dropName = $("#dropName"), dropEmail = $("#dropEmail");
 const dropStatus = $("#dropStatus"), dropSend = $("#dropSend"), dropType = $("#dropType");
@@ -1497,16 +1621,6 @@ function resetDropCard() {
   dropStatus.textContent = "";
 }
 dropAgain?.addEventListener("click", () => { resetDropCard(); dropForm.reset(); syncDropAnon(); $$(".card-type").forEach((b, i) => { b.classList.toggle("on", i === 0); b.setAttribute("aria-pressed", String(i === 0)); }); if (dropType) dropType.value = (C.suggest?.types || ["Suggestion"])[0]; dropMsg?.focus(); });
-
-document.addEventListener("click", e => {
-  if (!e.target.closest("[data-drop-card]")) return;
-  e.preventDefault();
-  go(N - 1);
-  setTimeout(() => {
-    $("#dropCard")?.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
-    dropMsg?.focus();
-  }, preferReduced ? 0 : 700);
-});
 
 function playDropAnimation(done) {
   if (preferReduced) { done(); return; }
@@ -1636,8 +1750,9 @@ function openIvQuestion(id) {
     ${item.challenge ? `<div class="ask-challenge"><span>What you might challenge</span><p>${esc(item.challenge)}</p></div>` : ""}
     ${next ? `<div class="ask-next"><span>You might ask next</span><div class="ask-qlist">${next}</div></div>` : ""}`;
   ivAnswer.scrollIntoView({ block: "nearest", behavior: preferReduced ? "auto" : "smooth" });
-  MI.classList.add("speaking");
-  setTimeout(() => MI.classList.remove("speaking"), preferReduced ? 400 : 1600);
+  awakenGuardian();
+  MI.classList.add("speaking", "guardian-alive");
+  setTimeout(() => MI.classList.remove("speaking"), preferReduced ? 400 : 2200);
 }
 function setIvTrack(id) {
   ivTrack = id;
@@ -1670,7 +1785,8 @@ function closestQuestions(text, n = 3) {
 async function askFreeform(question) {
   const q = question.trim(); if (!q || busy) return;
   busy = true;
-  MI.classList.add("speaking");
+  awakenGuardian();
+  MI.classList.add("speaking", "guardian-alive");
   if (CFG.GUARDIAN_API) {
     if (ivHits) {
       ivHits.hidden = false;
@@ -1689,7 +1805,7 @@ async function askFreeform(question) {
         }
         if (ivHits) ivHits.hidden = true;
         busy = false;
-        setTimeout(() => MI.classList.remove("speaking"), 1200);
+        setTimeout(() => MI.classList.remove("speaking"), 1600);
         return;
       }
     } catch (_) { /* fall through to bank search */ }
@@ -1704,7 +1820,7 @@ async function askFreeform(question) {
       : `<p class="iv-hits-label">No close match. Try a track above, or email ${esc(P.email || "srivastavadya@gmail.com")}.</p>`;
   }
   busy = false;
-  setTimeout(() => MI.classList.remove("speaking"), 600);
+  setTimeout(() => MI.classList.remove("speaking"), 900);
 }
 
 document.addEventListener("click", e => {
@@ -1870,17 +1986,28 @@ function mountDropCardUI() {
   document.body.appendChild(final);
   const card = mk(dropCardHTML());
   $("#dropDrawerBody", drawer).appendChild(card);
-  const openDrawer = () => { drawer.hidden = false; document.body.classList.add("drop-drawer-open"); };
+  const openDrawer = () => {
+    if (document.body.classList.contains("at-about")) {
+      final.hidden = false;
+      $("#dropMsg")?.focus();
+      return;
+    }
+    drawer.hidden = false;
+    document.body.classList.add("drop-drawer-open");
+    setTimeout(() => $("#dropMsg")?.focus(), 50);
+  };
   const closeDrawer = () => { drawer.hidden = true; document.body.classList.remove("drop-drawer-open"); };
   tab.addEventListener("click", openDrawer);
   $("#dropDrawerClose", drawer).addEventListener("click", closeDrawer);
   document.addEventListener("click", e => {
-    if (e.target.closest("[data-drop-card]")) {
-      e.preventDefault();
-      if (document.body.classList.contains("at-about")) return;
-      openDrawer();
-    }
+    if (!e.target.closest("[data-drop-card]")) return;
+    e.preventDefault();
+    openDrawer();
   });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !drawer.hidden) closeDrawer();
+  });
+  window.__openDropDrawer = openDrawer;
   window.__showDropFinal = on => {
     if (on) {
       final.appendChild(card);
