@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Adya Srivastava","jobTitle":"ML research engineer","alumniOf":"BITS Pilani","sameAs":["https://github.com/Adya6714","https://www.linkedin.com/in/adyasri","https://openreview.net/forum?id=d8w4gMVQ1w"]}</script>
 </head>
 <body class="loading">
@@ -36,6 +36,14 @@
 </header>
 
 <aside class="rail" id="rail" aria-label="Find me"></aside>
+<div class="playTab" id="playTab">
+  <button class="playBtn" id="playBtn" aria-label="Play" aria-expanded="false" aria-controls="playMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r=".9" fill="currentColor"/><circle cx="18" cy="13.5" r=".9" fill="currentColor"/></svg><span>Play</span></button>
+  <div class="playMenu" id="playMenu" hidden>
+    <b>Little games on this site</b>
+    <a href="#pond" data-play="pond"><i>🐟</i><span><strong>Feed the koi</strong><em>Tap the water and the fish say thanks</em></span></a>
+    <a href="#ask" data-play="ask"><i>🗿</i><span><strong>Wake the guardian</strong><em>Ask a question and the stone comes alive</em></span></a>
+  </div>
+</div>
 <button class="dropTab" id="dropTab" aria-label="Drop me a card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Drop me a card</span></button>
 
 <main id="main">
@@ -148,13 +156,13 @@ void main(){
   gl_FragColor = vec4(col, 1.0);
 }
 </script>
-<script src="js/assets.js?v=7"></script>
-<script src="js/config.js?v=7"></script>
-<script src="js/content.js?v=7"></script>
-<script src="js/scene.js?v=7"></script>
-<script src="js/interview.js?v=7"></script>
-<script src="js/koi.js?v=7"></script>
-<script src="js/site.js?v=7"></script>
+<script src="js/assets.js?v=8"></script>
+<script src="js/config.js?v=8"></script>
+<script src="js/content.js?v=8"></script>
+<script src="js/scene.js?v=8"></script>
+<script src="js/interview.js?v=8"></script>
+<script src="js/koi.js?v=8"></script>
+<script src="js/site.js?v=8"></script>
 
 </body>
 </html>

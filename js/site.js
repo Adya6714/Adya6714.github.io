@@ -369,6 +369,17 @@ document.addEventListener("click", e => {
 });
 function goDrop() { document.getElementById("card").scrollIntoView({ behavior: reduce || S.calm ? "auto" : "smooth" }); setTimeout(() => { const t = $("#cMsg"); if (t) t.focus({ preventScroll: true }); }, 700); }
 $("#dropTab").onclick = goDrop;
+const playBtn = $("#playBtn"), playMenu = $("#playMenu");
+const setPlay = open => { playMenu.hidden = !open; playBtn.setAttribute("aria-expanded", String(open)); };
+playBtn.onclick = e => { e.stopPropagation(); setPlay(playMenu.hidden); };
+playMenu.addEventListener("click", e => {
+  const a = e.target.closest("[data-play]"); if (!a) return;
+  e.preventDefault(); setPlay(false);
+  document.getElementById(a.dataset.play).scrollIntoView({ behavior: reduce || S.calm ? "auto" : "smooth" });
+  if (a.dataset.play === "ask") setTimeout(() => { const t = $("#askIn"); if (t) t.focus({ preventScroll: true }); }, 700);
+});
+document.addEventListener("click", e => { if (!playMenu.hidden && !e.target.closest("#playTab")) setPlay(false); });
+addEventListener("keydown", e => { if (e.key === "Escape" && !playMenu.hidden) { setPlay(false); playBtn.focus(); } });
 
 /* nav highlight, progress, drop tab visibility, veil */
 const secs = ["hero", "research", "projects", "path", "shelf", "ask", "pond", "about", "card"].map(id => document.getElementById(id));
