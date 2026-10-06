@@ -22,6 +22,7 @@ window.CONTENT = {
     openreview: "https://openreview.net/forum?id=d8w4gMVQ1w",
     kaggle: "https://www.kaggle.com/adyasrivastava",
     youtube: "https://www.youtube.com/@adyasrivastava9398",
+    twitter: "https://x.com/adyasrivastava2",
     meraki: "https://srivastavadya.wixsite.com/meraki14",
     email: "srivastavadya@gmail.com",
     resume: "assets/Resume_Adya_Srivastava.pdf"
