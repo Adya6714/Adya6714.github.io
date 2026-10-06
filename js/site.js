@@ -350,7 +350,7 @@ function dropCard() {
 function rail() {
   const items = [["GitHub", L.github, I.gh], ["LinkedIn", L.linkedin, I.in], ["X", L.twitter, I.x], ["YouTube", L.youtube, I.yt], ["OpenReview", L.openreview, I.or], ["Email", "mailto:" + L.email, I.mail], ["Resume", L.resume, I.cv]];
   $("#rail").innerHTML = items.map(([l, u, ic]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : u.endsWith(".pdf") ? "download" : ""} aria-label="${l}">${ic}<span>${l}</span></a>`).join("");
-  $("#foot").innerHTML = `<div class="fl">${[["GitHub", L.github], ["LinkedIn", L.linkedin], ["X", L.twitter], ["YouTube", L.youtube], ["OpenReview", L.openreview], ["Kaggle", L.kaggle], ["Meraki", L.meraki], ["Email", "mailto:" + L.email], ["Resume", L.resume]].map(([l, u]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${l}</a>`).join("")}</div><div>Built by Adya Srivastava. Last updated ${window.BUILD_DATE || ""}</div>`;
+  $("#foot").innerHTML = `<div class="fl">${[["GitHub", L.github], ["LinkedIn", L.linkedin], ["X", L.twitter], ["YouTube", L.youtube], ["OpenReview", L.openreview], ["LeetCode", CFG.LEETCODE_URL || "https://leetcode.com/u/adyasrivastava"], ["Kaggle", L.kaggle], ["Meraki", L.meraki], ["Email", "mailto:" + L.email], ["Resume", L.resume], ["Plain text", "plain.html"]].map(([l, u]) => `<a href="${esc(u)}" ${u.startsWith("http") || u.endsWith(".html") || u.endsWith(".pdf") ? 'target="_blank" rel="noopener"' : ""}>${l}</a>`).join("")}</div><div>Built by Adya Srivastava. Last updated ${window.BUILD_DATE || ""}</div>`;
 }
 
 /* ---------- init ---------- */
@@ -390,10 +390,11 @@ addEventListener("scroll", () => { const m = document.documentElement.scrollHeig
 $("#menuBtn").onclick = () => { const o = $("#navLinks").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded", String(o)); };
 $("#navLinks").addEventListener("click", () => $("#navLinks").classList.remove("open"));
 
-/* calm + night */
+/* calm + night (dusk is the default look; night is an opt-in toggle) */
 const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+const lowMem = (() => { try { const d = navigator.deviceMemory; return typeof d === "number" && d > 0 && d <= 4; } catch (e) { return false; } })() || (matchMedia("(max-width:700px)").matches && matchMedia("(prefers-reduced-motion: reduce)").matches);
 function setCalm(v) { S.calm = v; document.body.classList.toggle("calm", v); $("#calmBtn").setAttribute("aria-pressed", String(v)); store.set("calm", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
-function setNight(v) { S.night = v; document.body.classList.toggle("night", v); $("#nightBtn").setAttribute("aria-pressed", String(v)); store.set("night", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
+function setNight(v) { S.night = v; document.body.classList.toggle("night", v); $("#nightBtn").setAttribute("aria-pressed", String(v)); store.set("preferNight", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
 $("#calmBtn").onclick = () => setCalm(!S.calm); $("#nightBtn").onclick = () => setNight(!S.night);
-setCalm(store.get("calm") === "1" || reduce); setNight(store.get("night") !== "0");
+setCalm(store.get("calm") === "1" || reduce || lowMem); setNight(store.get("preferNight") === "1");
 })();

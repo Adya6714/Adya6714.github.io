@@ -7,7 +7,7 @@ const canvas = $("#scene"), bg = $("#bg"), fxc = $("#fx"), fx = fxc.getContext("
 let gl = null, prog, U = {}, ready = false, W = innerWidth, H = innerHeight, dirty = true;
 let target = 0, p = 0, last = performance.now(), t0 = last, night = 0, nightT = 0;
 const rips = [], ripBuf = new Float32Array(24);
-const S = window.SceneState = { calm: matchMedia("(prefers-reduced-motion: reduce)").matches, night: true };
+const S = window.SceneState = { calm: matchMedia("(prefers-reduced-motion: reduce)").matches, night: false };
 
 function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; }
 function init() {

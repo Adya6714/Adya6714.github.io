@@ -31,10 +31,8 @@ window.CONTENT = {
   areas: [
     { id: "reasoning", kind: "Research", title: "How models reason", line: "Do they work a problem out, or recall something similar?", go: "research", color: "#72f1df" },
     { id: "vision", kind: "Research", title: "Vision and documents", line: "Does a model's confidence come from what it actually sees?", go: "research", color: "#b9a6ff" },
-    { id: "markets", kind: "Research", title: "Generative models for markets", line: "AI-made market data to train a better hedging agent.", go: "research", color: "#ffcf86" },
     { id: "production", kind: "Engineering", title: "Production ML", line: "Speech AI at Nurix: a voicemail detector and 40% fewer transcription errors.", go: "path", color: "#6fd4c8" },
-    { id: "systems", kind: "Engineering", title: "AI systems and agents", line: "OmniMesh offline triage, FraudScope360 (Citi national winner), FraudSense.", go: "projects", color: "#8fd0ff" },
-    { id: "forecast", kind: "Engineering", title: "Forecasting and data", line: "Traffic demand, seat sales, pricing and carbon-credit checks.", go: "projects", color: "#f0a3c0" }
+    { id: "systems", kind: "Engineering", title: "AI systems and agents", line: "OmniMesh offline triage, FraudScope360 (Citi national winner), FraudSense.", go: "projects", color: "#8fd0ff" }
   ],
 
   research: [
@@ -275,11 +273,15 @@ window.CONTENT = {
   shelf: {
     study: { title: "AI/ML Chapters Module", status: "Writing in progress", blurb: "My own chapter notes, derivations and experiments while I learn ML properly. I keep adding to it, and you are welcome to read along.", chapters: [] },
     reading: [
-      { id: "neet", title: "NeetCode problem list", by: "NeetCode / LeetCode", type: "Course", tags: ["practice", "algorithms"], finished: "Ongoing", takeaway: "The DSA list I work through for interview prep.", rating: 5, recommend: true, url: "https://leetcode.com/problem-list/plakya4j/" },
-      { id: "mlmod", title: "AI/ML Chapters Module", by: "My notes", type: "Book", tags: ["ml", "study"], finished: "In progress", takeaway: "Chapter notes I am writing for myself while learning ML end to end.", rating: 3, recommend: true, url: "https://drive.google.com/file/d/1ZQwes72CfT3sfStrruXMIUmNdQHJaqeL/view?usp=sharing" },
-      { id: "sysgh", title: "System Design course", by: "Karan Pratap Singh", type: "Course", tags: ["system-design"], finished: "Ongoing", takeaway: "Clear written system design notes I return to.", rating: 4, recommend: true, url: "https://www.karanpratapsingh.com/courses/system-design" },
-      { id: "mlsys", title: "ML System Design", by: "YouTube", type: "Course", tags: ["ml", "system-design"], finished: "Ongoing", takeaway: "Search and watch ML system design walkthroughs before interviews.", rating: 1, recommend: true, url: "https://www.youtube.com/results?search_query=ml+system+design" },
-      { id: "deepm", title: "DeepMind interview prep", by: "Deep-ML", type: "Course", tags: ["interview", "ml"], finished: "Ongoing", takeaway: "Targeted prep questions for DeepMind-style interviews.", rating: 4, recommend: true, url: "https://www.deep-ml.com/interview-prep/google-deepmind?role=general" }
+      { id: "attn", title: "Attention Is All You Need", by: "Vaswani et al.", type: "Paper", tags: ["transformers", "ml"], finished: "2024", takeaway: "The paper that made me stop treating sequence models as RNNs with extras. Once attention is the whole architecture, a lot of later LLM behaviour starts to look inevitable.", rating: 5, recommend: true, url: "https://arxiv.org/abs/1706.03762" },
+      { id: "ddpm", title: "Denoising Diffusion Probabilistic Models", by: "Ho, Jain, Abbeel", type: "Paper", tags: ["generative", "ml"], finished: "2025", takeaway: "Diffusion clicked for me when I treated noise schedules as the product, not the side detail. That framing is what I carried into generating volatility surfaces.", rating: 5, recommend: true, url: "https://arxiv.org/abs/2006.11239" },
+      { id: "sutton", title: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", tags: ["rl", "ml"], finished: "2025", takeaway: "Still the clearest map of what an agent is actually optimising. I go back to it whenever a hedging or triage demo starts hiding the reward definition.", rating: 5, recommend: true, url: "http://incompleteideas.net/book/the-book.html" },
+      { id: "weng", title: "What are diffusion models?", by: "Lilian Weng", type: "Blog", tags: ["generative", "ml"], finished: "2025", takeaway: "Best short bridge from the DDPM math to something I could implement without getting lost in notation.", rating: 4, recommend: true, url: "https://lilianweng.github.io/posts/2021-07-11-diffusion-models/" },
+      { id: "circuits", title: "A Mathematical Framework for Transformer Circuits", by: "Elhage et al.", type: "Paper", tags: ["interpretability", "ml"], finished: "2025", takeaway: "Gave me language for asking where a behaviour lives, which is the next step after my retrieval-versus-computation probes.", rating: 4, recommend: true, url: "https://transformer-circuits.pub/2021/framework/index.html" },
+      { id: "neet", title: "NeetCode problem list", by: "NeetCode / LeetCode", type: "Course", tags: ["practice", "algorithms"], finished: "Ongoing", takeaway: "The DSA list I work through for interview prep.", rating: 5, recommend: false, url: "https://leetcode.com/problem-list/plakya4j/" },
+      { id: "sysgh", title: "System Design course", by: "Karan Pratap Singh", type: "Course", tags: ["system-design"], finished: "Ongoing", takeaway: "Clear written system design notes I return to before interviews.", rating: 4, recommend: true, url: "https://www.karanpratapsingh.com/courses/system-design" },
+      { id: "mlsys", title: "ML System Design", by: "YouTube", type: "Course", tags: ["ml", "system-design"], finished: "Ongoing", takeaway: "Loose playlist of ML system design walkthroughs. Useful for breadth, not a single standout resource.", rating: 3, recommend: false, url: "https://www.youtube.com/results?search_query=ml+system+design" },
+      { id: "leet", title: "LeetCode profile", by: "LeetCode", type: "Course", tags: ["practice", "algorithms"], finished: "Ongoing", takeaway: "My public problem-solving profile.", rating: 4, recommend: false, url: "https://leetcode.com/u/adyasrivastava" }
     ],
     currently: [{ title: "AI/ML Chapters Module", by: "My notes", note: "Writing and revising chapters as I go." }],
     videos: [
