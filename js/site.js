@@ -290,7 +290,7 @@ function pondShell() {
 function about() {
   const P = C.person;
   $("#about").innerHTML = `<div class="wrap"><div class="aboutGrid reveal"><div class="photo noimg" id="photo"><b>AS</b></div><div><h2>${esc(P.closingTitle)}</h2>${P.closing.map(t => `<p>${esc(t)}</p>`).join("")}
-   <div class="btns" style="margin-top:20px"><a class="btn primary resume" href="${esc(L.resume)}" download>${I.cv}Resume</a><a class="btn" href="mailto:${L.email}">${I.mail}Email</a><a class="btn" href="${L.github}" target="_blank" rel="noopener">${I.gh}GitHub</a><a class="btn" href="${L.linkedin}" target="_blank" rel="noopener">${I.in}LinkedIn</a><a class="btn" href="${L.openreview}" target="_blank" rel="noopener">${I.or}OpenReview</a></div></div></div></div>`;
+   <div class="btns" style="margin-top:20px"><a class="btn primary resume" href="${esc(L.resume)}" download>${I.cv}Resume</a><a class="btn" href="mailto:${L.email}">${I.mail}Email</a><a class="btn" href="${L.github}" target="_blank" rel="noopener">${I.gh}GitHub</a><a class="btn" href="${L.linkedin}" target="_blank" rel="noopener">${I.in}LinkedIn</a><a class="btn" href="${L.youtube}" target="_blank" rel="noopener">${I.yt}YouTube</a><a class="btn" href="${L.openreview}" target="_blank" rel="noopener">${I.or}OpenReview</a></div></div></div></div>`;
   if (CFG.PHOTO_URL) { const img = new Image(); img.alt = "Adya Srivastava"; img.onload = () => { const ph = $("#photo"); ph.classList.remove("noimg"); ph.innerHTML = ""; ph.appendChild(img); }; img.src = CFG.PHOTO_URL; }
 }
 
