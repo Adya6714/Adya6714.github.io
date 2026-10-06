@@ -271,24 +271,25 @@ window.CONTENT = {
   ],
 
   shelf: {
-    study: { title: "My ML study book", status: "Writing in progress", blurb: "The notes, derivations and experiments I am writing for myself while I learn ML properly. I keep adding to it, and you are welcome to read along.", chapters: [] },
-    /* Replace these with what you have actually read. Items marked sample:true show a "Sample" tag. */
+    study: { title: "AI/ML Chapters Module", status: "Writing in progress", blurb: "My own chapter notes, derivations and experiments while I learn ML properly. I keep adding to it — PDF link coming once I share it.", chapters: [] },
     reading: [
-      { id: "b1", title: "Attention Is All You Need", by: "Vaswani et al.", type: "Paper", tags: ["transformers"], finished: "Sample", takeaway: "Replace this with your own one or two line takeaway.", rating: 5, recommend: true, url: "https://arxiv.org/abs/1706.03762", sample: true },
-      { id: "b2", title: "Denoising Diffusion Probabilistic Models", by: "Ho, Jain, Abbeel", type: "Paper", tags: ["generative"], finished: "Sample", takeaway: "Replace this with your own one or two line takeaway.", rating: 5, recommend: true, url: "https://arxiv.org/abs/2006.11239", sample: true },
-      { id: "b3", title: "Reinforcement Learning: An Introduction", by: "Sutton and Barto", type: "Book", tags: ["rl"], finished: "Sample", takeaway: "Replace this with your own one or two line takeaway.", rating: 5, recommend: true, url: "http://incompleteideas.net/book/the-book.html", sample: true },
-      { id: "b4", title: "A Mathematical Framework for Transformer Circuits", by: "Elhage et al.", type: "Paper", tags: ["interpretability"], finished: "Sample", takeaway: "Replace this with your own one or two line takeaway.", rating: 4, recommend: true, url: "https://transformer-circuits.pub/2021/framework/index.html", sample: true },
-      { id: "b5", title: "What are diffusion models?", by: "Lilian Weng", type: "Blog", tags: ["generative"], finished: "Sample", takeaway: "Replace this with your own one or two line takeaway.", rating: 4, recommend: false, url: "https://lilianweng.github.io/posts/2021-07-11-diffusion-models/", sample: true }
+      { id: "neet", title: "NeetCode problem list", by: "NeetCode / LeetCode", type: "Course", tags: ["practice", "algorithms"], finished: "Ongoing", takeaway: "The DSA list I work through for interview prep.", rating: 5, recommend: true, url: "https://leetcode.com/problem-list/plakya4j/" },
+      { id: "mlmod", title: "AI/ML Chapters Module", by: "My notes", type: "Book", tags: ["ml", "study"], finished: "In progress", takeaway: "Chapter notes I am writing for myself while learning ML end to end.", rating: 3, recommend: true, url: "" },
+      { id: "sysgh", title: "System Design course", by: "Karan Pratap Singh", type: "Course", tags: ["system-design"], finished: "Ongoing", takeaway: "Clear written system design notes I return to.", rating: 4, recommend: true, url: "https://www.karanpratapsingh.com/courses/system-design" },
+      { id: "mlsys", title: "ML System Design", by: "YouTube", type: "Course", tags: ["ml", "system-design"], finished: "Ongoing", takeaway: "Search and watch ML system design walkthroughs before interviews.", rating: 1, recommend: true, url: "https://www.youtube.com/results?search_query=ml+system+design" },
+      { id: "deepm", title: "DeepMind interview prep", by: "Deep-ML", type: "Course", tags: ["interview", "ml"], finished: "Ongoing", takeaway: "Targeted prep questions for DeepMind-style interviews.", rating: 4, recommend: true, url: "https://www.deep-ml.com/interview-prep/google-deepmind?role=general" }
     ],
-    currently: [{ title: "Add what you are reading now", by: "", note: "" }],
+    currently: [{ title: "AI/ML Chapters Module", by: "My notes", note: "Writing and revising chapters as I go." }],
     videos: [
-      { id: "v1", title: "Let's build GPT: from scratch, in code, spelled out", by: "Andrej Karpathy", len: "1h 56m", videoId: "kCc8FmEb1nY", why: "Replace with why this helped you.", sample: true },
-      { id: "v2", title: "But what is a neural network?", by: "3Blue1Brown", len: "19 min", videoId: "aircAruvnKk", why: "Replace with why this helped you.", sample: true },
-      { id: "v3", title: "But what is a GPT?", by: "3Blue1Brown", len: "27 min", videoId: "wjZofJX0v4M", why: "Replace with why this helped you.", sample: true }
+      { id: "v-tm", title: "System Design Interview: Design Ticketmaster", by: "Hello Interview · Ex-Meta Staff", len: "59 min", videoId: "fhdPyoO6aXI", why: "A full Ticketmaster walkthrough the way a staff interviewer expects it." },
+      { id: "v-agent", title: "AI Agent System Design in 19 Min", by: "YouTube", len: "19 min", videoId: "CyLYY_xb5bQ", why: "RAG, vector databases, evals and function calling in one pass." },
+      { id: "v-reason", title: "Reasoning ML Models", by: "YouTube", len: "Watch", videoId: "Kh9mqTzjuEQ", why: "How reasoning models think step by step." }
     ],
     practice: [
-      { id: "leetcode", name: "LeetCode", note: "Daily problem solving", urlKey: "LEETCODE_URL" },
-      { id: "kaggle", name: "Kaggle", note: "Notebooks and competitions", url: "https://www.kaggle.com/adyasrivastava" },
+      { id: "neetcode", name: "NeetCode", note: "DSA problem list I actually grind", url: "https://leetcode.com/problem-list/plakya4j/" },
+      { id: "deepmind", name: "DeepMind prep", note: "Interview questions on Deep-ML", url: "https://www.deep-ml.com/interview-prep/google-deepmind?role=general" },
+      { id: "sysdesign", name: "System Design", note: "Karan Pratap Singh’s course notes", url: "https://www.karanpratapsingh.com/courses/system-design" },
+      { id: "mlsys", name: "ML System Design", note: "YouTube walkthroughs before interviews", url: "https://www.youtube.com/results?search_query=ml+system+design" },
       { id: "github", name: "GitHub", note: "Code, every day", url: "https://github.com/Adya6714" }
     ],
     beyond: [
