@@ -54,16 +54,40 @@ function showQ(id, note) {
   view.innerHTML = `<div class="answer"><button class="btn sm back" data-back>Back to questions</button>${note ? `<p class="match">${esc(note)}</p>` : ""}<h4>${esc(q.q)}</h4><p class="short">${esc(q.short)}</p><button class="btn sm" data-deep>Go deeper</button><p class="long" hidden>${esc(q.long || "")}</p>
    ${q.next && q.next.length ? `<div class="nextQs"><b>You might ask next</b><div class="chips">${q.next.map(n => { const x = IV.qs.find(y => y.id === n); return x ? `<button type="button" data-q="${x.id}">${esc(x.q)}</button>` : ""; }).join("")}</div></div>` : ""}</div>`;
 }
-function ask(text) {
+const related = res => `<div class="nextQs"><b>Related questions</b><div class="chips">${res.slice(0, 3).map(r => `<button type="button" data-q="${r.q.id}">${esc(r.q.q)}</button>`).join("")}</div></div>`;
+function showAI(text, answer, res) {
+  view.innerHTML = `<div class="answer"><button class="btn sm back" data-back>Back to questions</button><h4>${esc(text)}</h4>${answer.split(/\n\n+/).map(p => `<p class="short">${esc(p)}</p>`).join("")}${related(res)}</div>`;
+}
+function showClosest(text, res) {
+  const top = res[0].q;
+  view.innerHTML = `<div class="answer"><button class="btn sm back" data-back>Back to questions</button><h4>${esc(text)}</h4><p class="match">The closest thing in Adya's notes is "${esc(top.q)}"</p><p class="short">${esc(top.short)}</p>${top.long ? `<p class="short">${esc(top.long)}</p>` : ""}<p class="match">For anything more specific, email srivastavadya@gmail.com or drop a card at the end of the page.</p>${related(res.slice(1))}</div>`;
+}
+async function askAI(text, res) {
+  const url = (window.SITE_CONFIG || {}).GUARDIAN_API;
+  if (!url) return null;
+  const context = res.slice(0, 6).map(r => `Q: ${r.q.q}\nA: ${r.q.short} ${r.q.long || ""}`).join("\n\n");
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(url, { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text, context }) });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d && d.answer ? String(d.answer) : null;
+  } catch { return null; } finally { clearTimeout(t); }
+}
+async function ask(text) {
   if (busy) return; busy = true; awaken();
   view.innerHTML = `<div class="answer"><p class="match"><span class="typing"><i></i><i></i><i></i></span> &nbsp;Thinking about "${esc(text)}"</p></div>`;
+  const started = performance.now();
+  const res = window.AskMatch.match(text), top = res[0];
+  let answer = null;
+  if (top.s < .45) answer = await askAI(text, res);
+  const wait = Math.max(0, (reduce ? 0 : 750) - (performance.now() - started));
   setTimeout(() => {
-    const res = window.AskMatch.match(text), top = res[0];
-    if (top.s >= .3) showQ(top.q.id, `I think you are asking: "${top.q.q}"`);
-    else if (top.s >= .14) view.innerHTML = `<div class="answer"><button class="btn sm back" data-back>Back to questions</button><p class="match">I am not sure I have that exactly. These are the closest questions I can answer:</p><div class="qList">${res.slice(0, 3).map(r => `<button type="button" data-q="${r.q.id}"><span>${esc(r.q.q)}</span>${arrow}</button>`).join("")}</div></div>`;
-    else view.innerHTML = `<div class="answer"><button class="btn sm back" data-back>Back to questions</button><p class="short">${esc(IV.fallback)}</p><div class="qList" style="margin-top:12px">${res.slice(0, 3).map(r => `<button type="button" data-q="${r.q.id}"><span>${esc(r.q.q)}</span>${arrow}</button>`).join("")}</div></div>`;
+    if (answer) showAI(text, answer, res);
+    else if (top.s >= .3) showQ(top.q.id, `I think you are asking: "${top.q.q}"`);
+    else showClosest(text, res);
     busy = false;
-  }, reduce ? 0 : 750);
+  }, wait);
 }
 function awaken() {
   if (!portal) return; gState.textContent = "Awake. Listening.";

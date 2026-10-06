@@ -5,6 +5,8 @@ window.SITE_CONFIG = {
   STUDY_MODULE_URL: "",                   // paste the Drive share link ("Anyone with the link")
   LEETCODE_URL: "",
   SUGGESTION_ENDPOINT: "https://formsubmit.co/ajax/srivastavadya@gmail.com",
+  GUARDIAN_API: "",                       // Worker URL ending in /ask (see worker/README.md). Empty = answers from the question bank only
+
   REMOTE_IMAGES: true,                    // YouTube thumbnails; set false for fully offline builds
   SHOW_SAMPLES: true                      // shows clearly marked sample shelf items until you add your own
 };

@@ -238,9 +238,9 @@ window.CONTENT = {
   /* stops on the path: flags in front of the arches in the painting. bx,by = base of the flag pole in map pixels */
   path: [
     { id: "j-bits", flag: "BITS Pilani", sub: "Education", when: "2022 to 2026", bx: 765, by: 462, color: "#8fd0ff",
-      line: "Where it started: engineering fundamentals with a finance minor.",
-      bullets: ["B.E. in Electrical and Electronics Engineering, with a minor in Finance.", "Where I found research: papers, experiments and building from scratch.", "Combined hardware thinking with machine learning and quantitative finance."],
-      impact: [["B.E.", "Electrical and Electronics"], ["Minor", "Finance"]], skills: ["Signals and control", "Finance", "Python", "Machine learning"] },
+      line: "Where it started: electrical engineering fundamentals, and where I found research.",
+      bullets: ["B.E. in Electrical and Electronics Engineering.", "Where I found research: papers, experiments and building from scratch.", "Combined hardware thinking with machine learning and quantitative work."],
+      impact: [["B.E.", "Electrical and Electronics"], ["2026", "Graduated"]], skills: ["Python", "Machine learning"] },
     { id: "j-kat", flag: "Khageshvara", sub: "Product Development Lead and ML Intern", when: "May to Oct 2023", bx: 672, by: 376, color: "#7fe3c8",
       line: "Drone vision that spots people in real time.",
       bullets: ["Built CNN vision pipelines for real-time human detection from drones.", "Built the financial model and pitch behind a successful DST funding round."],
@@ -322,7 +322,7 @@ window.CONTENT = {
     qs: [
       { id: "me", track: "Start here", q: "Tell me about yourself.", para: ["introduce yourself", "who are you", "what do you do", "your background"],
         short: "I'm Adya, an engineer who enjoys building things from scratch and figuring out how they work. I'm drawn to AI and ML because it sits between research and engineering: asking whether something really works, then building it so it does.",
-        long: "I graduated from BITS Pilani in 2026 in Electrical and Electronics Engineering, with a minor in Finance. My work ranges from research on how language models reason and how vision models express confidence, to shipped speech systems, forecasting and fraud detection.", next: ["looking", "why-ml"] },
+        long: "I graduated from BITS Pilani in 2026 in Electrical and Electronics Engineering. My work ranges from research on how language models reason and how vision models express confidence, to shipped speech systems, forecasting and fraud detection.", next: ["looking", "why-ml"] },
       { id: "looking", track: "Start here", q: "What are you looking for right now?", para: ["job", "open to jobs", "open to work", "role", "opportunities", "hiring", "available", "next step"],
         short: "Opportunities where I can work closely with interesting problems in AI/ML, research and engineering, with people who are building and experimenting.",
         long: "I'm also happy to talk about hackathons, papers I should read, or a different way of looking at the field. If you have something in mind, the Drop me a card box at the end of the site is the easiest way to reach me.", next: ["hack", "re"] },
