@@ -2,7 +2,7 @@
   "name": "adya-portfolio",
   "private": true,
   "version": "1.0.0",
-  "description": "Scroll-driven river portfolio — static HTML/CSS/JS",
+  "description": "Scroll-driven river portfolio, static HTML/CSS/JS",
   "scripts": {
     "dev": "npx --yes serve .",
     "start": "npm run dev",

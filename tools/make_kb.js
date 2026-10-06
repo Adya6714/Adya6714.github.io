@@ -23,7 +23,8 @@ L.push(`# About ${P.name || "Adya"}`, aboutText, `Email: ${P.email || ""}`, `Git
 if (C.research) {
   L.push("# Research threads");
   C.research.forEach(r => {
-    L.push(`## ${r.title || r.label}`, r.headline || "", r.blurb || r.summary || "", "");
+    const hl = (r.note && r.note.headline) || r.headline || "";
+    L.push(`## ${r.title || r.tag || r.label}`, hl, r.blurb || r.summary || (r.note && r.note.what) || "", "");
   });
 }
 if (C.notes) {
@@ -43,7 +44,7 @@ L.push("# Projects");
 });
 
 L.push("# Experience");
-(C.jobs || []).forEach(j => L.push(`## ${j.co}: ${j.role}, ${j.when}`, ...(j.pts || []).map(x => `- ${x}`), ""));
+(C.jobs || []).forEach(j => L.push(`## ${j.co}: ${j.role}, ${j.when}`, ...(j.bullets || j.pts || []).map(x => `- ${x}`), ""));
 
 L.push("# Skills");
 (C.skills || []).forEach(([g, items]) => {

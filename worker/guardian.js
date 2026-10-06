@@ -1,6 +1,6 @@
 /**
  * Cloudflare Worker: live guardian for GitHub Pages.
- * Same behaviour as api/ask.js — Claude Haiku, KB from api/kb.js,
+ * Same behaviour as api/ask.js ,  Claude Haiku, KB from api/kb.js,
  * 20 questions / IP / hour, CORS only for the Pages origin.
  *
  * Deploy:

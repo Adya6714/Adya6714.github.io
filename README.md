@@ -1,4 +1,4 @@
-# Adya Srivastava — river portfolio
+# Adya Srivastava, river portfolio
 
 Scroll-driven portfolio: a camera flies down a painted forest river (WebGL flow-map shader). Seven stops on the River, plus Library / Writing / Other work tabs.
 
@@ -16,7 +16,7 @@ Plain HTML, CSS, and JavaScript. No framework. No build step for the site.
 npm run dev
 ```
 
-Open the printed URL. Do not open `index.html` from disk — textures will not load.
+Open the printed URL. Do not open `index.html` from disk, textures will not load.
 
 ## Deploy (site)
 

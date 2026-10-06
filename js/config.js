@@ -1,9 +1,9 @@
-/* Site settings — Part D9. */
+/* Site settings, Part D9. */
 window.SITE_CONFIG = {
   RESUME_URL: "assets/Resume_Adya_Srivastava.pdf",
   PHOTO_URL: "assets/photo.jpg",
   LEETCODE_URL: "", // paste public LeetCode profile URL; Library hides the card when empty
-  // Formspree free plan: https://formspree.io/f/<id> — or FormSubmit (activate via email once):
+  // Formspree free plan: https://formspree.io/f/<id>, or FormSubmit (activate via email once):
   SUGGESTION_ENDPOINT: "https://formsubmit.co/ajax/srivastavadya@gmail.com",
   // After `npx wrangler deploy` in /worker, paste the Worker URL ending in /ask:
   GUARDIAN_API: "" // e.g. "https://adya-guardian.<you>.workers.dev/ask"

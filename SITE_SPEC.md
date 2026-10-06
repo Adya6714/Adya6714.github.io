@@ -187,22 +187,20 @@ Each section lists: what the camera shows, the panel content, the on-map element
 
 **Panel:** one row per job: coloured banner-shaped monogram, company, role and dates. Clicking a row expands its bullet points (accordion; only one open at a time).
 
-**On the map:** each arch gets a coloured cloth banner with the company initial, and a small name tag floating above the arch. Clicking a banner opens that job in the modal.
-- Arch top-right, banner at `(674, 274)`, 28 x 64: **EquiContracts**
-- Arch middle-right, banner at `(696, 452)`, 38 x 88: **Nurix AI**
-- Arch lower-right, banner at `(732, 619)`, 42 x 101: **FidelFolio**
-- Arch on the left bank, banner at `(112, 447)`, 39 x 84: **Grasim** (seen while travelling)
-- Khageshvara appears in the panel only.
+**On the map:** each arch gets a coloured cloth banner with the company initial, and a small name tag floating above the arch. Clicking a banner opens that job in the panel.
+- Arch top-right, banner at `(674, 274)`, 28 x 64: **Nurix AI**
+- Arch middle-right, banner at `(696, 452)`, 38 x 88: **FidelFolio**
+- Arch lower-right, banner at `(732, 619)`, 42 x 101: **Grasim**
+- Khageshvara appears in the panel and as a stepping stone.
 
-**Jobs (order: newest first):**
+**Jobs (order: chronological on the path; newest last):**
 
 | Company | Role | Dates | Link |
 |---|---|---|---|
-| EquiContracts | Founding Engineer | 2026 to present | https://github.com/Adya6714/EquiContracts (only after co-founder approval) |
-| Nurix AI | ML Engineering Intern | Jul to Dec 2025 | none |
-| FidelFolio Investments | Quant Investment Analyst | May to Jun 2025 | none |
-| Grasim (Aditya Birla Group) | Research Engineer | May to Jul 2024 | none |
 | Khageshvara Aviation | Product Development Lead and ML Intern | May to Oct 2023 | none |
+| Grasim (Aditya Birla Group) | Research Engineer | May to Jul 2024 | none |
+| FidelFolio Investments | Quant Investment Analyst | May to Jun 2025 | none |
+| Nurix AI | ML Engineering Intern | Jul to Dec 2025 | none |
 
 **Checks:** banner text is centred on the painted banners; name tags never overlap each other.
 
