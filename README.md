@@ -6,8 +6,8 @@ Plain HTML, CSS, and JavaScript. No framework. No build step for the site.
 
 | | |
 |---|---|
-| **Live site** | https://adya6714.github.io/adya-portfolio/ |
-| **Repo** | https://github.com/Adya6714/adya-portfolio |
+| **Live site** | https://adya6714.github.io/ |
+| **Repo** | https://github.com/Adya6714/Adya6714.github.io |
 | **Plan** | [`CURSOR_PLAN_v2.md`](./CURSOR_PLAN_v2.md) |
 
 ## Run locally
