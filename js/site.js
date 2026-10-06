@@ -15,6 +15,7 @@ const I = {
   in: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.500 2.500 0 0 1 0-5zM3 9.500h4V21H3zM9.500 9.500h3.800v1.600h.1c.5-1 1.800-2 3.800-2 4 0 4.800 2.600 4.800 6V21h-4v-5c0-1.200 0-2.800-1.700-2.800s-2 1.300-2 2.700V21h-4z"/></svg>',
   or: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>',
   kg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 13l8-9M9.500 11.500 16 20"/></svg>',
+  yt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>',
   mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   cv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4.500-4.500M12 15l4.500-4.500M4 20h16"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
@@ -348,9 +349,9 @@ function dropCard() {
 
 /* ---------- Rail, footer ---------- */
 function rail() {
-  const items = [["GitHub", L.github, I.gh], ["LinkedIn", L.linkedin, I.in], ["OpenReview", L.openreview, I.or], ["Email", "mailto:" + L.email, I.mail], ["Resume", L.resume, I.cv]];
+  const items = [["GitHub", L.github, I.gh], ["LinkedIn", L.linkedin, I.in], ["YouTube", L.youtube, I.yt], ["OpenReview", L.openreview, I.or], ["Email", "mailto:" + L.email, I.mail], ["Resume", L.resume, I.cv]];
   $("#rail").innerHTML = items.map(([l, u, ic]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : u.endsWith(".pdf") ? "download" : ""} aria-label="${l}">${ic}<span>${l}</span></a>`).join("");
-  $("#foot").innerHTML = `<div class="fl">${[["GitHub", L.github], ["LinkedIn", L.linkedin], ["OpenReview", L.openreview], ["Kaggle", L.kaggle], ["Meraki", L.meraki], ["Email", "mailto:" + L.email], ["Resume", L.resume]].map(([l, u]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${l}</a>`).join("")}</div><div>Built by Adya Srivastava. Last updated ${window.BUILD_DATE || ""}</div>`;
+  $("#foot").innerHTML = `<div class="fl">${[["GitHub", L.github], ["LinkedIn", L.linkedin], ["YouTube", L.youtube], ["OpenReview", L.openreview], ["Kaggle", L.kaggle], ["Meraki", L.meraki], ["Email", "mailto:" + L.email], ["Resume", L.resume]].map(([l, u]) => `<a href="${esc(u)}" ${u.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${l}</a>`).join("")}</div><div>Built by Adya Srivastava. Last updated ${window.BUILD_DATE || ""}</div>`;
 }
 
 /* ---------- init ---------- */
