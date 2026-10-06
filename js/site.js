@@ -122,7 +122,7 @@ function projectCard(p, i) {
   return `<article class="rcard" data-i="${i}" tabindex="0" aria-label="${esc(p.title)}"><div class="th">${thumb(p.kind, p.group, i + 3)}</div><div class="bd"><h3>${esc(p.title)}</h3><p>${esc(p.line)}</p><div class="chips">${p.chips.slice(0, 3).map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div><div class="acts">${acts}<button class="btn" data-detail="${p.id}">Details</button></div></div></article>`;
 }
 function projects() {
-  $("#projects").innerHTML = `<div class="wrap"><div class="head reveal" style="margin:0 auto 22px;text-align:center"><h2>Projects</h2><p>Drag the ring, or use the arrows. Cards with a live site have a Visit site button.</p></div>
+  $("#projects").innerHTML = `<div class="wrap"><div class="head reveal" style="margin:0 auto 22px;text-align:center"><h2>Projects</h2><p>Drag the ring with your cursor, swipe sideways on a trackpad (or Shift + scroll), or use the arrows.</p></div>
   <div class="filters reveal" id="pFilters" role="group" aria-label="Filter projects">${GROUPS.map((g, i) => `<button type="button" data-g="${g}" aria-pressed="${i === 0}">${g}</button>`).join("")}</div>
   <div class="ringWrap reveal"><div class="ringStage" id="ringStage"><div class="ring" id="ring"></div></div>
   <div class="ringBar"><button class="icon" id="rPrev" aria-label="Previous project">${I.arrow.replace("<svg", '<svg style="transform:scaleX(-1)"')}</button><span class="count" id="rCount"></span><button class="icon" id="rNext" aria-label="Next project">${I.arrow}</button></div>
@@ -163,6 +163,16 @@ function bindRing() {
   st.addEventListener("pointerup", end); st.addEventListener("pointercancel", end);
   st.addEventListener("click", e => { const c = e.target.closest(".rcard"); if (!c || e.target.closest("a,button") || mobileMQ.matches) return; if (!drag) goTo(+c.dataset.i); });
   st.addEventListener("keydown", e => { if (e.key === "ArrowRight") rot(1); if (e.key === "ArrowLeft") rot(-1); });
+  let wheelSnap = 0;
+  st.addEventListener("wheel", e => {
+    if (mobileMQ.matches) return;
+    const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+    if (!dx) return;
+    e.preventDefault();
+    const px = e.deltaMode === 1 ? dx * 16 : dx;
+    tgt -= px * .12; pauseAuto = true; autoT = performance.now() + 9000;
+    clearTimeout(wheelSnap); wheelSnap = setTimeout(() => { tgt = Math.round(tgt / step) * step; }, 160);
+  }, { passive: false });
   st.addEventListener("mouseenter", () => pauseAuto = true); st.addEventListener("mouseleave", () => { autoT = performance.now() + 3000; });
   new IntersectionObserver(es => { ringVisible = es[0].isIntersecting; }, { threshold: .3 }).observe(st);
   $("#allProj").onclick = openAll;
