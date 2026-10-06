@@ -286,13 +286,6 @@ window.CONTENT = {
       { id: "v-agent", title: "AI Agent System Design in 19 Min", by: "YouTube", len: "19 min", videoId: "CyLYY_xb5bQ", why: "RAG, vector databases, evals and function calling in one pass." },
       { id: "v-reason", title: "Reasoning ML Models", by: "YouTube", len: "Watch", videoId: "Kh9mqTzjuEQ", why: "How reasoning models think step by step." }
     ],
-    practice: [
-      { id: "neetcode", name: "NeetCode", note: "DSA problem list I actually grind", url: "https://leetcode.com/problem-list/plakya4j/" },
-      { id: "deepmind", name: "DeepMind prep", note: "Interview questions on Deep-ML", url: "https://www.deep-ml.com/interview-prep/google-deepmind?role=general" },
-      { id: "sysdesign", name: "System Design", note: "Karan Pratap Singh’s course notes", url: "https://www.karanpratapsingh.com/courses/system-design" },
-      { id: "mlsys", name: "ML System Design", note: "YouTube walkthroughs before interviews", url: "https://www.youtube.com/results?search_query=ml+system+design" },
-      { id: "github", name: "GitHub", note: "Code, every day", url: "https://github.com/Adya6714" }
-    ],
     beyond: [
       { title: "Meraki", line: "Poems and short stories. An alleyway to sonder.", url: "https://srivastavadya.wixsite.com/meraki14", label: "Read on Meraki" },
       { title: "Case studies", line: "Consulting, product and business write-ups.", id: "cases", label: "See case studies" }

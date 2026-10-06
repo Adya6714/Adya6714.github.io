@@ -236,7 +236,7 @@ function shelf() {
   const sk = C.skills;
   $("#shelf").innerHTML = `<div class="wrap"><div class="head reveal"><h2>On my shelf</h2><p>What I use, what I am studying, what I have read, and what I would recommend to you.</p></div>
   <div class="shelfGrid"><aside class="skillsCard reveal"><h3>Skills</h3>${sk.map(([g, a]) => `<div class="grp"><b>${esc(g)}</b><div class="chips">${a.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>`).join("")}</aside>
-   <div class="shelfMain reveal"><div class="tabs" role="tablist" id="shelfTabs">${[["study", "Study module"], ["reading", "Reading log"], ["recommended", "Recommended"], ["practice", "Practice"], ["beyond", "Beyond ML"]].map(([k, l]) => `<button role="tab" data-t="${k}" aria-selected="${k === tabSel}">${l}</button>`).join("")}</div><div class="tabBody" id="tabBody"></div></div></div></div>`;
+   <div class="shelfMain reveal"><div class="tabs" role="tablist" id="shelfTabs">${[["study", "Study module"], ["reading", "Reading log"], ["recommended", "Recommended"], ["beyond", "Beyond ML"]].map(([k, l]) => `<button role="tab" data-t="${k}" aria-selected="${k === tabSel}">${l}</button>`).join("")}</div><div class="tabBody" id="tabBody"></div></div></div></div>`;
   $("#shelfTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; tabSel = b.dataset.t; $$("#shelfTabs button").forEach(x => x.setAttribute("aria-selected", String(x === b))); drawTab(); });
   drawTab();
 }
@@ -266,8 +266,6 @@ function drawTab() {
   } else if (tabSel === "recommended") {
     const recs = [...SH.reading.filter(x => x.recommend && showSample(x)).map(x => ({ title: x.title, by: x.by, len: x.type, type: x.type, url: x.url, why: x.takeaway, sample: x.sample })), ...SH.videos.filter(showSample).map(x => ({ ...x, type: "Video", url: `https://www.youtube.com/watch?v=${x.videoId}` }))];
     body.innerHTML = `<h3>Recommended</h3><p class="sub">Things that helped me. Start with any of these.</p>${recs.length ? `<div class="ytGrid">${recs.map((r, i) => `<a class="yt" href="${esc(r.url)}" target="_blank" rel="noopener"><div class="thumb">${ytThumb(r, i)}<span class="ty">${esc(r.type)}</span><span class="play"><i>${I.play}</i></span><span class="len">${esc(r.len)}</span></div><h5>${esc(r.title)}${r.sample ? '<span class="sampleTag">Sample</span>' : ""}</h5><small>${esc(r.by)}</small>${r.why ? `<em>${esc(r.why)}</em>` : ""}</a>`).join("")}</div>` : '<div class="empty">Recommendations are coming soon.</div>'}`;
-  } else if (tabSel === "practice") {
-    body.innerHTML = `<h3>Practice</h3><p class="sub">Where I keep my skills sharp.</p><div class="cards3">${SH.practice.map(p => { const u = p.url || CFG[p.urlKey]; return `<div class="pc"><b>${esc(p.name)}</b><span>${esc(p.note)}</span>${u ? `<a class="btn primary sm" href="${esc(u)}" target="_blank" rel="noopener">Open ${esc(p.name)}</a>` : '<span class="btn sm off">Link coming soon</span>'}</div>`; }).join("")}</div>`;
   } else {
     body.innerHTML = `<h3>Beyond ML</h3><p class="sub">Writing and case work that sits outside machine learning.</p><div class="cards3">${SH.beyond.map(b => `<div class="pc"><b>${esc(b.title)}</b><span>${esc(b.line)}</span>${b.url ? `<a class="btn primary sm" href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.label)}</a>` : `<button class="btn primary sm" data-cases>${esc(b.label)}</button>`}</div>`).join("")}</div>`;
   }
