@@ -105,8 +105,10 @@ body.calm .reveal{opacity:1;transform:none;transition:none}
 .more a:hover{color:var(--cyan);border-color:var(--cyan)}
 .areas h3{font-size:22px;margin-bottom:6px}
 .areas>p{color:#d3e9e5;margin-bottom:16px;font-size:16px;text-shadow:0 1px 12px rgba(0,0,0,.6)}
-.areaList{display:grid;gap:12px}
-.area{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;text-align:left;padding:15px 16px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:14px;text-decoration:none;transition:transform .18s,border-color .18s,background .18s}
+.areaKind{margin:14px 0 8px;font:600 12px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#d3e9e5;opacity:.85}
+.areaKind:first-of-type{margin-top:0}
+.areaList{display:grid;gap:10px}
+.area{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;text-align:left;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:14px;text-decoration:none;transition:transform .18s,border-color .18s,background .18s}
 .area:hover{transform:translateX(4px);background:var(--panel2);border-color:var(--c)}
 .area .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
 .area .ic svg{width:24px;height:24px}

@@ -24,7 +24,9 @@ const I = {
   markets: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 8-9"/><path d="M15 5h5v5"/></svg>',
   systems: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.500"/><rect x="3" y="14" width="18" height="6" rx="1.500"/><path d="M7 7h.01M7 17h.01"/></svg>'
 };
-const aIcon = { reasoning: I.reason, vision: I.vision, markets: I.markets, systems: I.systems };
+I.production = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2M21 12h0"/></svg>';
+I.forecast = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>';
+const aIcon = { reasoning: I.reason, vision: I.vision, markets: I.markets, production: I.production, systems: I.systems, forecast: I.forecast };
 
 /* ---------- helpers ---------- */
 const toast = (() => { const t = $("#toast"); let h; return m => { t.textContent = m; t.classList.add("on"); clearTimeout(h); h = setTimeout(() => t.classList.remove("on"), 3400); }; })();
@@ -82,11 +84,11 @@ function hero() {
      </div>
      ${P.intro.map(t => `<p>${esc(t)}</p>`).join("")}
      <div class="openTo"><h4>I'm open to</h4><div class="chips">${P.openTo.map(t => `<span class="chip c">${esc(t)}</span>`).join("")}</div></div>
-     <div class="more"><a href="${L.openreview}" target="_blank" rel="noopener">OpenReview paper</a><a href="${L.kaggle}" target="_blank" rel="noopener">Kaggle</a><a href="${L.meraki}" target="_blank" rel="noopener">Meraki, my poems</a><a href="mailto:${L.email}">${esc(L.email)}</a></div>
+     <div class="more"><a href="${L.openreview}" target="_blank" rel="noopener">OpenReview paper</a><a href="${L.meraki}" target="_blank" rel="noopener">Meraki, my poems</a><a href="mailto:${L.email}">${esc(L.email)}</a></div>
    </div>
    <div class="areas reveal">
-     <h3>What I work on</h3><p>Four threads that run through my research and projects.</p>
-     <div class="areaList">${C.areas.map(a => `<a class="area" style="--c:${a.color}" href="#${a.go}"><span class="ic">${aIcon[a.id]}</span><span><b>${esc(a.title)}</b><span>${esc(a.line)}</span></span></a>`).join("")}</div>
+     <h3>What I work on</h3><p>Research questions I chase, and systems I build and ship.</p>
+     ${["Research", "Engineering"].map(k => `<h5 class="areaKind">${k}</h5><div class="areaList">${C.areas.filter(a => (a.kind || "Research") === k).map(a => `<a class="area" style="--c:${a.color}" href="#${a.go}"><span class="ic">${aIcon[a.id] || I.systems}</span><span><b>${esc(a.title)}</b><span>${esc(a.line)}</span></span></a>`).join("")}</div>`).join("")}
      <div class="proof">${P.proof.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div>
    </div></div><div class="cue"><i></i>Scroll</div>`;
 }

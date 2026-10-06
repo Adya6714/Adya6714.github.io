@@ -27,10 +27,12 @@ window.CONTENT = {
   },
 
   areas: [
-    { id: "reasoning", title: "How models reason", line: "Do they work a problem out, or recall something similar?", go: "research", color: "#72f1df" },
-    { id: "vision", title: "Vision and documents", line: "Does a model's confidence come from what it actually sees?", go: "research", color: "#b9a6ff" },
-    { id: "markets", title: "Generative models for markets", line: "AI-made market data to train a better hedging agent.", go: "research", color: "#ffcf86" },
-    { id: "systems", title: "Systems that ship", line: "Agents, fraud detection, forecasting and offline networks.", go: "projects", color: "#8fd0ff" }
+    { id: "reasoning", kind: "Research", title: "How models reason", line: "Do they work a problem out, or recall something similar?", go: "research", color: "#72f1df" },
+    { id: "vision", kind: "Research", title: "Vision and documents", line: "Does a model's confidence come from what it actually sees?", go: "research", color: "#b9a6ff" },
+    { id: "markets", kind: "Research", title: "Generative models for markets", line: "AI-made market data to train a better hedging agent.", go: "research", color: "#ffcf86" },
+    { id: "production", kind: "Engineering", title: "Production ML", line: "Speech AI at Nurix: a voicemail detector and 40% fewer transcription errors.", go: "path", color: "#6fd4c8" },
+    { id: "systems", kind: "Engineering", title: "AI systems and agents", line: "OmniMesh offline triage, FraudScope360 (Citi national winner), FraudSense.", go: "projects", color: "#8fd0ff" },
+    { id: "forecast", kind: "Engineering", title: "Forecasting and data", line: "Traffic demand, seat sales, pricing and carbon-credit checks.", go: "projects", color: "#f0a3c0" }
   ],
 
   research: [
