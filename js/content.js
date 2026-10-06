@@ -272,10 +272,10 @@ window.CONTENT = {
   ],
 
   shelf: {
-    study: { title: "AI/ML Chapters Module", status: "Writing in progress", blurb: "My own chapter notes, derivations and experiments while I learn ML properly. I keep adding to it — PDF link coming once I share it.", chapters: [] },
+    study: { title: "AI/ML Chapters Module", status: "Writing in progress", blurb: "My own chapter notes, derivations and experiments while I learn ML properly. I keep adding to it, and you are welcome to read along.", chapters: [] },
     reading: [
       { id: "neet", title: "NeetCode problem list", by: "NeetCode / LeetCode", type: "Course", tags: ["practice", "algorithms"], finished: "Ongoing", takeaway: "The DSA list I work through for interview prep.", rating: 5, recommend: true, url: "https://leetcode.com/problem-list/plakya4j/" },
-      { id: "mlmod", title: "AI/ML Chapters Module", by: "My notes", type: "Book", tags: ["ml", "study"], finished: "In progress", takeaway: "Chapter notes I am writing for myself while learning ML end to end.", rating: 3, recommend: true, url: "" },
+      { id: "mlmod", title: "AI/ML Chapters Module", by: "My notes", type: "Book", tags: ["ml", "study"], finished: "In progress", takeaway: "Chapter notes I am writing for myself while learning ML end to end.", rating: 3, recommend: true, url: "https://drive.google.com/file/d/1ZQwes72CfT3sfStrruXMIUmNdQHJaqeL/view?usp=sharing" },
       { id: "sysgh", title: "System Design course", by: "Karan Pratap Singh", type: "Course", tags: ["system-design"], finished: "Ongoing", takeaway: "Clear written system design notes I return to.", rating: 4, recommend: true, url: "https://www.karanpratapsingh.com/courses/system-design" },
       { id: "mlsys", title: "ML System Design", by: "YouTube", type: "Course", tags: ["ml", "system-design"], finished: "Ongoing", takeaway: "Search and watch ML system design walkthroughs before interviews.", rating: 1, recommend: true, url: "https://www.youtube.com/results?search_query=ml+system+design" },
       { id: "deepm", title: "DeepMind interview prep", by: "Deep-ML", type: "Course", tags: ["interview", "ml"], finished: "Ongoing", takeaway: "Targeted prep questions for DeepMind-style interviews.", rating: 4, recommend: true, url: "https://www.deep-ml.com/interview-prep/google-deepmind?role=general" }
