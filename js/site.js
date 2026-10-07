@@ -390,11 +390,11 @@ addEventListener("scroll", () => { const m = document.documentElement.scrollHeig
 $("#menuBtn").onclick = () => { const o = $("#navLinks").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded", String(o)); };
 $("#navLinks").addEventListener("click", () => $("#navLinks").classList.remove("open"));
 
-/* calm + night (dusk is the default look; night is an opt-in toggle) */
+/* calm + night (night/dark is the default look) */
 const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 const lowMem = (() => { try { const d = navigator.deviceMemory; return typeof d === "number" && d > 0 && d <= 4; } catch (e) { return false; } })() || (matchMedia("(max-width:700px)").matches && matchMedia("(prefers-reduced-motion: reduce)").matches);
 function setCalm(v) { S.calm = v; document.body.classList.toggle("calm", v); $("#calmBtn").setAttribute("aria-pressed", String(v)); store.set("calm", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
-function setNight(v) { S.night = v; document.body.classList.toggle("night", v); $("#nightBtn").setAttribute("aria-pressed", String(v)); store.set("preferNight", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
+function setNight(v) { S.night = v; document.body.classList.toggle("night", v); $("#nightBtn").setAttribute("aria-pressed", String(v)); store.set("nightMode", v ? "1" : "0"); window.dispatchEvent(new Event("scene:dirty")); }
 $("#calmBtn").onclick = () => setCalm(!S.calm); $("#nightBtn").onclick = () => setNight(!S.night);
-setCalm(store.get("calm") === "1" || reduce || lowMem); setNight(store.get("preferNight") === "1");
+setCalm(store.get("calm") === "1" || reduce || lowMem); setNight(store.get("nightMode") !== "0");
 })();

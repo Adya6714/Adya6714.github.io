@@ -5,9 +5,9 @@ const A = window.ASSETS || {}, MAP_W = 848, MAP_H = 1264;
 const $ = s => document.querySelector(s);
 const canvas = $("#scene"), bg = $("#bg"), fxc = $("#fx"), fx = fxc.getContext("2d");
 let gl = null, prog, U = {}, ready = false, W = innerWidth, H = innerHeight, dirty = true;
-let target = 0, p = 0, last = performance.now(), t0 = last, night = 0, nightT = 0;
+let target = 0, p = 0, last = performance.now(), t0 = last, night = 1, nightT = 1;
 const rips = [], ripBuf = new Float32Array(24);
-const S = window.SceneState = { calm: matchMedia("(prefers-reduced-motion: reduce)").matches, night: false };
+const S = window.SceneState = { calm: matchMedia("(prefers-reduced-motion: reduce)").matches, night: true };
 
 function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; }
 function init() {
