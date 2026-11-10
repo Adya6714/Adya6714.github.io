@@ -11,7 +11,7 @@ const S = window.SceneState = { calm: matchMedia("(prefers-reduced-motion: reduc
 
 function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; }
 function init() {
-  try { gl = canvas.getContext("webgl2", { antialias: false, alpha: false }) || canvas.getContext("webgl", { antialias: false, alpha: false }); } catch (e) { gl = null; }
+  try { gl = canvas.getContext("webgl2", { antialias: true, alpha: false, powerPreference: "high-performance" }) || canvas.getContext("webgl", { antialias: true, alpha: false, powerPreference: "high-performance" }); } catch (e) { gl = null; }
   if (!gl) return false;
   const vs = sh(gl.VERTEX_SHADER, "attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}");
   const fs = sh(gl.FRAGMENT_SHADER, document.getElementById("sceneFrag").textContent);
@@ -40,7 +40,7 @@ function tex(unit, img, fmt, mip) {
 }
 function resize() {
   W = innerWidth; H = innerHeight;
-  const q = Math.min(window.devicePixelRatio || 1, 1.5) * (W > 1700 ? .8 : 1);
+  const q = Math.min(window.devicePixelRatio || 1, 2) * (W > 1700 ? .92 : 1);
   canvas.width = Math.round(W * q); canvas.height = Math.round(H * q);
   const d = Math.min(window.devicePixelRatio || 1, 2); fxc.width = Math.round(W * d); fxc.height = Math.round(H * d); fx.setTransform(d, 0, 0, d, 0, 0);
   if (gl) gl.viewport(0, 0, canvas.width, canvas.height);

@@ -209,7 +209,7 @@ let pIdx = 0;
 function path() {
   const J = C.path;
   $("#path").innerHTML = `<div class="wrap"><div class="head reveal"><h2>The path so far</h2><p>Pick a flag in front of an arch, or use the buttons. Each one opens what I worked on there.</p></div>
-  <div class="stepper reveal" id="stepper">${J.map((j, i) => `<button type="button" data-i="${i}" style="--c:${j.color}" aria-pressed="${i === 0}"><small>${esc(j.when)}</small><b>${esc(j.flag)}</b></button>`).join("")}</div>
+  <div class="stepper reveal" id="stepper">${J.map((j, i) => `<button type="button" data-i="${i}" style="--c:${j.color}" aria-pressed="${i === 0}"><em>${String(i + 1).padStart(2, "0")}</em><small>${esc(j.when)}</small><b>${esc(j.flag)}</b><span>${esc(j.tag || j.sub)}</span></button>`).join("")}</div>
   <div class="pathGrid reveal" id="pathGrid"><img src="${A.banner}" alt="Painted river bank with stone arches" loading="lazy">
    ${J.map((j, i) => `<button class="flag${j.bx / 848 > .8 ? " rev" : ""}" style="left:${(j.bx / 848 * 100).toFixed(2)}%;top:${((j.by - 250) / 480 * 100).toFixed(2)}%;--c:${j.color}" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(j.flag)}: ${esc(j.tag || j.sub)}"><span class="cloth">${esc(j.flag)}<small>${esc(j.tag || j.sub)}</small></span></button>`).join("")}
    <div class="pathCard" id="pathCard" aria-live="polite"></div></div></div>`;

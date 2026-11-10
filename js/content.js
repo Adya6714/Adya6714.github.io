@@ -5,10 +5,10 @@ window.CONTENT = {
     role: "BITS Pilani, EEE · ML research and engineering",
     intro: [
       "I'm Adya, a BITS Pilani graduate in Electrical and Electronics Engineering (EEE). I genuinely enjoy building things from scratch and figuring out how they work along the way. I'm especially interested in AI and ML, but what keeps me excited is the engineering and research around them: taking a vague question, digging into it, experimenting, breaking things, and eventually turning an idea into something that actually works. I love learning by building, and I'm constantly trying to go one level deeper than what I already know.",
-      "I'm currently looking for opportunities where I can work closely with interesting problems in AI/ML, research, and engineering. But I'm also here because I like talking to people who are building, experimenting, and thinking about the same things. If you're working on something interesting, have a different way of looking at AI/ML, have recently discovered something that changed how you think about the field, or simply have a few things you think I should know, I'd genuinely love to hear from you. I'm always up for a good conversation."
+      "Since October 2026 I have been an AI resident at Lossfunk in Bangalore, and an ML engineer at Lenskart working on recommendation systems. I still like talking to people who are building, experimenting, and thinking about the same things. If you're working on something interesting, have a different way of looking at AI/ML, have recently discovered something that changed how you think about the field, or simply have a few things you think I should know, I'd genuinely love to hear from you. I'm always up for a good conversation."
     ],
     openTo: ["ML research and engineering roles", "Hackathon teammates", "Resources you think I should read", "Conversations about AI/ML"],
-    proof: ["4 research papers", "National winner, Citi Innovation Challenge", "Open source on GitHub"],
+    proof: ["4 research papers", "National winner, Citi Innovation Challenge", "AI resident at Lossfunk", "ML engineer at Lenskart"],
     closingTitle: "At the core, I like making things.",
     closing: [
       "I like starting with a blank page, learning whatever I need to learn, and slowly turning an idea into something real. Research gives me the opportunity to chase questions that don't have obvious answers, while engineering gives me the satisfaction of actually building the answer. AI and ML happen to sit at a particularly exciting intersection of the two for me.",
@@ -31,7 +31,7 @@ window.CONTENT = {
   areas: [
     { id: "reasoning", kind: "Research", title: "How models reason", line: "Do they work a problem out, or recall something similar?", go: "research", color: "#72f1df" },
     { id: "vision", kind: "Research", title: "Vision and documents", line: "Does a model's confidence come from what it actually sees?", go: "research", color: "#b9a6ff" },
-    { id: "production", kind: "Engineering", title: "Production ML", line: "Speech AI at Nurix: a voicemail detector and 40% fewer transcription errors.", go: "path", color: "#6fd4c8" },
+    { id: "production", kind: "Engineering", title: "Production ML", line: "Speech AI at Nurix, and recommendation systems at Lenskart.", go: "path", color: "#6fd4c8" },
     { id: "systems", kind: "Engineering", title: "AI systems and agents", line: "OmniMesh offline triage, FraudScope360 (Citi national winner), FraudSense.", go: "projects", color: "#8fd0ff" }
   ],
 
@@ -258,7 +258,15 @@ window.CONTENT = {
     { id: "j-nurix", flag: "Nurix AI", tag: "Production speech AI", sub: "ML Engineering Intern", when: "Jul to Dec 2025", bx: 672, by: 376, color: "#72f1df",
       line: "Speech AI running in production.",
       bullets: ["Built and deployed a TinyBERT voicemail detector with backend integration.", "Designed a word-error correction pipeline using Word2Vec, phonetic normalisation and LLM scoring.", "Improved real-time turn-end detection in a transformer speech-to-text pipeline."],
-      impact: [["95%", "voicemail detection precision"], ["40%", "fewer word errors"]], skills: ["Transformers", "Speech", "Deployment", "NLP"] }
+      impact: [["95%", "voicemail detection precision"], ["40%", "fewer word errors"]], skills: ["Transformers", "Speech", "Deployment", "NLP"] },
+    { id: "j-loss", flag: "Lossfunk", tag: "AI residency", sub: "AI Resident", when: "Oct 2026 to now", bx: 808, by: 318, color: "#ff9db8",
+      line: "A Bangalore residency for people building in AI, science and deep tech.",
+      bullets: ["Joined as an AI resident in October 2026, and I am still there.", "Work independently on research and building, with a peer cohort and a public showcase.", "Based at Lossfunk's space in Indiranagar, Bangalore."],
+      impact: [["AI resident", "Bangalore"], ["Oct 2026", "ongoing"]], skills: ["Research", "Independent building", "AI"] },
+    { id: "j-lens", flag: "Lenskart", tag: "Recommendation systems", sub: "ML Engineer", when: "Oct 2026 to now", bx: 638, by: 268, color: "#ffb38a",
+      line: "Building recommendation systems for how people find eyewear.",
+      bullets: ["ML engineer at Lenskart since October 2026.", "Working on recommendation and ranking systems used in product discovery.", "Personalisation that has to hold up in production, not only in a notebook."],
+      impact: [["ML engineer", "recommendation systems"], ["Oct 2026", "ongoing"]], skills: ["Recommenders", "Ranking", "Production ML"] }
   ],
 
   skills: [
@@ -325,10 +333,10 @@ window.CONTENT = {
     qs: [
       { id: "me", track: "Start here", q: "Tell me about yourself.", para: ["introduce yourself", "who are you", "what do you do", "your background"],
         short: "I'm Adya, an engineer who enjoys building things from scratch and figuring out how they work. I'm drawn to AI and ML because it sits between research and engineering: asking whether something really works, then building it so it does.",
-        long: "I graduated from BITS Pilani in 2026 in Electrical and Electronics Engineering. My work ranges from research on how language models reason and how vision models express confidence, to shipped speech systems, forecasting and fraud detection.", next: ["looking", "why-ml"] },
+        long: "I graduated from BITS Pilani in 2026 in Electrical and Electronics Engineering. My work ranges from research on how language models reason and how vision models express confidence, to shipped speech systems, forecasting, fraud detection, and recommendation systems at Lenskart. Since October 2026 I have also been an AI resident at Lossfunk in Bangalore.", next: ["looking", "why-ml"] },
       { id: "looking", track: "Start here", q: "What are you looking for right now?", para: ["job", "open to jobs", "open to work", "role", "opportunities", "hiring", "available", "next step"],
-        short: "Opportunities where I can work closely with interesting problems in AI/ML, research and engineering, with people who are building and experimenting.",
-        long: "I'm also happy to talk about hackathons, papers I should read, or a different way of looking at the field. If you have something in mind, the Drop me a card box at the end of the site is the easiest way to reach me.", next: ["hack", "re"] },
+        short: "I am an AI resident at Lossfunk and an ML engineer at Lenskart, working on recommendation systems. I am still glad to talk with people who are building and experimenting.",
+        long: "If you have a hackathon, a paper I should read, or a different way of looking at the field, the Drop me a card box at the end of the site is the easiest way to reach me.", next: ["hack", "re"] },
       { id: "why-ml", track: "Start here", q: "Why AI and ML?", para: ["why machine learning", "what drew you to ai", "motivation"],
         short: "Because it combines research and engineering. Research lets me chase questions without obvious answers, and engineering lets me build the answer.",
         long: "AI and ML sit at an exciting intersection of the two for me, and they keep me moving between papers, experiments and systems.", next: ["scratch", "re"] },
@@ -362,7 +370,13 @@ window.CONTENT = {
         long: "The signals are writing style (DetectGPT, GLTR), typing behaviour, honeypot questions and embedding similarity.", next: ["fraudscope", "convincing"] },
       { id: "nurix", track: "Projects", q: "What did you ship at Nurix?", para: ["internship", "speech", "voicemail", "production ml", "work experience"],
         short: "Production speech and NLP: a TinyBERT voicemail detector with 95% precision, a word-error correction pipeline that cut errors by 40%, and better real-time turn-end detection.",
-        long: "The correction pipeline used Word2Vec, phonetic normalisation and LLM scoring. I worked on backend integration and deployment as well as the models.", next: ["re", "grid"] },
+        long: "The correction pipeline used Word2Vec, phonetic normalisation and LLM scoring. I worked on backend integration and deployment as well as the models.", next: ["re", "lenskart"] },
+      { id: "lossfunk", track: "Projects", q: "What are you doing at Lossfunk?", para: ["lossfunk", "ai resident", "residency", "bangalore residency"],
+        short: "I joined Lossfunk as an AI resident in October 2026. It is a Bangalore residency for people building in AI, science and deep tech, with a peer cohort and a public showcase.",
+        long: "I work independently on research and building, from their space in Indiranagar, and I am still there.", next: ["lenskart", "now"] },
+      { id: "lenskart", track: "Projects", q: "What are you doing at Lenskart?", para: ["lenskart", "lesnakrt", "recommendation", "recommender", "ranking", "personalisation", "personalization", "ml engineer"],
+        short: "I have been an ML engineer at Lenskart since October 2026, working on recommendation systems for product discovery.",
+        long: "The work is ranking and personalisation that has to hold up in production, not only in a notebook.", next: ["nurix", "lossfunk"] },
       { id: "grid", track: "Projects", q: "Tell me about GridLock 2.0.", para: ["traffic prediction", "forecasting", "ensemble"],
         short: "A traffic demand forecasting project that scored 87.9 using a four-way ensemble with blend weights per road type, built only from competition data.",
         long: "The whole pipeline is reproducible from the repository and runs on a CPU in a few minutes.", next: ["nurix", "convincing"] },
