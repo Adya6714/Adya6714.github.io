@@ -199,23 +199,25 @@ body.calm .reveal{opacity:1;transform:none;transition:none}
 /* path */
 .pathGrid{position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(200,255,240,.38);box-shadow:0 24px 60px rgba(0,0,0,.5);aspect-ratio:1700/962;background:#06242a}
 .pathGrid>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.1) saturate(1.08)}
-.stepper{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.stepper button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 14px 9px;border-radius:12px;border:1px solid var(--line);background:rgba(5,24,28,.9);text-align:left;transition:border-color .18s,background .18s;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.stepper button em{font:700 11px/1 var(--body);letter-spacing:.08em;color:var(--cyan);opacity:.9}
-.stepper button small{color:var(--muted);font-size:12px}.stepper button b{font:600 15px var(--display)}
-.stepper button span{font-size:12px;color:var(--muted);line-height:1.25}
-.stepper button:hover{border-color:rgba(160,255,238,.55)}
-.stepper button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#06181b;box-shadow:none}
-.stepper button[aria-pressed="true"] small,.stepper button[aria-pressed="true"] span,.stepper button[aria-pressed="true"] em{color:#06181b;opacity:1}
-.flag{position:absolute;transform:translate(-4px,-100%);height:clamp(78px,10vw,140px);width:clamp(118px,14.5vw,210px);padding:0;border:0;background:none;text-align:left;z-index:2}
-.flag::before{content:"";position:absolute;left:0;bottom:0;top:0;width:3px;border-radius:1px;background:#efe3c0;box-shadow:1px 0 0 rgba(0,0,0,.45),2px 0 8px rgba(0,0,0,.4)}
-.flag .cloth{position:absolute;left:3px;top:2%;width:calc(100% - 3px);height:62%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:4px 22px 4px 10px;background:var(--c);color:#06181b;font:700 clamp(11px,1.25vw,16px)/1.1 var(--display);clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%);transform-origin:left center;animation:wave 6.5s ease-in-out infinite;box-shadow:inset 0 0 0 1px rgba(0,0,0,.22),0 6px 10px rgba(0,0,0,.28);transition:filter .2s}
-.flag .cloth small{font:600 clamp(9px,.95vw,12px)/1.15 var(--body);opacity:.9;letter-spacing:.01em}
-.flag:hover .cloth{filter:brightness(1.08)}
-.flag[aria-pressed="true"] .cloth{filter:none;outline:2px solid #fff;outline-offset:-3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28),0 6px 10px rgba(0,0,0,.28)}
-.flag[aria-pressed="true"]::after{content:"";position:absolute;left:-14px;bottom:-6px;width:36px;height:12px;border-radius:50%;background:radial-gradient(var(--c),transparent 70%);opacity:.8}
-body.calm .flag .cloth{animation:none}
-@keyframes wave{0%,100%{transform:skewY(0deg) scaleX(1)}50%{transform:skewY(-1.2deg) scaleX(.99)}}
+.stepper{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.stepper button{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(5,24,28,.88);text-align:left;transition:border-color .18s,background .18s,color .18s}
+.stepper button em{font:700 11px/1 var(--body);letter-spacing:.08em;color:var(--cyan)}
+.stepper button b{font:600 14px var(--display)}
+.stepper button:hover{border-color:rgba(160,255,238,.5)}
+.stepper button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#06181b}
+.stepper button[aria-pressed="true"] em{color:#06181b}
+.flag{position:absolute;width:10px;height:44px;padding:0;border:0;background:none;transform:translate(-50%,-100%);z-index:2}
+.flag::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;border-radius:1px;background:#efe3c0;box-shadow:0 0 0 1px rgba(0,0,0,.28)}
+.flag::after{content:"";position:absolute;left:50%;bottom:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px rgba(6,24,27,.9),0 0 10px var(--c)}
+.flag .cloth{position:absolute;top:0;left:7px;padding:5px 9px;border-radius:2px 8px 8px 2px;background:var(--c);color:#06181b;font:700 12px/1.15 var(--display);white-space:nowrap;letter-spacing:.01em;box-shadow:0 6px 14px rgba(0,0,0,.32);transform-origin:left center;animation:flagLift 3.4s ease-in-out infinite}
+.flag:hover,.flag[aria-pressed="true"]{z-index:4}
+.flag:hover .cloth{filter:brightness(1.06)}
+.flag[aria-pressed="true"] .cloth{outline:1px solid #fff;outline-offset:1px}
+.flag[aria-pressed="true"]::after{animation:pinPulse 1.6s ease-out infinite}
+.flag.hang-l .cloth{left:auto;right:7px;border-radius:8px 2px 2px 8px;transform-origin:right center}
+body.calm .flag .cloth,body.calm .flag[aria-pressed="true"]::after{animation:none}
+@keyframes flagLift{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes pinPulse{0%{box-shadow:0 0 0 2px rgba(6,24,27,.9),0 0 0 0 color-mix(in srgb,var(--c) 55%,transparent)}70%,100%{box-shadow:0 0 0 2px rgba(6,24,27,.9),0 0 0 10px transparent}}
 .pathCard{position:absolute;left:3.5%;top:7%;width:min(52%,560px);max-height:88%;overflow:auto;background:rgba(4,22,26,.95);border:1px solid rgba(200,255,240,.34);border-radius:18px;padding:24px 26px 22px;z-index:3;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 22px 48px rgba(0,0,0,.42)}
 .pathCard .top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .pathCard .dot{width:12px;height:12px;border-radius:50%;background:var(--c)}
@@ -433,9 +435,4 @@ body[data-sec="pond"],body[data-sec="card"]{--veil:.22}
 body[data-sec="about"]{--veil:.3}
 
 @media(max-width:560px){#calmBtn{display:none}.nav{gap:10px;padding:10px 14px}.brand{font-size:16px}}
-/* flags near the right edge hang to the left */
-.flag.rev{transform:translate(calc(-100% + 4px),-100%)}
-.flag.rev::before{left:auto;right:0}
-.flag.rev .cloth{left:0;right:3px;width:calc(100% - 3px);padding:4px 10px 4px 22px;align-items:flex-end;text-align:right;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,12% 50%);transform-origin:right center}
-.flag.rev[aria-pressed="true"]::after{left:auto;right:-14px}
-@media(max-width:900px){.flag{height:22vw;width:30vw}.flag .cloth{font-size:10px;padding:3px 14px 3px 7px}.flag.rev .cloth{padding:3px 7px 3px 14px}.flag .cloth small{font-size:8.5px}.stepper button{padding:6px 10px}.stepper button b{font-size:14px}.stepper button span{font-size:11px}}
+@media(max-width:900px){.flag{height:36px}.flag .cloth{font-size:11px;padding:4px 8px}.stepper button{padding:5px 10px}.stepper button b{font-size:13px}}
